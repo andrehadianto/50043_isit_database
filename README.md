@@ -1,15 +1,15 @@
 ### Initialization
 
 #### 1. Python Virtual Environment
-For Windows User
+**For Windows User**
 - run command prompt
 - type `pip install virtualenv`
 
-Creating a virtualenv
+**Creating a virtualenv**
 - go to project root folder
 - type `virtualenv .env`
 
-To activate the isolated virtualenv  
+**To activate the isolated virtualenv**
 If you are using powershell or powershell-based VSCode terminal
 - go to root folder
 - run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` once
@@ -19,7 +19,7 @@ If you are using command prompt
 - go to root folder
 - run `.\\.env\Scripts\activate`
 
-Installing Python Dependencies
+**Installing Python Dependencies**
 - go to root folder
 - run `python -m pip install -r requirements.txt`
 
@@ -29,7 +29,7 @@ Installing new dependencies
 - update requirements.txt with the right version
 
 #### 3. Development
-Project Structure
+**Project Structure**
 root  
 | common `(contains all the connectors to the Dbs and some shared function)`  
 |-| util.py `(utilities function such as connectors)`  
@@ -37,10 +37,10 @@ root
 |-| `(insert function)`  
 | app.py `(contains all the route and endpoints)`    
 
-Running Flask
+**Running Flask**
 - run `python -m flask run --reload`
 
-Create a new resource
+**Create a new resource**
 - go to ./resources
 - create a new .py file
 ```python
@@ -51,7 +51,7 @@ class Foo(Resource):
         return 'hello world'
 ```
 
-Create new endpoint
+**Create new endpoint**
 - Follow Create a new resource tutorial
 - go to `app.py`
 - add new import `from resource.foo import Foo`
