@@ -29,7 +29,7 @@ Installing new dependencies
 - update requirements.txt with the right version
 
 #### 3. Development
-**Project Structure**
+**Project Structure** <br>
 root  
 | common `(contains all the connectors to the Dbs and some shared function)`  
 |-| util.py `(utilities function such as connectors)`  
