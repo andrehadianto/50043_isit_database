@@ -1,8 +1,10 @@
 const webpack = require('webpack');
+const path = require('path');
+
 const config = {
-    entry: __dirname + '/js/index.jsx',
+    entry: path.join(__dirname, '/js/index.jsx'),
     output: {
-        path: __dirname + '/dist',
+        path: path.join(__dirname, '/public'),
         filename: 'bundle.js',
     },
     resolve: {
@@ -11,9 +13,17 @@ const config = {
     module: {
         rules: [
             {
-                test: /\.jsx?/,
+                test: /\.jsx?$/,
                 exclude: /node_modules/,
-                use: 'babel-loader',
+                loader: 'babel-loader',
+            },
+            {
+                test: /\.(png|jpg)$/,
+                loader: 'url-loader?limit-8192'
+            },
+            {
+                test: /\.scss$/,
+                use: ['style-loader', 'css-loader', 'sass-loader']
             }
         ]
     }

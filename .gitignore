@@ -98,7 +98,7 @@ celerybeat-schedule
 *.sage.py
 
 # Environments
-.env
+.pyenv
 .venv
 env/
 venv/
@@ -142,4 +142,4 @@ yarn-debug.log*
 yarn-error.log*
 /.changelog
 .npm/
-dist/
+public/
