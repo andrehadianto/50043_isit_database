@@ -40,6 +40,7 @@ SQL_USER=root
 SQL_PW=root
 
 MONGO_DB=isit_database_mongo
+LOG_DB=log_mongo
 ```
 
 #### 4. Development
