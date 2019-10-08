@@ -1,0 +1,46 @@
+/* Custom Color */
+$background-color: #00171F;
+$background-dark: #242426;
+$primary-one: #003459;
+$primary-two: #007EA7;
+$primary-three: #00A8E8;
+
+$secondary-red: #EF233C;
+$secondary-yellow: #FEBC11;
+
+$success-green: #4DBD74;
+$light-color: #F3F4F5;
+
+/* Custom Size */
+$break-ipad: 769px;
+$break-iphone: 376px;
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    padding: 0;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+html {
+    background-color: black;
+    color: var(--background-color);
+    font-weight: 100;
+    font-size: 100%;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    font-family: 'Comfortaa', Helvetica, Arial, sans-serif;
+    margin: 0%;
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+    color: $light-color;
+    background-color: $background-dark;
+    line-height: 1.75;
+}
