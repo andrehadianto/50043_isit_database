@@ -6,21 +6,21 @@ For Windows User
 - type `pip install virtualenv`
 
 Creating a virtualenv
-- go to project root folder
+- go to server folder
 - type `virtualenv .pyenv`
 
 To activate the isolated virtualenv  
 If you are using powershell or powershell-based VSCode terminal
-- go to root folder
+- go to server folder
 - run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` once
 - run `.\\.pyenv\Scripts\activate`
 
 If you are using command prompt
-- go to root folder
+- go to server folder
 - run `.\\.pyenv\Scripts\activate`
 
 Installing Python Dependencies
-- go to root folder
+- go to server folder
 - run `python -m pip install -r requirements.txt`
 
 #### 2. Using Virtual Environment
@@ -30,15 +30,17 @@ Installing new dependencies
 
 #### 3. Development
 Project Structure
-root  
+server  
 | common `(contains all the connectors to the Dbs and some shared function)`  
 |-| util.py `(utilities function such as connectors)`  
 | resources `(contains more specific functions)`  
 |-| `(insert function)`  
-| app.py `(contains all the route and endpoints)`    
+| app.py `(contains all the route and endpoints)`  
+| README.md  
+| requirements.txt
 
-Running Flask
-- run `python -m flask run --reload`
+Running the web app
+- run `python app.py`
 
 Create a new resource
 - go to ./resources
