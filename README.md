@@ -59,7 +59,7 @@ Create new endpoint
 
 #### 4. PyMongo
 - Install mongodb server community edition from [here](https://www.mongodb.com/download-center/community)
-- create a new database called `isit_database_mongo`
+- create new databases called `isit_database_mongo` and `log_mongo`
 - make sure mongo server is running on port:27017
 - run `mongod` in any shell
 - create an admin user with username: isit_database_mongo password: password

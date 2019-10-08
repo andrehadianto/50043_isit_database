@@ -31,7 +31,7 @@ def log_request(response):
             "status": status_as_string,
             "status_code": status_as_integer
         })
-        app.logger.debug("Successful insert with _id %s" % _id)
+        app.logger.debug("Successful log insert with _id %s" % _id)
     except:
-        app.logger.warning("Error encountered during insertion of log")    
+        app.logger.warning("Error encountered during insertion of log to database")    
     return response
