@@ -3,3 +3,4 @@ flask_restful
 black==18.5b0
 Flask-PyMongo==2.3.0
 mysql-connector==2.2.9
+python-dotenv
