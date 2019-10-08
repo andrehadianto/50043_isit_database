@@ -7,17 +7,17 @@ For Windows User
 
 Creating a virtualenv
 - go to project root folder
-- type `virtualenv .env`
+- type `virtualenv .pyenv`
 
 To activate the isolated virtualenv  
 If you are using powershell or powershell-based VSCode terminal
 - go to root folder
 - run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` once
-- run `.\\.env\Scripts\activate`
+- run `.\\.pyenv\Scripts\activate`
 
 If you are using command prompt
 - go to root folder
-- run `.\\.env\Scripts\activate`
+- run `.\\.pyenv\Scripts\activate`
 
 Installing Python Dependencies
 - go to root folder
