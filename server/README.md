@@ -28,7 +28,22 @@ Installing new dependencies
 - run `python -m pip install xxx`
 - update requirements.txt with the right version
 
-#### 3. Development
+#### 3. Use .env
+- Create .env file in server folder
+- Add in the following:
+```
+# Change values according to your local machine
+
+SQL_DB=isit_database
+SQL_HOST=localhost
+SQL_USER=root
+SQL_PW=root
+
+MONGO_DB=isit_database_mongo
+LOG_DB=log_mongo
+```
+
+#### 4. Development
 Project Structure
 server  
 | common `(contains all the connectors to the Dbs and some shared function)`  
@@ -59,7 +74,7 @@ Create new endpoint
 - add new import `from resource.foo import Foo`
 - add new resource in this syntax api.add_resource(<Function name>, <endpoint>) e.g. `api.add_resource(Foo, '/foo')` (running `localhost:5000/foo` will call the GET function from function Foo)
 
-#### 4. PyMongo
+#### 5. PyMongo
 - Install mongodb server community edition from [here](https://www.mongodb.com/download-center/community)
 - create a new database called `isit_database_mongo`
 - make sure mongo server is running on port:27017
@@ -71,6 +86,8 @@ To GET data from the database
 - import `from common.util import mongo`
 - use the syntax: `mongo.db.<collection name>.<mongo function>` e.g. `mongo.db.logs.find({})
 
+#### 6. MySQL
+- Install MySQL server version 5.7.27 from [here](https://dev.mysql.com/downloads/windows/installer/5.7.html)
 
 
 
