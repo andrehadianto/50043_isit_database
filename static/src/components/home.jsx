@@ -1,14 +1,14 @@
-import React from 'react';
-import { Layout } from 'antd';
+import React, { Component } from 'react';
+import { Layout, Button } from 'antd';
 
 const { Header, Content, Footer } = Layout;
 
-class Home extends React.Component {
+class Home extends Component {
     render() {
         return (
             <Layout>
                 <Header className="header">
-                    <p>header</p>
+                    <Button>Test</Button>
                 </Header>
                 <Content>
                     <div className="home">
