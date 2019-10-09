@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from resources.foo import Foo, testMySql, testMongo
-import common.util
+from common.util import mongo, mongo_log
 import datetime
 import logging
 
@@ -25,7 +25,7 @@ def log_request(response):
     status_as_string = response.status
     status_as_integer = response.status_code
     try:
-        _id = common.util.mongo_log.db.logs.insert({
+        _id = mongo_log.db.logs.insert({
             "time": time,
             "body": body,
             "status": status_as_string,
