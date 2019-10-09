@@ -3,8 +3,10 @@ import {
     Menu,
     Container,
     Image,
-    Dropdown,
+    Button
 } from 'semantic-ui-react';
+
+const { Item } = Menu;
 
 class Home extends Component {
     render() {
@@ -12,29 +14,15 @@ class Home extends Component {
             <div>
                 <Menu fixed='top' inverted>
                     <Container>
-                        <Menu.Item as='a' header>
-                        <Image size='mini' style={{ marginRight: '1.5em' }} />
-                        Project Name
-                        </Menu.Item>
-                        <Menu.Item as='a'>Home</Menu.Item>
-
-                        <Dropdown item simple text='Dropdown'>
-                        <Dropdown.Menu>
-                            <Dropdown.Item>List Item</Dropdown.Item>
-                            <Dropdown.Item>List Item</Dropdown.Item>
-                            <Dropdown.Divider />
-                            <Dropdown.Header>Header Item</Dropdown.Header>
-                            <Dropdown.Item>
-                            <i className='dropdown icon' />
-                            <span className='text'>Submenu</span>
-                            <Dropdown.Menu>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                                <Dropdown.Item>List Item</Dropdown.Item>
-                            </Dropdown.Menu>
-                            </Dropdown.Item>
-                            <Dropdown.Item>List Item</Dropdown.Item>
-                        </Dropdown.Menu>
-                        </Dropdown>
+                        <Item as='a' header>
+                            <Image size='mini' src="https://icon-library.net/images/react-icon/react-icon-28.jpg" style={{ marginRight: '1.5em' }} />
+                            isit database?
+                        </Item> 
+                        <Item position='right' name='login'> 
+                            <Button as='a'inverted>
+                                Log in
+                            </Button>
+                        </Item>              
                     </Container>
                 </Menu>
             </div>
