@@ -19,11 +19,9 @@ api.add_resource(testMongo, '/mongo')
 
 # Invoked after every requests to log the timestamp, content & status
 @app.after_request
-def after_request(response):
-    response.direct_passthrough = False
-    return response
-
 def log_request(response):
+    # response.direct_passthrough = False
+
     time = datetime.datetime.now()
     body = response.data.decode("utf-8")
     status_as_string = response.status
