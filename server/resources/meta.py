@@ -7,7 +7,7 @@ from bson.json_util import dumps
 from bson import json_util
 import json
 
-class MetaAPI(Resource):
+class BooksListResource(Resource):
     """Returns books information (lightweight) with pagination"""
     def get(self):
         parser = reqparse.RequestParser()
@@ -19,7 +19,7 @@ class MetaAPI(Resource):
         _offset = (args['page']-1) * args['count']
         
         # Returns only fields asin and imUrl
-        cursor = mongo.db.kindle_metadata.find({},
+        cursor = mongo.db.kindle_meta.find({},
              {"asin" : 1, "imUrl" : 1}).skip(_offset).limit(_limit)
         jsonstring = json_util.dumps(cursor, default=json_util.default)
         return json.loads(jsonstring)
