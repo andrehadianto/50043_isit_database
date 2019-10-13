@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import AddReview from '../components/AddReview';
+import AddNewBook from '../components/AddNewBook';
 import {
     Menu,
     Container,
@@ -48,40 +50,8 @@ class Home extends Component {
                         </Grid.Row>
                     </Grid>
                 </Segment>
-                <Segment vertical padded>
-                    <Grid container verticalAlign='middle'>
-                        <Grid.Row>
-                            <Header as='h2'>
-                                Add new review
-                            </Header>
-                        </Grid.Row>
-                        <Grid.Row>
-                            <Form>
-                                <Form.Select fluid placeholder='Select book' options={options}/>
-                                <Form.TextArea placeholder='How was the book?'/>
-                                <Form.Button>Submit</Form.Button>
-                            </Form>
-                        </Grid.Row>
-                    </Grid>
-                </Segment>
-                <Segment vertical padded>
-                    <Grid container verticalAlign='middle'>
-                        <Grid.Row>
-                            <Header as='h2'>
-                                Add new book
-                            </Header>
-                        </Grid.Row>
-                        <Grid.Row>
-                            <Form>
-                                <Form.Input fluid placeholder='Book title'/>
-                                <Form.TextArea placeholder='Description'/>
-                                <Form.Input fluid placeholder='price'/>
-                                <Form.Select fluid placeholder='Select category' options={options}/>
-                                <Form.Button>Submit</Form.Button>
-                            </Form>
-                        </Grid.Row>
-                    </Grid>
-                </Segment>
+                <AddReview options={options}/>
+                <AddNewBook options={options}/>
             </div>
         )
     }
