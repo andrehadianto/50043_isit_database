@@ -10,11 +10,12 @@ def dictfetchall(cursor):
     return [dict(zip([col[0] for col in desc], row)) 
             for row in cursor.fetchall()]
 
+
 class ReviewsAPI(Resource):
+    # Get list of reviews for a book
     def get(self, asin):
         parser = reqparse.RequestParser()
 
-        parser.add_argument('asin', type=int, location='args')
         parser.add_argument('page', type=int, location='args')
         parser.add_argument('count', type=int, location='args')
 
@@ -32,6 +33,7 @@ class ReviewsAPI(Resource):
 
         return results
 
+    # Add a new review for a book
     def post(self, asin):
         parser = reqparse.RequestParser()
         parser.add_argument('overall', type=int, location='form', help="No rating")
@@ -64,5 +66,29 @@ class ReviewsAPI(Resource):
             print(e)
 
 class ReviewAPI(Resource):
+    def get(self, id):
+        cursor.execute("SELECT * FROM kindle_reviews where id=%s" % (id))
+        results = dictfetchall(cursor)
+
+        return results
+
+    # Delete a review
     def delete(self, id):
-        pass
+        try: 
+            cursor.execute("DELETE FROM kindle_reviews where id=%s" % (id))
+            print("Row(s) were updated:" + str(cursor.rowcount))
+            con.commit()
+            
+            return {'message': 'Book review with id {} was deleted'.format(id)}, 200
+
+        except Exception as e:
+            print(e)
+
+class ReviewsByUserAPI(Resource):
+    # Get all reviews by a user
+    def get(self, reviewerID):
+
+        cursor.execute("SELECT * FROM kindle_reviews where reviewerID='%s'" % (reviewerID))
+        results = dictfetchall(cursor)
+
+        return results
