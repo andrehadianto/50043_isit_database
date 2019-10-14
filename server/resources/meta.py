@@ -6,6 +6,7 @@ from common.util import mongo, cursor
 
 
 from bson.json_util import dumps
+from bson.son import SON
 from bson import json_util
 import json
 
@@ -68,7 +69,7 @@ class BookPreviewResource(Resource):
 
 class BookCategoryResource(Resource):
     
-    def post(self, categoryArray):
+    def post(self):
         # categoryArray: array of string
         # Response Body: array of json(asin, title, imUrl?)
         # create empty array
@@ -76,3 +77,9 @@ class BookCategoryResource(Resource):
         # from responses for categoryArray[0], check if the response has the remaining categories
         # if have, put in empty array, else dispose
         parser = reqparse.RequestParser()
+        parser.add_argument('categoryArray', type=str, location='args')
+        args = parser.parse_args()
+        categoryArray = list(args.get('categoryArray').split(","))
+        bookInfo = mongo.db.isit_database.find_one({"categories":[categoryArray]})
+
+        print(dumps(bookInfo))
