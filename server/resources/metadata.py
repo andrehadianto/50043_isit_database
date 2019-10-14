@@ -3,17 +3,30 @@ from flask_restful import Resource, request, reqparse
 from common.util import mongo
 from bson.json_util import dumps, default
 
-#get book by id or asin via query param
-class GetBookDetails(Resource):
-    """Returns book details (all available fields)"""
-    def get(self, asin):
-        cursor = mongo.db.kindle_metadata.find_one({'asin': asin})
+class GetBooksDetails(Resource):
+    # """Returns book details (all available fields)"""
+    # api.add_resource(GetBooksDetails, '/book/<string:asin>')
+    # def get(self, asin):
+    #     cursor = mongo.db.kindle_metadata.find_one({'asin': asin})
+    #     jsonstring = dumps(cursor, default=default)
+    #     return json.loads(jsonstring)
+    
+    """Returns books details (all available fields)"""
+    def post(self):
+        req_json = request.get_json(force=True)
+        try:
+            _asin = req_json['asin']
+        except Exception as e:
+            print(e)
+            return {"message": "asin is a required field"}, 400
+        
+        cursor = mongo.db.kindle_metadata.find({'asin': {'$in':_asin}})
         jsonstring = dumps(cursor, default=default)
         return json.loads(jsonstring)
 
 class RegisterNewBook(Resource):
     def get_filled_fields(self, field_names, fields):
-        """Returns a dictionary of fields that were updated"""
+        "helper function"
         to_be_updated = {}
         for field_name, field in zip(field_names, fields):
             if field != None:
@@ -21,6 +34,7 @@ class RegisterNewBook(Resource):
         return to_be_updated
 
     def post(self):
+        """Returns a dictionary of fields that were updated"""
         req_json = request.get_json(force=True)
 
         try: 
@@ -30,7 +44,8 @@ class RegisterNewBook(Resource):
         except Exception as e:
             print(e)
             return {"message": "title, imUrl and description are required fields"}, 400
-        
+        #TODO: implement checker for imUrl 
+
         _price = req_json.get('price')
         _categories = req_json.get('categories')
         _related = req_json.get('related')
@@ -41,6 +56,7 @@ class RegisterNewBook(Resource):
 
         try:
             cursor = mongo.db.kindle_metadata.insert({"asin": 'B000000000'}, {"$set": to_be_updated})
+            #TODO: generate asin dynamically
             return {"message": "Book registered", "insertedId": str(cursor), "body": to_be_updated}, 200
             
         except Exception as e:

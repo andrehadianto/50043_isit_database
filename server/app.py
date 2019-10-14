@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from resources.foo import Foo, testMySql, testMongo
-from resources.metadata import GetBookDetails,RegisterNewBook
+from resources.metadata import GetBooksDetails,RegisterNewBook
 from common.util import mongo, mongo_log
 import datetime
 import logging
@@ -17,7 +17,7 @@ api = Api(app)
 api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
-api.add_resource(GetBookDetails, '/book/<string:asin>')
+api.add_resource(GetBooksDetails, '/book')
 api.add_resource(RegisterNewBook, '/book/new')
 
 # Invoked after every requests to log the timestamp, content & status
