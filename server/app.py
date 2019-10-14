@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from resources.foo import Foo, testMySql, testMongo
-from resources.meta import BooksListResource, UpdateBookResource, MetaAPI
+from resources.meta import BooksListResource, UpdateBookResource
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
 from common.util import mongo, mongo_log
 import datetime
