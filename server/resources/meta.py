@@ -14,14 +14,14 @@ class BooksListResource(Resource):
         args = parser.parse_args()
 
         if (not args['count'] or not args['page']):
-            cursor = mongo.db.kindle_meta.find({},
+            cursor = mongo.db.kindle_metadata.find({},
                 {"asin" : 1, "imUrl" : 1, "title" : 1}).skip(0).limit(15)
             jsonstring = dumps(cursor, default=default)
             return json.loads(jsonstring)
         
         _limit = args['count']
         _offset = (args['page']-1) * args['count']
-        cursor = mongo.db.kindle_meta.find({},
+        cursor = mongo.db.kindle_metadata.find({},
              {"asin" : 1, "imUrl" : 1}).skip(_offset).limit(_limit)
         jsonstring = dumps(cursor, default=default)
         return json.loads(jsonstring)
@@ -59,9 +59,13 @@ class UpdateBookResource(Resource):
         to_be_updated = self.get_filled_fields(field_names, fields)
 
         try:
-            cursor = mongo.db.kindle_meta.update({"asin": asin}, {"$set": to_be_updated})
+            cursor = mongo.db.kindle_metadata.update({"asin": asin}, {"$set": to_be_updated})
             if cursor['updatedExisting']:
-                return {"message": "Book details updated", "body": to_be_updated}, 200
+                # return the updated book if update was successful
+                cursor = mongo.db.kindle_metadata.find_one({"asin": asin})
+                jsonstring = dumps(cursor, default=default)
+                updated_json_body = json.loads(jsonstring)
+                return {"message": "Book details updated", "body": updated_json_body}, 200
             raise Exception("Something went wrong during book update to Database")
             
         except Exception as e:
