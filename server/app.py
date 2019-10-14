@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from resources.foo import Foo, testMySql, testMongo
+from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
 from resources.meta import MetaAPI
 from common.util import mongo, mongo_log
 import datetime
@@ -10,6 +11,7 @@ app = Flask(__name__,
     static_folder="../static/public",
     template_folder="../static"
     )
+
 logging.basicConfig(level=logging.DEBUG,
 					format="%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
 
@@ -18,6 +20,10 @@ api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
 api.add_resource(MetaAPI, '/books')
+
+api.add_resource(ReviewsAPI, '/reviews/<asin>', endpoint = 'reviews')
+api.add_resource(ReviewsByUserAPI, '/reviews/user/<reviewerID>', endpoint = 'reviews/user')
+api.add_resource(ReviewAPI, '/review/<id>', endpoint = 'review')
 
 # Invoked after every requests to log the timestamp, content & status
 @app.after_request
