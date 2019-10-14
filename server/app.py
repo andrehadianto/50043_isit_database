@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_restful import Api
 from resources.foo import Foo, testMySql, testMongo
+from resources.meta import BooksListResource, UpdateBookResource
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
-from resources.meta import MetaAPI
 from common.util import mongo, mongo_log
 import datetime
 import logging
@@ -19,7 +19,8 @@ api = Api(app)
 api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
-api.add_resource(MetaAPI, '/books')
+api.add_resource(BooksListResource, '/books')
+api.add_resource(UpdateBookResource, '/book/update/<string:asin>')
 
 api.add_resource(ReviewsAPI, '/reviews/<asin>', endpoint = 'reviews')
 api.add_resource(ReviewsByUserAPI, '/reviews/user/<reviewerID>', endpoint = 'reviews/user')
