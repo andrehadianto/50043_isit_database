@@ -1,5 +1,5 @@
 from flask import request
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, request
 from common.util import mongo, cursor
 
 from bson.json_util import dumps, default
@@ -40,22 +40,15 @@ class UpdateBookResource(Resource):
             Parameters: asin
             Body: json(title, categories, imUrl, related?, price?, description)
             """
-        parser = reqparse.RequestParser()
-        parser.add_argument('title', type=str, location='form')
-        # parser.add_argument('categories', location='form')
-        parser.add_argument('imUrl', type=str, location='form')
-        # parser.add_argument('related', location='form')
-        parser.add_argument('price', type=float, location='form')
-        parser.add_argument('description', type=str, location='form')
-        args = parser.parse_args()
+        json_request = request.get_json(force=True)
+        _title = json_request.get('title')
+        _imUrl = json_request.get('imUrl')
+        _categories = json_request.get('categories')
+        _price = json_request.get('price')
+        _description = json_request.get('description')
 
-        _title = args.get('title')
-        _imUrl = args.get('imUrl')
-        _price = args.get('price')
-        _description = args.get('description')
-
-        field_names = ['title', 'imUrl', 'price', 'description']
-        fields = [_title, _imUrl, _price, _description]
+        field_names = ['title', 'imUrl', 'categories','price', 'description']
+        fields = [_title, _imUrl, _categories, _price, _description]
         to_be_updated = self.get_filled_fields(field_names, fields)
 
         try:
