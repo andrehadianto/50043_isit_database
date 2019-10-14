@@ -21,14 +21,22 @@ class RegisterNewBook(Resource):
         return to_be_updated
 
     def post(self):
-        json = request.get_json(force=True)
-        _title = json['title']
-        _imUrl = json['imUrl']
-        _price = json['price']
-        _description = json['description']
+        req_json = request.get_json(force=True)
+
+        try: 
+            _title = req_json['title']
+            _imUrl = req_json['imUrl']
+            _description = req_json['description']
+        except Exception as e:
+            print(e)
+            return {"message": "title, imUrl and description are required fields"}, 400
         
-        field_names = ['title', 'imUrl', 'price', 'description']
-        fields = [_title, _imUrl, _price, _description]
+        _price = req_json.get('price')
+        _categories = req_json.get('categories')
+        _related = req_json.get('related')
+        
+        field_names = ['title', 'imUrl', 'description', 'price', 'description', 'related']
+        fields = [_title, _imUrl, _description, _price, _description, _related]
         to_be_updated = self.get_filled_fields(field_names, fields)
 
         try:
