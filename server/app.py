@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from resources.foo import Foo, testMySql, testMongo
-from resources.meta import MetaAPI
+from resources.meta import MetaAPI, BookPreviewResource
 from common.util import mongo, mongo_log
 import datetime
 import logging
@@ -12,12 +12,14 @@ app = Flask(__name__,
     )
 logging.basicConfig(level=logging.DEBUG,
 					format="%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
+app.config["MONGO_URI"] = "mongodb://localhost:27017/isit_database"
 
 api = Api(app)
 api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
 api.add_resource(MetaAPI, '/books')
+api.add_resource(BookPreviewResource, '/books/preview')
 
 # Invoked after every requests to log the timestamp, content & status
 @app.after_request
