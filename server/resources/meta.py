@@ -28,22 +28,23 @@ class MetaAPI(Resource):
 
 class BookPreviewResource(Resource):
     
-    def post(self, asinArray):
-        
+    def post(self):
         """Returns book information (lightweight) """
         # asinArray: array of string
-        print(request.args[0])
-        booksJSONArray = list()
         # Response Body: Array of json(asin, title, imURL?)
         parser = reqparse.RequestParser()
-        """
-        for asin in asinArray:
-            bookInfoInJSON = mongo.db.kindle_meta.find({"asin":str(asin)})
-            #check if bookInfoInJSON is empty?
-            bookInfoInJSON.append(booksJSONArray)
-        """        
+        parser.add_argument('asinArray', type=str, location='form')
+        args = parser.parse_args()
+        asinArray = args.get('value')
+        print(asinArray)
+
+        #print(cursor)
+        #print("jsonString:",jsonstring)
+        #check if bookInfoInJSON is empty?
+        #bookInfoInJSON.append(booksJSONArray)
+          
         #print("BOOKS JSON ARRAY: ", booksJSONArray)
-        return booksJSONArray
+        #return booksJSONArray
         # create an array to host the json
         # For each asin in asinArray, parse and request for the asin and its relevant info
         # If don't exist, put some placeholder

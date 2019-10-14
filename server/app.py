@@ -12,14 +12,14 @@ app = Flask(__name__,
     )
 logging.basicConfig(level=logging.DEBUG,
 					format="%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
-app.config["MONGO_URI"] = "mongodb://localhost:27017/isit_database"
+app.config["MONGO_URI"] = "mongodb://localhost:27017"
 
 api = Api(app)
 api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
-api.add_resource(MetaAPI, '/books')
-api.add_resource(BookPreviewResource, '/books/preview')
+#api.add_resource(MetaAPI, '/books')
+api.add_resource(BookPreviewResource, '/books/previews')
 
 # Invoked after every requests to log the timestamp, content & status
 @app.after_request
