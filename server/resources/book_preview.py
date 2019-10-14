@@ -10,6 +10,9 @@ from bson.son import SON
 from bson import json_util
 import json
 
+default_book_title = "untitled"
+default_img_Url = "no-url"
+
 class BookPreviewResource(Resource):
     
     def post(self):
@@ -34,12 +37,12 @@ class BookPreviewResource(Resource):
             try:
                 book_title = bookInfo["title"]
             except Exception as e:
-                book_title = "untitled"
+                book_title = default_book_title 
                 
             try:
                 book_imUrl = bookInfo["imUrl"]
             except Exception as e:
-                book_imUrl = bookInfo[""]
+                book_imUrl = default_img_Url
               
             bookLW = {"asin": book_asin, "title": book_title, "imUrl":book_imUrl}
             booksJSONArray.append(json.dumps(bookLW))
@@ -52,16 +55,29 @@ class BookPreviewResource(Resource):
 class BookCategoryResource(Resource):
     
     def post(self):
-        # categoryArray: array of string
-        # Response Body: array of json(asin, title, imUrl?)
-        # create empty array
-        # get response for categoryArray[0]
-        # from responses for categoryArray[0], check if the response has the remaining categories
-        # if have, put in empty array, else dispose
+
         parser = reqparse.RequestParser()
-        parser.add_argument('categoryArray', type=str, location='args')
+        parser.add_argument('categoryArray', type=str, location='form')
         args = parser.parse_args()
         categoryArray = list(args.get('categoryArray').split(","))
-        bookInfo = mongo.db.isit_database.find_one({"categories":[categoryArray]})
+        filteredArray = list()
+        #booksInfo = mongo.db.isit_database.find()
+        for item in mongo.db.isit_database.find():
+            counter = 0
+            for category in categoryArray:
+                if category in list(item["categories"]):
+                    counter += 1
+            if counter == len(categoryArray):
+                _asin = item["asin"]
+                try:
+                    _title = item["title"]
+                except Exception as e:
+                    _title = default_book_title
+                try:
+                    _imUrl = item["imUrl"]
+                except Exception as e:
+                    _imUrl = default_img_Url
+                filteredItem = {"asin":_asin, "title":_title, "imUrl":_imUrl}
+                filteredArray.append(json.dumps(filteredItem))
 
-        print(dumps(bookInfo))
+        return filteredArray
