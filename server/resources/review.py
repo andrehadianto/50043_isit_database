@@ -76,7 +76,6 @@ class ReviewAPI(Resource):
     def delete(self, id):
         try: 
             cursor.execute("DELETE FROM kindle_reviews where id=%s" % (id))
-            print("Row(s) were updated:" + str(cursor.rowcount))
             con.commit()
             
             return {'message': 'Book review with id {} was deleted'.format(id)}, 200
