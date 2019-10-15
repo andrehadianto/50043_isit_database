@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import _ from 'lodash';
 import {
@@ -15,9 +16,10 @@ import {
 const { Column } = Grid;
 
 const preview_placeholder = _.times(18, (i) => (
-    <Column> key={i}>
+    <Column  key={i}>
         <Placeholder>
-            <Placeholder.Image square/>
+            <Placeholder.Image style={{minWidth: '100px', minHeight: '140px'}} square/>
+            <Placeholder.Line/>
         </Placeholder>
     </Column>
 ));
@@ -57,10 +59,12 @@ const AllBooks = () => {
                     : bookData.map((book, index) => {
                         return (
                             <Column key={index}>
-                                <Item>
-                                    <Item.Image verticalAlign='middle' size='small' style={{minWidth: '100px', minHeight: '140px'}} src={book.imUrl}/>
-                                    <Header textAlign='center' as='h5'>{book.asin}</Header>
-                                </Item>
+                                <Link to={{pathname: `/review/${book.asin}`}}>
+                                    <Item>
+                                        <Item.Image verticalAlign='middle' size='small' style={{minWidth: '100px', minHeight: '140px'}} src={book.imUrl}/>
+                                        <Header textAlign='center' as='h5'>{book.asin}</Header>
+                                    </Item>
+                                </Link>
                             </Column>
                         )
                     })
