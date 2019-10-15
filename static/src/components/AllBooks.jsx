@@ -1,17 +1,20 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import {
     Grid,
     Segment,
     Header,
-    Image,
-    Placeholder
+    Pagination,
+    Placeholder,
+    Item,
+    Divider,
+    Container
 } from 'semantic-ui-react';
 
 const { Column } = Grid;
 
-const preview_placeholder = _.times(12, (i) => (
+const preview_placeholder = _.times(18, (i) => (
     <Column> key={i}>
         <Placeholder>
             <Placeholder.Image square/>
@@ -19,52 +22,64 @@ const preview_placeholder = _.times(12, (i) => (
     </Column>
 ));
 
-class AllBooks extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            bookPreviews: [],
-            _isLoading: true
-        };
-    }
+const AllBooks = () => {
+    const [activePage, setActivePage] = useState(1);
+    const [bookData, setBookData] = useState([]);
+    const [getBookApiUrl, setGetBookApiUrl] = useState('http://localhost:5000/books?page=1&count=18');
+    const [isLoading, setIsLoading] = useState(true);
 
-    componentDidMount() {
-        const url = 'http://localhost:5000/books';
+    useEffect(() => {
         axios.get(
-            url
+            getBookApiUrl
         )
         .then(res => {
-            this.setState({
-                bookPreviews: [...res.data],
-                _isLoading: false
-            });
+            setBookData([...res.data]);
+            setIsLoading(false);
         });
+    }, [getBookApiUrl]);
+
+    const onPageChange = (e, pageInfo) => {
+        setIsLoading(true);
+        setActivePage(pageInfo.activePage);
+        setGetBookApiUrl(`http://localhost:5000/books?page=${pageInfo.activePage.toString()}&count=18`);
     }
 
-    render() {
-        return(
-            <Column width={12}>
-                <Segment>
-                    <Header as='h3' dividing>
-                        Hullo
-                    </Header>
-                    <Grid columns={6}>
-                    {
-                        this.state._isLoading
-                        ? preview_placeholder
-                        : this.state.bookPreviews.map((book, index) => {
-                            return (
-                                <Column key={index}>
-                                    <Image src={book.imUrl}/>
-                                </Column>
-                            )
-                        })
-                    } 
-                    </Grid>
-                </Segment>
-            </Column>
-        );
-    }
+    return(
+        <Column width={12}>
+            <Segment color='orange'>
+                <Header as='h3' dividing>
+                    List of Books
+                </Header>
+                <Grid columns={6}>
+                {
+                    isLoading
+                    ? preview_placeholder
+                    : bookData.map((book, index) => {
+                        return (
+                            <Column key={index}>
+                                <Item>
+                                    <Item.Image verticalAlign='middle' size='small' style={{minWidth: '100px', minHeight: '140px'}} src={book.imUrl}/>
+                                    <Header textAlign='center' as='h5'>{book.asin}</Header>
+                                </Item>
+                            </Column>
+                        )
+                    })
+                } 
+                </Grid>
+                <Divider/>
+                <Container textAlign='center'>
+                    <Pagination
+                        secondary
+                        ellipsisItem={null}
+                        activePage={activePage}
+                        onPageChange={onPageChange}
+                        totalPages={99}
+                    />
+                </Container>
+            </Segment>
+        </Column>
+    );
+    
 }
 
 export default AllBooks;

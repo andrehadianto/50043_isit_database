@@ -5,7 +5,6 @@ import AddNewBook from '../components/AddNewBook';
 import NavBar from '../components/NavBar';
 import AllBooks from '../components/AllBooks';
 import {
-    Menu,
     Container,
 
     Message,
@@ -13,8 +12,6 @@ import {
     Grid,
     Header
 } from 'semantic-ui-react';
-
-const { Item } = Menu;
 
 const options = [
     { key: 'm', text: 'Male', value: 'male' },
@@ -42,8 +39,16 @@ class Home extends Component {
                                 </Segment>
                             </Grid.Column>
                             <AllBooks/>
+
                         </Grid.Row>
                     </Grid>
+
+
+
+
+
+
+
 
                     <Segment.Group>
                         <Segment padded>
