@@ -22,15 +22,12 @@ class BookPreviewResource(Resource):
         parser.add_argument('asinArray', type=str, location='form')
         args = parser.parse_args()
         asinArray = args.get('asinArray').split(",")
-        print(asinArray)
         # create an array to host the json
         booksJSONArray = list()
         
             # For each asin in asinArray, parse and request for the asin and its relevant info
         for asin in asinArray:
             bookInfo = mongo.db.kindle_metadata.find_one({"asin":asin})
-            print("bookInfo:" ,bookInfo)
-
             book_asin = asin
             
             try:
