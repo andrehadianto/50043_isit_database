@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from resources.foo import Foo, testMySql, testMongo
-from resources.meta import BooksListResource, UpdateBookResource
+from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBook, UpdateBookResource
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
 from common.util import mongo, mongo_log
 import datetime
@@ -19,7 +19,9 @@ api = Api(app)
 api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
+api.add_resource(GetBookDetails, '/book/<string:asin>')
 api.add_resource(BooksListResource, '/books')
+api.add_resource(RegisterNewBook, '/book/new')
 api.add_resource(UpdateBookResource, '/book/update/<string:asin>')
 
 api.add_resource(ReviewsAPI, '/reviews/<asin>', endpoint = 'reviews')
@@ -35,7 +37,7 @@ def log_request(response):
     status_as_string = response.status
     status_as_integer = response.status_code
     try:
-        _id = mongo_log.db.logs.insert({
+        _id = mongo_log.db.logs.insert_one({
             "time": time,
             "body": body,
             "status": status_as_string,
