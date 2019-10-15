@@ -7,7 +7,8 @@ import {
     Placeholder,
     Header,
     Item,
-    Container
+    Rating,
+    Form
 } from 'semantic-ui-react';
 
 const image_placeholder = (
@@ -90,6 +91,29 @@ class BookDetails extends Component {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
+
+                <Segment.Group>
+                    <Segment vertical>
+                        <Grid container>
+                            <Grid.Column>
+                                <Form>
+                                    <Item.Content>
+                                        <Rating icon='star' maxRating={5}/>
+                                    </Item.Content>
+                                    <Form.TextArea
+                                        placeholder='Share your thoughts!'
+                                        style={{minHeight: '6em'}}
+                                    />
+                                    <Form.Button primary>Submit</Form.Button>
+                                </Form>
+                            </Grid.Column>
+                        </Grid>
+                    </Segment>
+                    <Segment vertical>
+                        asdffds
+                    </Segment>
+
+                </Segment.Group>
             </div>
         );
     }
