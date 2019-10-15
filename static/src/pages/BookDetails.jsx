@@ -8,7 +8,9 @@ import {
     Header,
     Item,
     Rating,
-    Form
+    Form,
+    Container,
+    Divider
 } from 'semantic-ui-react';
 
 const image_placeholder = (
@@ -26,21 +28,35 @@ class BookDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: true,
-            bookDetails: null
+            bookIsLoading: true,
+            reviewIsLoading: true,
+            bookDetails: null,
+            reviewList: []
         }
     }
 
     componentDidMount() {
         const {match: {params}} = this.props;
-        const url = `http://localhost:5000/book/${params.asin}`;
+        const bookUrl = `http://localhost:5000/book/${params.asin}`;
         axios.get(
-            url
+            bookUrl
         )
         .then(res => {
             this.setState({
                 bookDetails: res.data,
-                isLoading: false
+                bookIsLoading: false
+            });
+            console.log(this.state);
+        })
+
+        const reviewUrl = `http://localhost:5000/reviews/${params.asin}`;
+        axios.get(
+            reviewUrl
+        )
+        .then(res => {
+            this.setState({
+                reviewList: [...res.data],
+                reviewIsLoading: false
             });
             console.log(this.state);
         })
@@ -57,7 +73,7 @@ class BookDetails extends Component {
                                     <Grid.Row>
                                         <Grid.Column width={5}>
                                             {
-                                                this.state.isLoading
+                                                this.state.bookIsLoading
                                                 ? image_placeholder
                                                 : <Image style={{minWidth: '250px', minHeight: '250px'}} src={this.state.bookDetails.imUrl}/>
                                             }
@@ -65,17 +81,17 @@ class BookDetails extends Component {
                                         <Grid.Column width={10}>
                                             <Segment vertical>
                                                 {
-                                                    this.state.isLoading
+                                                    this.state.bookIsLoading
                                                     ? title_placeholder
                                                     : <Header as='h3' dividing>{this.state.bookDetails.asin}</Header>
                                                 }
                                                 <Item.Description>
                                                     {
-                                                        this.state.isLoading
+                                                        this.state.bookIsLoading
                                                         ? title_placeholder
                                                         : this.state.bookDetails.description === undefined
-                                                        ? <span style={{fontStyle: 'italic', lineHeight: '1.5'}}>No description</span>
-                                                        : this.state.bookDetails.description
+                                                            ? <span style={{fontStyle: 'italic', lineHeight: '1.5'}}>No description</span>
+                                                            : this.state.bookDetails.description
                                                     }
                                                 </Item.Description>
                                             </Segment>
@@ -93,13 +109,13 @@ class BookDetails extends Component {
                 </Grid>
 
                 <Segment.Group>
-                    <Segment vertical>
+                    <Segment padded vertical>
                         <Grid container>
                             <Grid.Column>
                                 <Form>
-                                    <Item.Content>
-                                        <Rating icon='star' maxRating={5}/>
-                                    </Item.Content>
+                                    <Container>
+                                        <Rating style={{marginBottom: '10px'}} size='large' icon='star' maxRating={5}/>
+                                    </Container>
                                     <Form.TextArea
                                         placeholder='Share your thoughts!'
                                         style={{minHeight: '6em'}}
@@ -109,8 +125,37 @@ class BookDetails extends Component {
                             </Grid.Column>
                         </Grid>
                     </Segment>
-                    <Segment vertical>
-                        asdffds
+                    <Segment padded vertical>
+                        <Grid container>
+                            <Grid.Column>
+                                <Item.Group>
+                                    {
+                                        this.state.reviewIsLoading
+                                        ? title_placeholder
+                                        : !this.state.reviewList.length
+                                            ? <span style={{fontStyle: 'italic', lineHeight: '1.5'}}>No review</span>
+                                            : this.state.reviewList.map((review, index) => {
+                                                return (
+                                                    <div key={index}>
+                                                        <Item>
+                                                            <Item.Content>
+                                                                <Item.Header as='h3'>{review.reviewerName}</Item.Header>
+                                                                <Item.Meta>
+                                                                    <h5>{review.summary}</h5>
+                                                                </Item.Meta>
+                                                                <Item.Description>
+                                                                    {review.reviewText}
+                                                                </Item.Description>
+                                                            </Item.Content>
+                                                        </Item>
+                                                        <Divider/>
+                                                    </div>
+                                                )
+                                            })
+                                    }
+                                </Item.Group>
+                            </Grid.Column>
+                        </Grid>
                     </Segment>
 
                 </Segment.Group>
