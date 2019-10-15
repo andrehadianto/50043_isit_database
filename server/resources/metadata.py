@@ -3,24 +3,10 @@ from flask_restful import Resource, request, reqparse
 from common.util import mongo
 from bson.json_util import dumps, default
 
-class GetBooksDetails(Resource):
-    # """Returns book details (all available fields)"""
-    # api.add_resource(GetBooksDetails, '/book/<string:asin>')
-    # def get(self, asin):
-    #     cursor = mongo.db.kindle_metadata.find_one({'asin': asin})
-    #     jsonstring = dumps(cursor, default=default)
-    #     return json.loads(jsonstring)
-    
-    """Returns books details (all available fields)"""
-    def post(self):
-        req_json = request.get_json(force=True)
-        try:
-            _asin = req_json['asin']
-        except Exception as e:
-            print(e)
-            return {"message": "asin is a required field"}, 400
-        
-        cursor = mongo.db.kindle_metadata.find({'asin': {'$in':_asin}})
+class GetBookDetails(Resource):
+    """Returns book details (all available fields)"""
+    def get(self, asin):
+        cursor = mongo.db.kindle_metadata.find_one({'asin': asin})
         jsonstring = dumps(cursor, default=default)
         return json.loads(jsonstring)
 
