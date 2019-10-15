@@ -1,7 +1,5 @@
-from flask import render_template, make_response
-from flask import request
+from flask import render_template, make_response, request
 from flask_restful import Resource, reqparse
-from flask_restful import Resource
 from common.util import mongo, cursor
 
 
@@ -12,6 +10,7 @@ import json
 
 default_book_title = "untitled"
 default_img_Url = "no-url"
+# mongodb_database = kindle_metadata
 
 class BookPreviewResource(Resource):
     
@@ -29,7 +28,7 @@ class BookPreviewResource(Resource):
         
             # For each asin in asinArray, parse and request for the asin and its relevant info
         for asin in asinArray:
-            bookInfo = mongo.db.isit_database.find_one({"asin":asin})
+            bookInfo = mongo.db.kindle_metadata.find_one({"asin":asin})
             print("bookInfo:" ,bookInfo)
 
             book_asin = asin
@@ -61,8 +60,7 @@ class BookCategoryResource(Resource):
         args = parser.parse_args()
         categoryArray = list(args.get('categoryArray').split(","))
         filteredArray = list()
-        #booksInfo = mongo.db.isit_database.find()
-        for item in mongo.db.isit_database.find():
+        for item in mongo.db.kindle_metadata.find():
             counter = 0
             for category in categoryArray:
                 if category in list(item["categories"]):
