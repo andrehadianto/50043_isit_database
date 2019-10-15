@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import AddReview from '../components/AddReview';
 import AddNewBook from '../components/AddNewBook';
+import NavBar from '../components/NavBar';
+import AllBooks from '../components/AllBooks';
 import {
     Menu,
     Container,
-    Image,
-    Button,
 
+    Message,
     Segment,
     Grid,
-    Header,
-    Form
+    Header
 } from 'semantic-ui-react';
 
 const { Item } = Menu;
@@ -21,37 +22,43 @@ const options = [
     { key: 'o', text: 'Other', value: 'other' },
   ]
 
+const tmp_columns = _.times(100, (i) => (
+    <Message compact key={i}>Hi</Message>
+))
+
 class Home extends Component {
     render() {
         return (
             <div>
-                <Segment inverted vertical size="tiny">
-                    <Menu inverted size="large">
-                        <Container>
-                            <Item as='a' header>
-                                <Image size='mini' src="https://icon-library.net/images/react-icon/react-icon-28.jpg" style={{ marginRight: '1.5em' }} />
-                                isit database?
-                            </Item> 
-                            <Item position='right' name='login'> 
-                                <Button as='a'inverted>
-                                    Log in
-                                </Button>
-                            </Item>              
-                        </Container>
-                    </Menu>
-                </Segment>
-
-                <Segment vertical padded>
-                    <Grid container verticalAlign='middle'>
+                <NavBar/>
+                <Container style={{marginTop: '2em', marginBottom: '4em'}}>
+                    <Grid>
                         <Grid.Row>
-                            <Header as='h2'>
-                                See some reviews
-                            </Header>
+                            <Grid.Column width={4}>
+                                <Segment>
+                                    <Header as='h3' dividing>
+                                        Hello
+                                    </Header>
+                                </Segment>
+                            </Grid.Column>
+                            <AllBooks/>
                         </Grid.Row>
                     </Grid>
-                </Segment>
-                <AddReview options={options}/>
-                <AddNewBook options={options}/>
+
+                    <Segment.Group>
+                        <Segment padded>
+                            <Grid container verticalAlign='middle'>
+                                <Grid.Column style={{minWidth: 600}}>
+                                    <Header as='h2'>
+                                        See some reviews
+                                    </Header>
+                                </Grid.Column>
+                            </Grid>
+                        </Segment>
+                        <AddReview options={options}/>
+                        <AddNewBook options={options}/>
+                    </Segment.Group>
+                </Container>
             </div>
         )
     }

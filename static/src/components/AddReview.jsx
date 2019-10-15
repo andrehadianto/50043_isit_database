@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Segment, Grid, Header, Form, Popup } from 'semantic-ui-react';
+import { Segment, Grid, Header, Form, Message } from 'semantic-ui-react';
 
-const { Row } = Grid;
+const { Column } = Grid;
 const { Select, TextArea, Button } = Form;
 
 const timeoutLength = 3000;
@@ -24,32 +24,26 @@ class AddReview extends Component {
         const url = "http://localhost:5000/review/" + book;
         if (review === '') {
             this.setState({isValidated: false});
+            setTimeout(() => {this.setState({isValidated: true})}, timeoutLength);
+            clearTimeout();
         }
     }
 
     render() {
         return (
-            <Segment vertical padded>
+            <Segment padded>
                 <Grid container verticalAlign='middle'>
-                    <Row>
+                    <Column style={{minWidth: 600}}>
                         <Header as='h2'>
                             Add new review
                         </Header>
-                    </Row>
-                    <Row>
                         <Form onSubmit={this.postReview}>
-                            <Select name='book' fluid placeholder='Select book' options={this.props.options}/>
-                            <Popup 
-                                position='top right'
-                                content='Review cannot be empty'
-                                onOpen={setTimeout(() => {this.setState({isValidated: true})}, timeoutLength)}
-                                open={!this.state.isValidated}
-                                trigger={
-                                    <TextArea name='review' placeholder='How was the book?'/>
-                            }/>
-                            <Button>Submit</Button>
+                            <Select name='book' placeholder='Select book' options={this.props.options}/>
+                            <TextArea name='review' placeholder='How was the book?'/>
+                            {!this.state.isValidated && <Message negative>Review cannot be empty</Message>}
+                            <Button primary>Submit</Button>
                         </Form>
-                    </Row>
+                    </Column>
                 </Grid>
             </Segment>
         );
