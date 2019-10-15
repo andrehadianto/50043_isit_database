@@ -15,8 +15,3 @@ class testMySql(Resource):
         cursor.execute("describe kindle_reviews")
         res = cursor.fetchall()
         return res
-        
-class Foo(Resource):
-    def get(self):
-        headers = {'Content-type': 'text/html'}
-        return make_response(render_template("index.html"),200,headers)
