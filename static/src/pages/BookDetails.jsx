@@ -46,7 +46,6 @@ class BookDetails extends Component {
                 bookDetails: res.data,
                 bookIsLoading: false
             });
-            console.log(this.state);
         })
 
         const reviewUrl = `http://localhost:5000/reviews/${params.asin}`;
@@ -58,7 +57,6 @@ class BookDetails extends Component {
                 reviewList: [...res.data],
                 reviewIsLoading: false
             });
-            console.log(this.state);
         })
     }
 
@@ -135,11 +133,18 @@ class BookDetails extends Component {
                                         : !this.state.reviewList.length
                                             ? <span style={{fontStyle: 'italic', lineHeight: '1.5'}}>No review</span>
                                             : this.state.reviewList.map((review, index) => {
+                                                const months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                                                const date = new Date(review.unixReviewTime * 1000);
+                                                const day = date.getDate();
+                                                const month = months_arr[date.getMonth()];
+                                                const year = date.getFullYear();
                                                 return (
                                                     <div key={index}>
                                                         <Item>
                                                             <Item.Content>
-                                                                <Item.Header as='h3'>{review.reviewerName}</Item.Header>
+                                                                <Item.Header as='h4'>{review.reviewerName}</Item.Header>
+                                                                <Rating defaultRating={review.overall} maxRating={5} disabled/>
+                                                                <span style={{ marginLeft: '2em' }}>{`${day} ${month} ${year}`}</span>
                                                                 <Item.Meta>
                                                                     <h5>{review.summary}</h5>
                                                                 </Item.Meta>

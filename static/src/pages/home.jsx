@@ -55,16 +55,6 @@ class Home extends Component {
 
 
                     <Segment.Group>
-                        <Segment padded>
-                            <Grid container verticalAlign='middle'>
-                                <Grid.Column style={{minWidth: 600}}>
-                                    <Header as='h2'>
-                                        See some reviews
-                                    </Header>
-                                </Grid.Column>
-                            </Grid>
-                        </Segment>
-                        <AddReview options={options}/>
                         <AddNewBook options={options}/>
                     </Segment.Group>
                 </Container>
