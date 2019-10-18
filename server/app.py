@@ -1,7 +1,9 @@
 from flask import Flask
 from flask_restful import Api
 from resources.foo import Foo, testMySql, testMongo
+from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBook, UpdateBookResource
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
+from resources.user import UserLogin, UserSignup
 from common.util import mongo, mongo_log
 import datetime
 import logging
@@ -18,20 +20,27 @@ api = Api(app)
 api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
+api.add_resource(GetBookDetails, '/book/<string:asin>')
+api.add_resource(BooksListResource, '/books')
+api.add_resource(RegisterNewBook, '/book/new')
+api.add_resource(UpdateBookResource, '/book/update/<string:asin>')
 
 api.add_resource(ReviewsAPI, '/reviews/<asin>', endpoint = 'reviews')
 api.add_resource(ReviewsByUserAPI, '/reviews/user/<reviewerID>', endpoint = 'reviews/user')
 api.add_resource(ReviewAPI, '/review/<id>', endpoint = 'review')
 
+api.add_resource(UserLogin, '/user/login')
+api.add_resource(UserSignup, '/user/signup')
 # Invoked after every requests to log the timestamp, content & status
 @app.after_request
 def log_request(response):
+    response.direct_passthrough = False
     time = datetime.datetime.now()
     body = response.data.decode("utf-8")
     status_as_string = response.status
     status_as_integer = response.status_code
     try:
-        _id = mongo_log.db.logs.insert({
+        _id = mongo_log.db.logs.insert_one({
             "time": time,
             "body": body,
             "status": status_as_string,

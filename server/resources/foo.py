@@ -1,6 +1,5 @@
-from flask import render_template, make_response
+from flask import render_template, make_response, json
 from flask_restful import Resource
-from flask import json
 from common.util import mongo, cursor
 
 from bson import json_util
