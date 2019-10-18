@@ -10,7 +10,9 @@ import {
     Rating,
     Form,
     Container,
-    Divider
+    Divider,
+    Message,
+    Label
 } from 'semantic-ui-react';
 
 const image_placeholder = (
@@ -31,8 +33,13 @@ class BookDetails extends Component {
             bookIsLoading: true,
             reviewIsLoading: true,
             bookDetails: null,
-            reviewList: []
+            reviewList: [],
+
+            rating: 0
+
         }
+        this.submitReviewHandler = this.submitReviewHandler.bind(this);
+        this.handleRate = this.handleRate.bind(this);
     }
 
     componentDidMount() {
@@ -60,10 +67,42 @@ class BookDetails extends Component {
         })
     }
 
+    handleRate(e, {rating, maxRating}) {
+        this.setState({rating})
+    }
+
+    submitReviewHandler(e) {
+        const {match: {params}} = this.props;
+        const overall = this.state.rating;
+        const review = e.target.elements.review.value;
+        const formData = new FormData();
+        formData.set('overall', overall);
+        formData.set('reviewText', review);
+        formData.set('reviewerID', 'SOME_ID');
+        formData.set('reviewerName', 'ONCE_TOLD_THIS');
+        formData.set('summary', 'FORGOT ABOUT THIS');
+
+        const url = `http://localhost:5000/reviews/${params.asin}`
+        axios.post(
+            url, 
+            formData
+        )
+        .catch(err => {
+            console.log(err);
+        })
+    }
+
     render() {
         return (
             <div>
                 <Grid>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Segment>
+                                Category
+                            </Segment>
+                        </Grid.Column>
+                    </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={12}>
                             <Segment color='blue'>
@@ -99,8 +138,14 @@ class BookDetails extends Component {
                             </Segment>
                         </Grid.Column>
                         <Grid.Column width={4}>
-                            <Segment>
-                                HAHABAHBAHBAHBHA
+                            <Segment color='grey'>
+                                {
+                                    this.state.bookIsLoading
+                                    ? title_placeholder
+                                    : (this.state.bookDetails.price !== undefined && this.state.bookDetails.price !== 0)
+                                    ? <Header textAlign='center' dividing color='pink'>SGD ${this.state.bookDetails.price}</Header>
+                                    : <Header textAlign='center' dividing><Label tag color='pink'>Free of charge</Label></Header>
+                                }
                             </Segment>
                         </Grid.Column>
                     </Grid.Row>
@@ -110,15 +155,22 @@ class BookDetails extends Component {
                     <Segment padded vertical>
                         <Grid container>
                             <Grid.Column>
-                                <Form>
+                                <Form onSubmit={this.submitReviewHandler}>
                                     <Container>
-                                        <Rating style={{marginBottom: '10px'}} size='large' icon='star' maxRating={5}/>
+                                        <Rating
+                                            name='overall'
+                                            onRate={this.handleRate}
+                                            style={{marginBottom: '10px'}}
+                                            size='large'
+                                            icon='star'
+                                            maxRating={5}/>
                                     </Container>
                                     <Form.TextArea
                                         placeholder='Share your thoughts!'
                                         style={{minHeight: '6em'}}
+                                        name='review'
                                     />
-                                    <Form.Button primary>Submit</Form.Button>
+                                    <Form.Button type='submit' primary>Submit</Form.Button>
                                 </Form>
                             </Grid.Column>
                         </Grid>
@@ -142,7 +194,7 @@ class BookDetails extends Component {
                                                     <div key={index}>
                                                         <Item>
                                                             <Item.Content>
-                                                                <Item.Header as='h4'>{review.reviewerName}</Item.Header>
+                                                                <Item.Header as='h4'><span style={{color: 'blue'}}>{review.reviewerName}</span></Item.Header>
                                                                 <Rating defaultRating={review.overall} maxRating={5} disabled/>
                                                                 <span style={{ marginLeft: '2em' }}>{`${day} ${month} ${year}`}</span>
                                                                 <Item.Meta>
@@ -162,7 +214,6 @@ class BookDetails extends Component {
                             </Grid.Column>
                         </Grid>
                     </Segment>
-
                 </Segment.Group>
             </div>
         );

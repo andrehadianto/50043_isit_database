@@ -18,13 +18,13 @@ const { Column } = Grid;
 const preview_placeholder = _.times(18, (i) => (
     <Column  key={i}>
         <Placeholder>
-            <Placeholder.Image style={{minWidth: '100px', minHeight: '140px'}} square/>
+            <Placeholder.Image style={{minWidth: '100px', minHeight: '100px'}} square/>
             <Placeholder.Line/>
         </Placeholder>
     </Column>
 ));
 
-const AllBooks = () => {
+const AllBooks = (props) => {
     const [activePage, setActivePage] = useState(1);
     const [bookData, setBookData] = useState([]);
     const [getBookApiUrl, setGetBookApiUrl] = useState('http://localhost:5000/books?page=1&count=18');
@@ -61,7 +61,7 @@ const AllBooks = () => {
                             <Column key={index}>
                                 <Link to={{pathname: `/review/${book.asin}`}}>
                                     <Item>
-                                        <Item.Image verticalAlign='middle' size='small' style={{minWidth: '100px', minHeight: '140px'}} src={book.imUrl}/>
+                                        <Item.Image verticalAlign='middle' size='small' style={{minWidth: '100px', minHeight: '100px'}} src={book.imUrl}/>
                                         <Header textAlign='center' as='h5'>{book.asin}</Header>
                                     </Item>
                                 </Link>
