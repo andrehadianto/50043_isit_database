@@ -117,5 +117,20 @@ IGNORE 1 ROWS;
 
 ```
 
+#### 7. JWT User Login
+Update local `isit_database_mongo` mongodb with a new collection called `user_login`.
+
+Sign up workflow  
+- Requires username, password and name. Username must be unique
+- Check whether fields are filled
+- Check whether username already exists
+- Create a unique secret for the user to encode the username and password with jwt
+
+Login workflow
+- Requires username and password
+- Check whether fields are filled
+- Check whether username is in the collection
+- Getting the user secret and reencode the entered password with the secret to see if the result match
+- Will return the jwt token if successful
 
 
