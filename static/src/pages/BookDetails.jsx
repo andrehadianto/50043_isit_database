@@ -75,21 +75,26 @@ class BookDetails extends Component {
         const {match: {params}} = this.props;
         const overall = this.state.rating;
         const review = e.target.elements.review.value;
-        const formData = new FormData();
-        formData.set('overall', overall);
-        formData.set('reviewText', review);
-        formData.set('reviewerID', 'SOME_ID');
-        formData.set('reviewerName', 'ONCE_TOLD_THIS');
-        formData.set('summary', 'FORGOT ABOUT THIS');
 
-        const url = `http://localhost:5000/reviews/${params.asin}`
-        axios.post(
-            url, 
-            formData
-        )
-        .catch(err => {
-            console.log(err);
-        })
+        if (!review) {
+            alert("Field is required");
+        } else {
+            const formData = new FormData();
+            formData.set('overall', overall);
+            formData.set('reviewText', review);
+            formData.set('reviewerID', 'SOME_ID');
+            formData.set('reviewerName', 'ONCE_TOLD_THIS');
+            formData.set('summary', 'FORGOT ABOUT THIS');
+    
+            const url = `http://localhost:5000/reviews/${params.asin}`
+            axios.post(
+                url, 
+                formData
+            )
+            .catch(err => {
+                console.log(err);
+            })
+        }
     }
 
     render() {
