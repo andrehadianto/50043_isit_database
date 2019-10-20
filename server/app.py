@@ -12,8 +12,6 @@ app = Flask(__name__,
     )
 logging.basicConfig(level=logging.DEBUG,
 					format="%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
-app.config["MONGO_URI"] = "mongodb://localhost:27017"
-
 api = Api(app)
 api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
