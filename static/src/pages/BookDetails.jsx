@@ -95,6 +95,9 @@ class BookDetails extends Component {
             .catch(err => {
                 console.log(err);
             })
+            e.target.elements.review.value = '';
+            e.target.elements.summary.value = '';
+            this.setState({rating: 0})
         } else {
             const nickname = e.target.elements.anonymous.value;
 
@@ -113,6 +116,10 @@ class BookDetails extends Component {
             .catch(err => {
                 console.log(err);
             })
+            e.target.elements.review.value = '';
+            e.target.elements.summary.value = '';
+            e.target.elements.anonymous.value = '';
+            this.setState({rating: 0})
         }
     }
 
