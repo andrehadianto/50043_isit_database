@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -30,6 +30,10 @@ const LoginMenu = () => {
                 sessionStorage.setItem('name', res.data.name);
                 sessionStorage.setItem('userId', res.data.id);
                 sessionStorage.setItem('token', res.data.token);
+                if (window.location.pathname === '/isit/') {
+                    window.location.replace('/isit');
+                }
+                window.location.reload(true);
             } else {
                 alert(res.data.message);
             }
