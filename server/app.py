@@ -20,7 +20,6 @@ api = Api(app)
 api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
-#api.add_resource(MetaAPI, '/books')
 api.add_resource(BookPreviewResource, '/books/previews')
 api.add_resource(BookCategoryResource, '/books/category')
 
