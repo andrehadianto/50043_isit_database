@@ -173,6 +173,7 @@ class BookDetails extends Component {
                                         name='review'
                                         placeholder='Share your thoughts!'
                                         style={{minHeight: '6em'}}
+                                        required
                                     />
                                     <Form.Button type='submit' primary>Submit</Form.Button>
                                 </Form>

@@ -17,7 +17,7 @@ import {
 
 const { Column } = Grid;
 
-const preview_placeholder = _.times(18, (i) => (
+const preview_placeholder = _.times(24, (i) => (
     <Column  key={i}>
         <Placeholder>
             <Placeholder.Image style={{minWidth: '100px', minHeight: '100px'}} square/>
@@ -29,7 +29,7 @@ const preview_placeholder = _.times(18, (i) => (
 const AllBooks = (props) => {
     const [activePage, setActivePage] = useState(1);
     const [bookData, setBookData] = useState([]);
-    const [getBookApiUrl, setGetBookApiUrl] = useState('http://localhost:5000/books?page=1&count=18');
+    const [getBookApiUrl, setGetBookApiUrl] = useState('http://localhost:5000/books?page=1&count=24');
     const [isLoading, setIsLoading] = useState(true);
     const [goToPage, setGoToPage] = useState(1);
 
@@ -46,20 +46,20 @@ const AllBooks = (props) => {
     const onPageChange = (e, pageInfo) => {
         setIsLoading(true);
         setActivePage(pageInfo.activePage);
-        setGetBookApiUrl(`http://localhost:5000/books?page=${pageInfo.activePage.toString()}&count=18`);
+        setGetBookApiUrl(`http://localhost:5000/books?page=${pageInfo.activePage.toString()}&count=24`);
     }
 
     const goToClickHandler = (e) => {
         if (goToPage > 0) {
             setIsLoading(true);
             setActivePage(goToPage);
-            setGetBookApiUrl(`http://localhost:5000/books?page=${goToPage.toString()}&count=18`);    
+            setGetBookApiUrl(`http://localhost:5000/books?page=${goToPage.toString()}&count=24`);    
         } else {
             alert("Page number must be more than 0");
         }
     }
 
-    return(
+    return (
         <Column width={12}>
             <Segment color='orange'>
                 <Header as='h3' dividing>

@@ -31,7 +31,7 @@ class UserLogin(Resource):
         user_secret = user.get("secret")
         user_password = b64encode(jwt.encode({"username": _user, "password": _password}, user_secret, JWT_ALG)).decode('utf-8')
         if user_password == user.get("password"):
-            return {"message": "user {} is successfully logged in".format(_user), "data": {"token": user_password, "id": user.get("_id")}}, 200
+            return {"message": "user {} is successfully logged in".format(_user), "data": {"token": user_password, "id": str(user.get("_id"))}}, 200
         else:
             return {"message": "Invalid password"}
 
