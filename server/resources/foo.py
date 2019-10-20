@@ -1,6 +1,6 @@
 from flask import render_template, make_response, json
 from flask_restful import Resource
-from common.util import mongo, cursor
+from common.util import mongo, connect
 
 from bson import json_util
 import json
@@ -12,8 +12,10 @@ class testMongo(Resource):
 
 class testMySql(Resource):
     def get(self):
+        con, cursor = connect()
         cursor.execute("describe kindle_reviews")
         res = cursor.fetchall()
+        con.close()
         return res
         
 class Foo(Resource):
