@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { AppContext } from '../globalContext/AppContext';
 import {
     Grid,
     Form,
@@ -13,8 +12,6 @@ import {
 } from 'semantic-ui-react';
 
 const LoginMenu = () => {
-    const globalContext = useContext(AppContext);
-
     const onSubmitHandler = (e) => {
         const url = `http://localhost:5000/user/login`;
         const username = e.target.elements.username.value;
@@ -30,9 +27,9 @@ const LoginMenu = () => {
         )
         .then(res => {
             if (res.data.name !== undefined) {
-                globalContext.name = res.data.name
-                globalContext.userId = res.data.id;
-                globalContext.token = res.data.token;
+                sessionStorage.setItem('name', res.data.name);
+                sessionStorage.setItem('userId', res.data.id);
+                sessionStorage.setItem('token', res.data.token);
             } else {
                 alert(res.data.message);
             }
