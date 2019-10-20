@@ -29,9 +29,10 @@ const LoginMenu = () => {
             body
         )
         .then(res => {
-            if (res.data.data !== undefined) {
-                globalContext.userId = res.data.data.id;
-                globalContext.token = res.data.data.token;
+            if (res.data.name !== undefined) {
+                globalContext.name = res.data.name
+                globalContext.userId = res.data.id;
+                globalContext.token = res.data.token;
             } else {
                 alert(res.data.message);
             }

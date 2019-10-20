@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { AppContext } from '../globalContext/AppContext';
 import {
     Grid, 
     Segment,
@@ -74,16 +75,35 @@ class BookDetails extends Component {
         const {match: {params}} = this.props;
         const overall = this.state.rating;
         const review = e.target.elements.review.value;
+        const summary = e.target.elements.summary.value;
 
-        if (!review) {
-            alert("Field is required");
-        } else {
+        if (!review || !summary) {
+            alert("Summary and Review cannot be empty");
+        } else if (this.context.name) {
             const formData = new FormData();
             formData.set('overall', overall);
             formData.set('reviewText', review);
-            formData.set('reviewerID', 'SOME_ID');
-            formData.set('reviewerName', 'ONCE_TOLD_THIS');
-            formData.set('summary', 'FORGOT ABOUT THIS');
+            formData.set('reviewerID', this.context.userId);
+            formData.set('reviewerName', this.context.name);
+            formData.set('summary', summary);
+    
+            const url = `http://localhost:5000/reviews/${params.asin}`
+            axios.post(
+                url, 
+                formData
+            )
+            .catch(err => {
+                console.log(err);
+            })
+        } else {
+            const nickname = e.target.elements.anonymous.value;
+
+            const formData = new FormData();
+            formData.set('overall', overall);
+            formData.set('reviewText', review);
+            formData.set('reviewerID', "ANONYMOUS");
+            formData.set('reviewerName', nickname);
+            formData.set('summary', summary);
     
             const url = `http://localhost:5000/reviews/${params.asin}`
             axios.post(
@@ -169,13 +189,26 @@ class BookDetails extends Component {
                                             icon='star'
                                             maxRating={5}/>
                                     </Container>
+                                    <Form.Input
+                                        name='summary'
+                                        placeholder='Summary'
+                                        required
+                                    />
                                     <Form.TextArea
                                         name='review'
                                         placeholder='Share your thoughts!'
                                         style={{minHeight: '6em'}}
                                         required
                                     />
-                                    <Form.Button type='submit' primary>Submit</Form.Button>
+                                    <Form.Group inline>
+                                        <Form.Button type='submit' primary>Submit</Form.Button>
+                                        {
+                                            this.context.name
+                                            ? null
+                                            : <Form.Input name='anonymous' placeholder='Nickname' required/>
+                                        }
+                                    </Form.Group>
+
                                 </Form>
                             </Grid.Column>
                         </Grid>
@@ -225,4 +258,5 @@ class BookDetails extends Component {
     }
 }
 
+BookDetails.contextType = AppContext;
 export default BookDetails;
