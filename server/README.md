@@ -88,6 +88,49 @@ To GET data from the database
 
 #### 6. MySQL
 - Install MySQL server version 5.7.27 from [here](https://dev.mysql.com/downloads/windows/installer/5.7.html)
+- Create the followint table in existing database:
+```
+CREATE TABLE IF NOT EXISTS `kindle_reviews` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `asin` VARCHAR(255) NOT NULL,
+  `helpful` VARCHAR(255) NOT NULL,
+  `overall` INT(11) NOT NULL,
+  `reviewText` TEXT NOT NULL,
+  `reviewTime` VARCHAR(255) NOT NULL,
+  `reviewerID` VARCHAR(255) NOT NULL,
+  `reviewerName` VARCHAR(255) NOT NULL,
+  `summary` VARCHAR(255) NOT NULL,
+  `unixReviewTime` INT(11) NOT NULL,
+  PRIMARY KEY (`id`));
 
+```
+- To load dataset:
+```
+SET sql_mode='NO_AUTO_VALUE_ON_ZERO';
+
+LOAD DATA LOCAL INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 5.7\\Data\\kindle_reviews.csv' 
+INTO TABLE kindle_reviews
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+```
+
+#### 7. JWT User Login
+Update local `isit_database_mongo` mongodb with a new collection called `user_login`.
+
+Sign up workflow  
+- Requires username, password and name. Username must be unique
+- Check whether fields are filled
+- Check whether username already exists
+- Create a unique secret for the user to encode the username and password with jwt
+
+Login workflow
+- Requires username and password
+- Check whether fields are filled
+- Check whether username is in the collection
+- Getting the user secret and reencode the entered password with the secret to see if the result match
+- Will return the jwt token if successful
 
 
