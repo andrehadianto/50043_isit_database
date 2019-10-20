@@ -10,7 +10,7 @@ import json
 
 class testMongo(Resource):
     def get(self):
-        obj = mongo.db.kindle_metadata.find_one({"asin": "0000011111"})
+        obj = mongo.db.kindle_metadata.find_one({"asin": "B000MAHACE"})
         return json.dumps(obj, default=json_util.default)
 
 class testMySql(Resource):

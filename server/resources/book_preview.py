@@ -15,18 +15,19 @@ default_img_Url = "no-url"
 class BookPreviewResource(Resource):
     
     def post(self):
-        """Returns book information (lightweight) """
+        """Returns book information (lightweight)   
+        Request Body: (asinArray) Array of string 
+        Response Body: Array of json(asin,title,imUrl)"""
+
         # asinArray: array of string
         # Response Body: Array of json(asin, title, imURL?)
-        parser = reqparse.RequestParser()
-        parser.add_argument('asinArray', type=str, location='form')
-        args = parser.parse_args()
-        asinArray = args.get('asinArray').split(",")
+        json_request = request.get_json(force=True)
+        _asinArray = json_request.get('asinArray')
         # create an array to host the json
         booksJSONArray = list()
         
             # For each asin in asinArray, parse and request for the asin and its relevant info
-        for asin in asinArray:
+        for asin in _asinArray:
             bookInfo = mongo.db.kindle_metadata.find_one({"asin":asin})
             book_asin = asin
             
@@ -52,17 +53,18 @@ class BookCategoryResource(Resource):
     
     def post(self):
 
-        parser = reqparse.RequestParser()
-        parser.add_argument('categoryArray', type=str, location='form')
-        args = parser.parse_args()
-        categoryArray = list(args.get('categoryArray').split(","))
+        """Returns books that have categories containing categories in categoryArray
+        Request Body: (categoryArray) Array of String 
+        Response Body: Array of json(asin, title, imUrl)"""
+        json_request = request.get_json(force=True)
+        _categoryArray = json_request.get('categoryArray')
         filteredArray = list()
         for item in mongo.db.kindle_metadata.find():
             counter = 0
-            for category in categoryArray:
+            for category in _categoryArray:
                 if category in list(item["categories"]):
                     counter += 1
-            if counter == len(categoryArray):
+            if counter == len(_categoryArray):
                 _asin = item["asin"]
                 try:
                     _title = item["title"]
