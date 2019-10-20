@@ -16,16 +16,6 @@ import {
     Header
 } from 'semantic-ui-react';
 
-const options = [
-    { key: 'm', text: 'Male', value: 'male' },
-    { key: 'f', text: 'Female', value: 'female' },
-    { key: 'o', text: 'Other', value: 'other' },
-  ]
-
-const tmp_columns = _.times(100, (i) => (
-    <Message compact key={i}>Hi</Message>
-))
-
 class Home extends Component {
     render() {
         return (
@@ -49,14 +39,6 @@ class Home extends Component {
                         </Route>
                         <Route exact path='/review/:asin' component={BookDetails}/>
                     </Switch>
-
-
-
-
-
-                    <Segment.Group>
-                        <AddNewBook options={options}/>
-                    </Segment.Group>
                 </Container>
             </div>
         )

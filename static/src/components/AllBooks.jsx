@@ -10,7 +10,9 @@ import {
     Placeholder,
     Item,
     Divider,
-    Container
+    Container,
+    Input,
+    Button
 } from 'semantic-ui-react';
 
 const { Column } = Grid;
@@ -29,6 +31,7 @@ const AllBooks = (props) => {
     const [bookData, setBookData] = useState([]);
     const [getBookApiUrl, setGetBookApiUrl] = useState('http://localhost:5000/books?page=1&count=18');
     const [isLoading, setIsLoading] = useState(true);
+    const [goToPage, setGoToPage] = useState(1);
 
     useEffect(() => {
         axios.get(
@@ -44,6 +47,16 @@ const AllBooks = (props) => {
         setIsLoading(true);
         setActivePage(pageInfo.activePage);
         setGetBookApiUrl(`http://localhost:5000/books?page=${pageInfo.activePage.toString()}&count=18`);
+    }
+
+    const goToClickHandler = (e) => {
+        if (goToPage > 0) {
+            setIsLoading(true);
+            setActivePage(goToPage);
+            setGetBookApiUrl(`http://localhost:5000/books?page=${goToPage.toString()}&count=18`);    
+        } else {
+            alert("Page number must be more than 0");
+        }
     }
 
     return(
@@ -75,9 +88,15 @@ const AllBooks = (props) => {
                     <Pagination
                         secondary
                         ellipsisItem={null}
-                        activePage={activePage}
-                        onPageChange={onPageChange}
+                        activePage={ activePage }
+                        onPageChange={ onPageChange }
                         totalPages={99}
+                    />
+                    <Input 
+                        onChange={ (e, {value}) => {setGoToPage(value)} }
+                        value={goToPage}
+                        style={{ width: '4em' }} 
+                        action={ <Button content='Go' onClick={ goToClickHandler }/> }
                     />
                 </Container>
             </Segment>

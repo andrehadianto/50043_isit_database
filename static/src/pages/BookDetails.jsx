@@ -11,7 +11,6 @@ import {
     Form,
     Container,
     Divider,
-    Message,
     Label
 } from 'semantic-ui-react';
 
@@ -171,9 +170,9 @@ class BookDetails extends Component {
                                             maxRating={5}/>
                                     </Container>
                                     <Form.TextArea
+                                        name='review'
                                         placeholder='Share your thoughts!'
                                         style={{minHeight: '6em'}}
-                                        name='review'
                                     />
                                     <Form.Button type='submit' primary>Submit</Form.Button>
                                 </Form>
