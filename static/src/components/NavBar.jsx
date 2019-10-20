@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import LoginMenu from './LoginMenu';
 import {
     Segment,
     Container,
@@ -37,30 +39,7 @@ const NavBar = () => (
                     >
                         <Modal.Content>
                                 <Grid textAlign='center' verticalAlign='middle'>
-                                    <Grid.Column>
-                                        <Header as='h2' color='blue' textAlign='center'>
-                                            <Image src='https://icon-library.net/images/react-icon/react-icon-28.jpg' /> Log-in to your account
-                                        </Header>
-                                        <Form size='large'>
-                                            <Segment stacked>
-                                            <Form.Input fluid icon='user' iconPosition='left' placeholder='Username' />
-                                            <Form.Input
-                                                fluid
-                                                icon='lock'
-                                                iconPosition='left'
-                                                placeholder='Password'
-                                                type='password'
-                                            />
-
-                                            <Button color='blue' fluid size='large'>
-                                                Login
-                                            </Button>
-                                            </Segment>
-                                        </Form>
-                                        <Message>
-                                            New to us? <a href='#'>Sign Up</a>
-                                        </Message>
-                                    </Grid.Column>
+                                    <LoginMenu/>
                             </Grid>
                         </Modal.Content>
                     </Modal>
