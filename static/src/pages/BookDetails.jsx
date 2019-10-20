@@ -91,12 +91,12 @@ class BookDetails extends Component {
                 url, 
                 formData
             )
+            .then(res => {
+                window.location.reload(true);
+            })
             .catch(err => {
                 console.log(err);
             })
-            e.target.elements.review.value = '';
-            e.target.elements.summary.value = '';
-            this.setState({rating: 0})
         } else {
             const nickname = e.target.elements.anonymous.value;
 
@@ -112,13 +112,12 @@ class BookDetails extends Component {
                 url, 
                 formData
             )
+            .then(res => {
+                window.location.reload(true);
+            })
             .catch(err => {
                 console.log(err);
             })
-            e.target.elements.review.value = '';
-            e.target.elements.summary.value = '';
-            e.target.elements.anonymous.value = '';
-            this.setState({rating: 0})
         }
     }
 
@@ -228,7 +227,7 @@ class BookDetails extends Component {
                                         ? title_placeholder
                                         : !this.state.reviewList.length
                                             ? <span style={{fontStyle: 'italic', lineHeight: '1.5'}}>No review</span>
-                                            : this.state.reviewList.map((review, index) => {
+                                            : this.state.reviewList.reverse().map((review, index) => {
                                                 const months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                                                 const date = new Date(review.unixReviewTime * 1000);
                                                 const day = date.getDate();
