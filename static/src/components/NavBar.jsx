@@ -26,12 +26,12 @@ const NavBar = () => {
         <Segment inverted vertical size="tiny">
             <Menu inverted size="large">
                 <Container>
-                    <Link to='/'>
+                    <a href='/isit'>
                         <Item header>
                             <Image size='mini' src='https://icon-library.net/images/react-icon/react-icon-28.jpg' style={{ marginRight: '1.5em' }} />
                             isit database?
                         </Item>
-                    </Link>
+                    </a>
                     <Item position='right'> 
                         {
                             sessionStorage.getItem('name') && sessionStorage.getItem('userId') && sessionStorage.getItem('token')
@@ -44,6 +44,8 @@ const NavBar = () => {
                                     className='icon'
                                 >
                                     <Dropdown.Menu>
+                                        <Dropdown.Item text='Add New Book' value='addBook' icon='book'/>
+                                        <Dropdown.Divider/>
                                         <Dropdown.Item text='Log Out' value='logout' icon='sign-out' onClick={onLogOut}/>
                                     </Dropdown.Menu>
                                 </Dropdown>
