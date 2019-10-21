@@ -32,7 +32,7 @@ class AddNewBook extends Component {
             "description": description,
             "price": price,
             "categories": [ category ],
-            "imUrl": this.state.file.name
+            "imUrl": "https://knowyourmeme.com/photos/96044" // this.state.file.name
         }
         const config = { "Content-type": "application/json" };
         axios.post(
@@ -104,10 +104,11 @@ class AddNewBook extends Component {
                     </Segment>
                 </Column>
                 <Column width={4}>
-                    <Segment color='teal' padded/>
-                    <Grid columns={4}>
-                        Hello
-                    </Grid>
+                    <Segment color='teal' padded>
+                        <Grid columns={4}>
+                            This part will contain the preview of the soon to be uploaded book
+                        </Grid>
+                    </Segment>
                 </Column>
             </Grid.Row>
         );
