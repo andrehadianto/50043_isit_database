@@ -119,17 +119,12 @@ class ReviewAPI(Resource):
         _summary = args['summary']
 
         _unixReviewTime = int(time.time())
-        _reviewTime = datetime.datetime.utcfromtimestamp(_unixReviewTime).strftime('%m %d, %Y')
-
-        sql = """UPDATE kindle_reviews 
-                SET overall=%s, reviewText=%s, summary=%s, reviewTime=%s, unixReviewTime=%s 
-                WHERE id=%s"""
-        val = (_overall, _reviewText, _summary, _reviewTime, _unixReviewTime, id)
+        _reviewTime = datetime.datetime.utcfromtimestamp(_unixReviewTime).strftime('%m %d, %Y')
 
         con, cursor = connect()
 
         try:
-            cursor.execute(sql, val)
+            cursor.execute("UPDATE kindle_reviews SET overall={}, reviewText='{}', summary='{}', reviewTime='{}', unixReviewTime={} WHERE id='{}'".format(_overall, _reviewText, _summary, _reviewTime, _unixReviewTime, id))
             con.commit()
             response = {"message": "Book review with id {} was edited".format(id)}
             return response, 200
@@ -146,7 +141,7 @@ class ReviewsByUserAPI(Resource):
         con, cursor = connect()
 
         try:
-            cursor.execute("SELECT * FROM kindle_reviews where reviewerID='%s'", (reviewerID,))
+            cursor.execute("SELECT * FROM kindle_reviews where reviewerID=%s", (reviewerID,))
             results = dictfetchall(cursor)
             return results
 
