@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, make_response, render_template
 from flask_restful import Api
-from resources.foo import Foo, testMySql, testMongo
 from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBook, UpdateBookResource
+from resources.test import testMySql, testMongo
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
 from resources.user import UserLogin, UserSignup
 from common.util import mongo, mongo_log
@@ -16,8 +16,12 @@ app = Flask(__name__,
 logging.basicConfig(level=logging.DEBUG,
 					format="%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
 
+@app.route('/isit', defaults={'path': '/isit'})
+@app.route('/isit/<path:path>')
+def index(path):
+    return make_response(render_template("index.html"), 200, {'Content-type': 'text/html'})
+
 api = Api(app)
-api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
 api.add_resource(GetBookDetails, '/book/<string:asin>')
