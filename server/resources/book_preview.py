@@ -21,30 +21,32 @@ class BookPreviewResource(Resource):
 
         # asinArray: array of string
         # Response Body: Array of json(asin, title, imURL?)
+        parser = reqparse.RequestParser()
+        parser.add_argument('page', type=int, location='args')
+        parser.add_argument('count', type=int, location='args')
+        args = parser.parse_args()
         json_request = request.get_json(force=True)
         _asinArray = json_request.get('asinArray')
         # create an array to host the json
         booksJSONArray = list()
-        
-            # For each asin in asinArray, parse and request for the asin and its relevant info
+
+        # For each asin in asinArray, parse and request for the asin and its relevant info
         for asin in _asinArray:
-            bookInfo = mongo.db.kindle_metadata.find_one({"asin":asin})
-            book_asin = asin
-            
-            try:
-                book_title = bookInfo["title"]
-            except Exception as e:
-                book_title = default_book_title 
-                
-            try:
-                book_imUrl = bookInfo["imUrl"]
-            except Exception as e:
-                book_imUrl = default_img_Url
+            if (not args['count'] or not args['page']):
+                bookInfo = mongo.db.kindle_metadata.find_one({"asin": asin})
+            else:
+                _limit = args['count']
+                _offset = (args['page']-1) * args['count']
+                bookInfo = mongo.db.kindle_metadata.find_one({"asin": asin}).skip(_offset).limit(_limit)
+            book_asin = bookInfo.get('asin')
+            book_title = bookInfo.get('title')
+            book_imUrl = bookInfo.get('imUrl')
               
             bookLW = {"asin": book_asin, "title": book_title, "imUrl":book_imUrl}
-            booksJSONArray.append(json.dumps(bookLW))
+            booksJSONArray.append(bookLW)
         
-        return booksJSONArray
+        return {"message": "Book previews shown", "asinArray": str(_asinArray), "body": booksJSONArray}, 200
+            
 
 
     
@@ -56,25 +58,31 @@ class BookCategoryResource(Resource):
         """Returns books that have categories containing categories in categoryArray
         Request Body: (categoryArray) Array of String 
         Response Body: Array of json(asin, title, imUrl)"""
+        #add the page count thingy
+        parser = reqparse.RequestParser()
+        parser.add_argument('page', type=int, location='args')
+        parser.add_argument('count', type=int, location='args')
+        args = parser.parse_args()
         json_request = request.get_json(force=True)
         _categoryArray = json_request.get('categoryArray')
         filteredArray = list()
-        for item in mongo.db.kindle_metadata.find():
+
+        if (not args['count'] or not args['page']):
+            cursor = mongo.db.kindle_metadata.find({})
+        else:
+            _limit = args['count']
+            _offset = (args['page']-1) * args['count']
+            cursor = mongo.db.kindle_metadata.find({}).skip(_offset).limit(_limit)
+        #How to make this more efficient?
+        for item in cursor:
             counter = 0
             for category in _categoryArray:
-                if category in list(item["categories"]):
+                if category in list(item["categories"][0]):
                     counter += 1
             if counter == len(_categoryArray):
-                _asin = item["asin"]
-                try:
-                    _title = item["title"]
-                except Exception as e:
-                    _title = default_book_title
-                try:
-                    _imUrl = item["imUrl"]
-                except Exception as e:
-                    _imUrl = default_img_Url
-                filteredItem = {"asin":_asin, "title":_title, "imUrl":_imUrl}
-                filteredArray.append(json.dumps(filteredItem))
+                filteredItem = {"asin":item.get("asin"), "title":item.get("title"), "imUrl":item.get("imUrl")}
+                filteredArray.append(filteredItem)
 
-        return filteredArray
+
+        return {"message": "Books filtered based on categories", "categoryArray": str(_categoryArray), "body": filteredArray}, 200
+                
