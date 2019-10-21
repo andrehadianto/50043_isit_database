@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import _ from 'lodash';
-import AddReview from '../components/AddReview';
-import AddNewBook from '../components/AddNewBook';
 import NavBar from '../components/NavBar';
 import AllBooks from '../components/AllBooks';
 import BookDetails from './BookDetails';
+import UserAction from '../pages/UserAction';
 
 import {
     Container,
@@ -37,6 +36,7 @@ class Home extends Component {
                                 </Grid.Row>
                             </Grid>
                         </Route>
+                        <Route path="/user_action" component={UserAction}/>
                         <Route exact path='/review/:asin' component={BookDetails}/>
                     </Switch>
                 </Container>

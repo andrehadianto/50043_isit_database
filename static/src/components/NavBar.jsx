@@ -44,7 +44,7 @@ const NavBar = () => {
                                     className='icon'
                                 >
                                     <Dropdown.Menu>
-                                        <Dropdown.Item text='Add New Book' value='addBook' icon='book'/>
+                                        <Dropdown.Item text='Add New Book' value='addBook' icon='book' as={ Link } to='/user_action'/>
                                         <Dropdown.Divider/>
                                         <Dropdown.Item text='Log Out' value='logout' icon='sign-out' onClick={onLogOut}/>
                                     </Dropdown.Menu>
