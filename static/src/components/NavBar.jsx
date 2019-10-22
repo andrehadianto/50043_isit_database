@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import LoginMenu from './LoginMenu';
 import {
     Segment,
@@ -44,7 +43,8 @@ const NavBar = () => {
                                     className='icon'
                                 >
                                     <Dropdown.Menu>
-                                        <Dropdown.Item text='Add New Book' value='addBook' icon='book' as={ Link } to='/user_action'/>
+                                        <Dropdown.Item text='Add New Book' value='addBook' icon='book' as={ Link } to='/user_action/new_book'/>
+                                        <Dropdown.Item text='See Logs' value='seeLogs' icon='eye' as={ Link } to='/user_action/logs'/>
                                         <Dropdown.Divider/>
                                         <Dropdown.Item text='Log Out' value='logout' icon='sign-out' onClick={onLogOut}/>
                                     </Dropdown.Menu>

@@ -4,8 +4,9 @@ import _ from 'lodash';
 import NavBar from '../components/NavBar';
 import AllBooks from '../components/AllBooks';
 import BookDetails from './BookDetails';
-import UserAction from '../pages/UserAction';
-
+import AddNewBook from '../pages/AddNewBook';
+import SeeLogList from '../pages/SeeLogList';
+import LogPreview from './LogPreview';
 import {
     Container,
 
@@ -36,7 +37,9 @@ class Home extends Component {
                                 </Grid.Row>
                             </Grid>
                         </Route>
-                        <Route path="/user_action" component={UserAction}/>
+                        <Route path='/user_action/new_book' component={AddNewBook}/>
+                        <Route exact path='/user_action/logs/:id' component={LogPreview}/>
+                        <Route exact path='/user_action/logs' component={SeeLogList}/>
                         <Route exact path='/review/:asin' component={BookDetails}/>
                     </Switch>
                 </Container>

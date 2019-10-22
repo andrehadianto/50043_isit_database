@@ -86,7 +86,7 @@ class BookDetails extends Component {
             formData.set('reviewerName', sessionStorage.getItem('name'));
             formData.set('summary', summary);
     
-            const url = `http://localhost:5000/reviews/${params.asin}`
+            const url = `http://localhost:5000/reviews/${params.asin}`;
             axios.post(
                 url, 
                 formData
