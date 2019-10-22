@@ -27,6 +27,7 @@ class LogsList(Resource):
         log_array = []
         logs = mongo_log.db.logs.find({}).limit(_limit).skip(_offset)
         for log in logs:
+            log_id = str(log.get('_id'))
             time = log.get('time').strftime("%d-%m-%Y, %H:%M:%S")
             method = log.get('method')
             path = log.get('path')
@@ -35,6 +36,7 @@ class LogsList(Resource):
             if len(body) > MAX_STRING_LENGTH:
                 body = body[:MAX_STRING_LENGTH-1] + '...'
             json = {
+                "id": log_id,
                 "time": time,
                 "method": method,
                 "path": path,
@@ -48,10 +50,14 @@ class LogAPI(Resource):
     """ Returns a specific log with respect to mongo ObjectId """
     def get(self, id):
         log = mongo_log.db.logs.find_one({'_id': ObjectId(id)})
+        log_id = str(log.get('_id'))
         time = log.get('time').strftime("%d-%m-%Y, %H:%M:%S")
+        method = log.get('method')
+        path = log.get('path')
         status = log.get('status')
         body = log.get('body')
         json = {
+            "id": log_id,
             "time": time,
             "method": method,
             "path": path,
