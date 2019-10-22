@@ -34,7 +34,7 @@ const NavBar = () => {
                     </a>
                     <Item position='right'> 
                         {
-                            sessionStorage.getItem('name') && sessionStorage.getItem('userId') && sessionStorage.getItem('token')
+                            sessionStorage.getItem('name') && sessionStorage.getItem('id') && sessionStorage.getItem('token')
                             ? 
                                 <Dropdown
                                     text={sessionStorage.getItem('name')}

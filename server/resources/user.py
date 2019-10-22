@@ -4,8 +4,21 @@ from base64 import b64encode
 import os
 from common.util import mongo
 from bson.json_util import dumps, default
+from passlib.context import CryptContext
 
 JWT_ALG = "HS256"
+PASSWORD_CONTEXT = CryptContext(
+        schemes=["pbkdf2_sha256"],
+        default="pbkdf2_sha256",
+        pbkdf2_sha256__default_rounds=30000
+)
+
+def encrypt_password(password):
+    return PASSWORD_CONTEXT.encrypt(password)
+
+def check_encrypted_password(password, hashed):
+    return PASSWORD_CONTEXT.verify(password, hashed)
+
 
 class UserLogin(Resource):
     """Returns user's id and generated jwt"""
@@ -17,21 +30,19 @@ class UserLogin(Resource):
         except Exception as e:
             print(e)
             return {"message": "username and password are required fields"}, 400
-
-        user_is_exist = False
-        user_list = mongo.db.user_data.find({},{"_id": 0, "username": 1})
-        for user in user_list:
-            if user.get("username") == _user:
-                user_is_exist = True
-                break
-        if not user_is_exist:
-            return {"message": "User {} does not exist".format(_user)}
-
         user = mongo.db.user_data.find_one({"username": _user})
-        user_secret = user.get("secret")
-        user_password = b64encode(jwt.encode({"username": _user, "password": _password}, user_secret, JWT_ALG)).decode('utf-8')
-        if user_password == user.get("password"):
-            return {"message": "user {} is successfully logged in".format(_user), "name": user.get("reviewerName"), "token": user_password, "id": str(user.get("_id"))}, 200
+        if user is None:
+            return {"message": "User {} does not exist".format(_user)}
+        password_match = check_encrypted_password(_password, user.get('password'))
+        if password_match:
+            token_binary = jwt.encode({
+                "username": user.get('username'),
+                "reviewerName": user.get('reviewerName'),
+                "id": str(user.get('id'))
+            }, user.get('secret'), JWT_ALG)
+            token = token_binary.decode('utf-8')
+            mongo.db.user_data.update_one({'username': user.get('username')}, { '$set': {'session_token': token}})
+            return {"message": "user {} is successfully logged in".format(_user), "name": user.get('reviewerName'), "id":str(user.get('_id')), "token": token}, 200
         else:
             return {"message": "Invalid password"}
 
@@ -46,20 +57,16 @@ class UserSignup(Resource):
             print(e)
             return {"message": "username, password, and name are required fields"}, 400
 
-        user_list = mongo.db.user_data.find({},{"_id": 0, "username": 1})
-        for user in user_list:
-            if user.get("username") == _user:
-                return {"message": "username already exists"}, 409
+        users = mongo.db.user_data.find({"username": _user},{"_id": 0, "username": 1})
+        if users.count() >= 1:
+            return {"message": "username already exists"}, 409
 
         secret = b64encode(os.urandom(16)).decode('utf-8')
-        pwd_token_binary = jwt.encode({
-            "username": _user,
-            "password": _password
-            }, secret, JWT_ALG) 
-        pwd_token = b64encode(pwd_token_binary).decode('utf-8')
+        encrypted_password = encrypt_password(_password)
+
         query = {
             "username": _user,
-            "password": pwd_token,
+            "password": encrypted_password,
             "reviewerName": _name,
             "secret": secret
         }

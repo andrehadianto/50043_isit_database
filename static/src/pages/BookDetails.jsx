@@ -78,11 +78,11 @@ class BookDetails extends Component {
 
         if (!review || !summary) {
             alert("Summary and Review cannot be empty");
-        } else if (sessionStorage.getItem('name') && sessionStorage.getItem('userId') && sessionStorage.getItem('token')) {
+        } else if (sessionStorage.getItem('name') && sessionStorage.getItem('id') && sessionStorage.getItem('token')) {
             const formData = new FormData();
             formData.set('overall', overall);
             formData.set('reviewText', review);
-            formData.set('reviewerID', sessionStorage.getItem('userId'));
+            formData.set('reviewerID', sessionStorage.getItem('id'));
             formData.set('reviewerName', sessionStorage.getItem('name'));
             formData.set('summary', summary);
     
@@ -208,7 +208,7 @@ class BookDetails extends Component {
                                     <Form.Group inline>
                                         <Form.Button type='submit' primary>Submit</Form.Button>
                                         {
-                                            sessionStorage.getItem('name') && sessionStorage.getItem('userId') && sessionStorage.getItem('token')
+                                            sessionStorage.getItem('name') && sessionStorage.getItem('id') && sessionStorage.getItem('token')
                                             ? null
                                             : <Form.Input name='anonymous' placeholder='Nickname' required/>
                                         }

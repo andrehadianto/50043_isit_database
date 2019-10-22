@@ -5,3 +5,4 @@ Flask-PyMongo==2.3.0
 mysql-connector==2.2.9
 python-dotenv
 PyJWT==1.7.1
+passlib==1.7.1

@@ -28,7 +28,7 @@ const LoginMenu = () => {
         .then(res => {
             if (res.data.name !== undefined) {
                 sessionStorage.setItem('name', res.data.name);
-                sessionStorage.setItem('userId', res.data.id);
+                sessionStorage.setItem('id', res.data.id);
                 sessionStorage.setItem('token', res.data.token);
                 if (window.location.pathname === '/isit/') {
                     window.location.replace('/isit');
