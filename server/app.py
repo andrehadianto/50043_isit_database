@@ -4,6 +4,7 @@ from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBoo
 from resources.test import testMySql, testMongo
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
 from resources.user import UserLogin, UserSignup
+from resources.logs import LogsList, LogAPI
 from common.util import mongo, mongo_log
 import datetime
 import logging
@@ -35,6 +36,9 @@ api.add_resource(ReviewAPI, '/review/<id>', endpoint = 'review')
 
 api.add_resource(UserLogin, '/user/login')
 api.add_resource(UserSignup, '/user/signup')
+
+api.add_resource(LogsList, '/user/logs')
+api.add_resource(LogAPI, '/user/logs/<string:id>', endpoint='user/logs')
 # Invoked after every requests to log the timestamp, content & status
 @app.after_request
 def log_request(response):
