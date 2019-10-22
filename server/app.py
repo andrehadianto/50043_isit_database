@@ -1,4 +1,4 @@
-from flask import Flask, make_response, render_template
+from flask import Flask, make_response, render_template, request
 from flask_restful import Api
 from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBook, UpdateBookResource
 from resources.test import testMySql, testMongo
@@ -51,6 +51,8 @@ def log_request(response):
         _id = mongo_log.db.logs.insert_one({
             "time": time,
             "body": body,
+            "method": request.method,
+            "path": request.full_path,
             "status": status_as_string,
             "status_code": status_as_integer
         })

@@ -28,12 +28,16 @@ class LogsList(Resource):
         logs = mongo_log.db.logs.find({}).limit(_limit).skip(_offset)
         for log in logs:
             time = log.get('time').strftime("%d-%m-%Y, %H:%M:%S")
+            method = log.get('method')
+            path = log.get('path')
             status = log.get('status')
             body = log.get('body')
             if len(body) > MAX_STRING_LENGTH:
                 body = body[:MAX_STRING_LENGTH-1] + '...'
             json = {
                 "time": time,
+                "method": method,
+                "path": path,
                 "status": status,
                 "body": body
             }
@@ -49,6 +53,8 @@ class LogAPI(Resource):
         body = log.get('body')
         json = {
             "time": time,
+            "method": method,
+            "path": path,
             "status": status,
             "body": body
         }
