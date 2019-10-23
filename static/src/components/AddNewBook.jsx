@@ -27,6 +27,7 @@ class AddNewBook extends Component {
         const price = e.target.elements.price.value ? e.target.elements.price.value : 0;
         const category = e.target.elements.category.value ? e.target.elements.category.value : "";
 
+        
         const json = {
             "title": title,
             "description": description,
