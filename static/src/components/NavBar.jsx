@@ -5,7 +5,6 @@ import {
     Segment,
     Container,
     Menu,
-    Image,
     Button,
     Icon,
     Modal,
@@ -27,14 +26,14 @@ const NavBar = () => {
                 <Container>
                     <a href='/isit'>
                         <Item header>
-                            <Image size='mini' src='https://icon-library.net/images/react-icon/react-icon-28.jpg' style={{ marginRight: '1.5em' }} />
+                            <Icon name='bomb' size='large'/>
                             isit database?
                         </Item>
                     </a>
                     <Item position='right'> 
                         {
                             sessionStorage.getItem('name') && sessionStorage.getItem('id') && sessionStorage.getItem('token')
-                            ? 
+                            ?
                                 <Dropdown
                                     text={sessionStorage.getItem('name')}
                                     icon='user'
@@ -49,21 +48,8 @@ const NavBar = () => {
                                         <Dropdown.Item text='Log Out' value='logout' icon='sign-out' onClick={onLogOut}/>
                                     </Dropdown.Menu>
                                 </Dropdown>
-                            :                     
-                                <Modal
-                                    trigger={
-                                        <Button icon as='a'inverted labelPosition='left'>
-                                            <Icon inverted name='sign in'/>
-                                            Log in
-                                        </Button>}
-                                    style={{ maxWidth: '450px' }}
-                                >
-                                    <Modal.Content>
-                                        <Grid textAlign='center' verticalAlign='middle'>
-                                            <LoginMenu/>
-                                        </Grid>
-                                    </Modal.Content>
-                                </Modal>
+                            :
+                                <LoginMenu/>
                         }
 
 
