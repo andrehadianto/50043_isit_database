@@ -21,7 +21,9 @@ mongo = PyMongo(app, uri="mongodb://localhost:27017/{}".format(MONGO_DB))
 # logs
 mongo_log = PyMongo(app, uri="mongodb://localhost:27017/{}".format(LOG_DB))
 
-
 # Connect to MySQL
-con = db.connect(host=SQL_HOST, user=SQL_USER, passwd=SQL_PW, db=SQL_DATABASE)
-cursor = con.cursor()
+def connect():
+    con = db.connect(host=SQL_HOST, user=SQL_USER, passwd=SQL_PW, db=SQL_DATABASE)
+    cursor = con.cursor()
+    return con, cursor
+

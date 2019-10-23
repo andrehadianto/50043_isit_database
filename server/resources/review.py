@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from common.util import con, cursor
+from common.util import connect
 import json
 import time
 import datetime
@@ -12,7 +12,6 @@ def dictfetchall(cursor):
 
 
 class ReviewsAPI(Resource):
-    # Get list of reviews for a book
     def get(self, asin):
         parser = reqparse.RequestParser()
 
@@ -28,12 +27,18 @@ class ReviewsAPI(Resource):
             _limit = args['count']
             _offset = (args['page'] - 1) * args['count']
 
-        cursor.execute("SELECT * FROM kindle_reviews where asin='%s' LIMIT %s OFFSET %s"% (asin, _limit, _offset))
-        results = dictfetchall(cursor)
+        
+        con, cursor = connect()
+        try:
+            cursor.execute("SELECT * FROM kindle_reviews where asin=%s LIMIT %s OFFSET %s", (asin, _limit, _offset))
+            results = dictfetchall(cursor)
+            return results
+        except Exception as e:
+            print(e)
 
-        return results
+        finally:
+            con.close()
 
-    # Add a new review for a book
     def post(self, asin):
         parser = reqparse.RequestParser()
         parser.add_argument('overall', type=int, location='form', help="No rating")
@@ -57,6 +62,8 @@ class ReviewsAPI(Resource):
         sql = "INSERT INTO kindle_reviews (id, asin, helpful, overall, reviewText, reviewTime, reviewerID, reviewerName, summary, unixReviewTime) VALUES (%s)" % format_specifier_string
         val = (None, asin, _helpful, _overall, _reviewText, _reviewTime, _reviewerID, _reviewerName, _summary, _unixReviewTime)
         
+        con, cursor = connect()
+
         try:
             cursor.execute(sql, val)
             con.commit()
@@ -65,29 +72,81 @@ class ReviewsAPI(Resource):
         except Exception as e:
             print(e)
 
+        finally:
+            con.close()
+
 class ReviewAPI(Resource):
     def get(self, id):
-        cursor.execute("SELECT * FROM kindle_reviews where id=%s" % (id))
-        results = dictfetchall(cursor)
 
-        return results
+        con, cursor = connect()
 
-    # Delete a review
-    def delete(self, id):
-        try: 
-            cursor.execute("DELETE FROM kindle_reviews where id=%s" % (id))
-            con.commit()
-            
-            return {'message': 'Book review with id {} was deleted'.format(id)}, 200
+        try:
+            cursor.execute("SELECT * FROM kindle_reviews where id=%s", (id,))
+            results = dictfetchall(cursor)
+            return results
 
         except Exception as e:
             print(e)
 
+        finally:
+            con.close()
+
+    def delete(self, id):
+
+        con, cursor = connect()
+
+        try: 
+            cursor.execute("DELETE FROM kindle_reviews where id=%s", (id,))
+            con.commit()
+            return {'message': 'Book review with id {} was deleted'.format(id)}, 200
+
+        except Exception as e:
+            print(e)
+        
+        finally:
+            con.close()
+
+    def put(self, id):
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('reviewText', type=str, location='form', help="No review text")
+        parser.add_argument('overall', type=int, location='form', help="No overall rating")
+        parser.add_argument('summary', type=str, location='form', help="No summary")
+        args = parser.parse_args()
+
+        _reviewText = args['reviewText']
+        _overall = args['overall']
+        _summary = args['summary']
+
+        _unixReviewTime = int(time.time())
+        _reviewTime = datetime.datetime.utcfromtimestamp(_unixReviewTime).strftime('%m %d, %Y')
+
+        con, cursor = connect()
+
+        try:
+            cursor.execute("UPDATE kindle_reviews SET overall={}, reviewText='{}', summary='{}', reviewTime='{}', unixReviewTime={} WHERE id='{}'".format(_overall, _reviewText, _summary, _reviewTime, _unixReviewTime, id))
+            con.commit()
+            response = {"message": "Book review with id {} was edited".format(id)}
+            return response, 200
+
+        except Exception as e:
+            print(e)
+
+        finally:
+             con.close()
+
 class ReviewsByUserAPI(Resource):
-    # Get all reviews by a user
     def get(self, reviewerID):
 
-        cursor.execute("SELECT * FROM kindle_reviews where reviewerID='%s'" % (reviewerID))
-        results = dictfetchall(cursor)
+        con, cursor = connect()
 
-        return results
+        try:
+            cursor.execute("SELECT * FROM kindle_reviews where reviewerID=%s", (reviewerID,))
+            results = dictfetchall(cursor)
+            return results
+
+        except Exception as e:
+            print(e)
+
+        finally:
+             con.close()
