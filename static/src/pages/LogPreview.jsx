@@ -62,6 +62,9 @@ class LogPreview extends Component {
                                         <Table.Cell>{this.state.log.path}</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
+                                        <Table.Cell>{this.state.log.status}</Table.Cell>
+                                    </Table.Row>
+                                    <Table.Row>
                                         <Table.Cell>{this.state.log.body}</Table.Cell>
                                     </Table.Row>
                                 </Table.Body>
