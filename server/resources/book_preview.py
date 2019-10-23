@@ -30,20 +30,25 @@ class BookPreviewResource(Resource):
         # create an array to host the json
         booksJSONArray = list()
 
-        # For each asin in asinArray, parse and request for the asin and its relevant info
-        for asin in _asinArray:
-            if (not args['count'] or not args['page']):
+        if (not args['count'] or not args['page']):
+            # For each asin in asinArray, parse and request for the asin and its relevant info
+            for asin in _asinArray:
                 bookInfo = mongo.db.kindle_metadata.find_one({"asin": asin})
-            else:
-                _limit = args['count']
-                _offset = (args['page']-1) * args['count']
-                bookInfo = mongo.db.kindle_metadata.find_one({"asin": asin}).skip(_offset).limit(_limit)
-            book_asin = bookInfo.get('asin')
-            book_title = bookInfo.get('title')
-            book_imUrl = bookInfo.get('imUrl')
-              
-            bookLW = {"asin": book_asin, "title": book_title, "imUrl":book_imUrl}
-            booksJSONArray.append(bookLW)
+                book_asin = bookInfo.get('asin')
+                book_title = bookInfo.get('title')
+                book_imUrl = bookInfo.get('imUrl')  
+                bookLW = {"asin": book_asin, "title": book_title, "imUrl":book_imUrl}
+                booksJSONArray.append(bookLW)
+
+        else:
+            _limit = args['count']
+            _offset = (args['page']-1) * args['count']
+            bookInfo = mongo.db.kindle_metadata.find({}).skip(_offset).limit(_limit)
+            for item in bookInfo:
+                if item.get("asin") in _asinArray:
+                    bookLW = {"asin":item.get("asin"), "title":item.get("title"), "imUrl":item.get("imUrl")}
+                    booksJSONArray.append(bookLW)
+
         
         return {"message": "Book previews shown", "asinArray": str(_asinArray), "body": booksJSONArray}, 200
             
