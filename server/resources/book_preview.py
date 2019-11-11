@@ -41,15 +41,20 @@ class BookPreviewResource(Resource):
                 booksJSONArray.append(bookLW)
 
         else:
+
             _limit = args['count']
             _offset = (args['page']-1) * args['count']
-            bookInfo = mongo.db.kindle_metadata.find({}).skip(_offset).limit(_limit)
-            for item in bookInfo:
+            
+            cursor = mongo.db.kindle_metadata.find({}, {"asin" : 1}).skip(_offset)
+            counter = 0
+            for item in cursor:
                 if item.get("asin") in _asinArray:
                     bookLW = {"asin":item.get("asin"), "title":item.get("title"), "imUrl":item.get("imUrl")}
                     booksJSONArray.append(bookLW)
-
-        
+                    counter += 1
+                if counter == _limit:
+                    break
+               
         return {"message": "Book previews shown", "asinArray": str(_asinArray), "body": booksJSONArray}, 200
             
 
@@ -74,11 +79,13 @@ class BookCategoryResource(Resource):
 
         if (not args['count'] or not args['page']):
             cursor = mongo.db.kindle_metadata.find({})
+            pageCountIsUsed = False
         else:
             _limit = args['count']
             _offset = (args['page']-1) * args['count']
-            cursor = mongo.db.kindle_metadata.find({}).skip(_offset).limit(_limit)
-        #How to make this more efficient?
+            cursor = mongo.db.kindle_metadata.find({}).skip(_offset)
+            pageCountIsUsed = True
+
         for item in cursor:
             counter = 0
             for category in _categoryArray:
@@ -87,6 +94,12 @@ class BookCategoryResource(Resource):
             if counter == len(_categoryArray):
                 filteredItem = {"asin":item.get("asin"), "title":item.get("title"), "imUrl":item.get("imUrl")}
                 filteredArray.append(filteredItem)
+            if pageCountIsUsed == True:
+                newArray = list()
+                #Limits items to 4 if page count is used
+                for i in range(_limit):
+                    newArray.append(filteredArray[i])
+                filteredArray = newArray
 
 
         return {"message": "Books filtered based on categories", "categoryArray": str(_categoryArray), "body": filteredArray}, 200
