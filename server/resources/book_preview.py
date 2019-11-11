@@ -1,8 +1,6 @@
 from flask import render_template, make_response, request
 from flask_restful import Resource, reqparse
 from common.util import mongo, cursor
-
-
 from bson.json_util import dumps
 from bson.son import SON
 from bson import json_util
@@ -13,46 +11,40 @@ default_img_Url = "no-url"
 # mongodb_database = kindle_metadata
 
 class BookPreviewResource(Resource):
+    def regex_generator(self, arr):
+        regex_string = "("
+        for asin in arr:
+            regex_string += str(asin) + "|"
+    
+        regex_string = regex_string[:-1] + ")"
+        return regex_string
+
     def post(self):
         """Returns book information (lightweight)   
         Request Body: (asinArray) Array of string 
         Response Body: Array of json(asin,title,imUrl)"""
 
-        # asinArray: array of string
-        # Response Body: Array of json(asin, title, imURL?)
         parser = reqparse.RequestParser()
         parser.add_argument('page', type=int, location='args')
         parser.add_argument('count', type=int, location='args')
         args = parser.parse_args()
         json_request = request.get_json(force=True)
         _asinArray = json_request.get('asinArray')
-        # create an array to host the json
         booksJSONArray = list()
 
         if (not args['count'] or not args['page']):
-            # For each asin in asinArray, parse and request for the asin and its relevant info
-            for asin in _asinArray:
-                bookInfo = mongo.db.kindle_metadata.find_one({"asin": asin})
-                book_asin = bookInfo.get('asin')
-                book_title = bookInfo.get('title')
-                book_imUrl = bookInfo.get('imUrl')  
-                bookLW = {"asin": book_asin, "title": book_title, "imUrl":book_imUrl}
-                booksJSONArray.append(bookLW)
-
+            bookInfo = mongo.db.kindle_metadata.find({"asin" : {"$regex": self.regex_generator(_asinArray) }}, {"asin" : 1, "title": 1, "imUrl": 1})
         else:
             _limit = args['count']
             _offset = (args['page']-1) * args['count']
-            
-            cursor = mongo.db.kindle_metadata.find({}, {"asin" : 1, "title": 1, "imUrl": 1}).skip(_offset)
-            counter = 0
-            for item in cursor:
-                if item.get("asin") in _asinArray:
-                    bookLW = {"asin":item.get("asin"), "title":item.get("title"), "imUrl":item.get("imUrl")}
-                    print(item)
-                    booksJSONArray.append(bookLW)
-                    counter += 1
-                if counter == _limit:
-                    break
+            bookInfo = mongo.db.kindle_metadata.find({"asin" : {"$regex": self.regex_generator(_asinArray) }}, {"asin" : 1, "title": 1, "imUrl": 1}).skip(_offset).limit(_limit)
+
+        for item in bookInfo:
+            book_asin = item.get('asin')
+            book_title = item.get('title')
+            book_imUrl = item.get('imUrl')  
+            bookLW = {"asin": book_asin, "title": book_title, "imUrl":book_imUrl}
+            booksJSONArray.append(bookLW)
 
         return {"message": "Book previews shown", "asinArray": str(_asinArray), "body": booksJSONArray}, 200
 
@@ -61,7 +53,6 @@ class BookCategoryResource(Resource):
         """Returns books that have categories containing categories in categoryArray
         Request Body: (categoryArray) Array of String 
         Response Body: Array of json(asin, title, imUrl)"""
-        #add the page count thingy
         parser = reqparse.RequestParser()
         parser.add_argument('page', type=int, location='args')
         parser.add_argument('count', type=int, location='args')
