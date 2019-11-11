@@ -13,7 +13,6 @@ default_img_Url = "no-url"
 # mongodb_database = kindle_metadata
 
 class BookPreviewResource(Resource):
-    
     def post(self):
         """Returns book information (lightweight)   
         Request Body: (asinArray) Array of string 
@@ -41,30 +40,24 @@ class BookPreviewResource(Resource):
                 booksJSONArray.append(bookLW)
 
         else:
-
             _limit = args['count']
             _offset = (args['page']-1) * args['count']
             
-            cursor = mongo.db.kindle_metadata.find({}, {"asin" : 1}).skip(_offset)
+            cursor = mongo.db.kindle_metadata.find({}, {"asin" : 1, "title": 1, "imUrl": 1}).skip(_offset)
             counter = 0
             for item in cursor:
                 if item.get("asin") in _asinArray:
                     bookLW = {"asin":item.get("asin"), "title":item.get("title"), "imUrl":item.get("imUrl")}
+                    print(item)
                     booksJSONArray.append(bookLW)
                     counter += 1
                 if counter == _limit:
                     break
-               
+
         return {"message": "Book previews shown", "asinArray": str(_asinArray), "body": booksJSONArray}, 200
-            
-
-
-    
 
 class BookCategoryResource(Resource):
-    
     def post(self):
-
         """Returns books that have categories containing categories in categoryArray
         Request Body: (categoryArray) Array of String 
         Response Body: Array of json(asin, title, imUrl)"""
@@ -101,6 +94,4 @@ class BookCategoryResource(Resource):
                     newArray.append(filteredArray[i])
                 filteredArray = newArray
 
-
         return {"message": "Books filtered based on categories", "categoryArray": str(_categoryArray), "body": filteredArray}, 200
-                
