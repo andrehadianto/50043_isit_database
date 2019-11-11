@@ -1,9 +1,6 @@
 from flask import render_template, make_response, request
 from flask_restful import Resource, reqparse
-from common.util import mongo, cursor
-from bson.json_util import dumps
-from bson.son import SON
-from bson import json_util
+from common.util import mongo
 import json
 
 default_book_title = "untitled"
@@ -23,7 +20,6 @@ class BookPreviewResource(Resource):
         """Returns book information (lightweight)   
         Request Body: (asinArray) Array of string 
         Response Body: Array of json(asin,title,imUrl)"""
-
         parser = reqparse.RequestParser()
         parser.add_argument('page', type=int, location='args')
         parser.add_argument('count', type=int, location='args')
@@ -60,7 +56,14 @@ class BookCategoryResource(Resource):
         json_request = request.get_json(force=True)
         _categoryArray = json_request.get('categories')
         filteredArray = list()
-        bookInfo = mongo.db.kindle_metadata.find({"categories": _categoryArray}, {"asin" : 1, "title": 1, "imUrl": 1})
+
+        if (not args['count'] or not args['page']):
+            bookInfo = mongo.db.kindle_metadata.find({"categories": _categoryArray}, {"asin" : 1, "title": 1, "imUrl": 1})
+        else:
+            _limit = args['count']
+            _offset = (args['page']-1) * args['count']
+            bookInfo = mongo.db.kindle_metadata.find({"categories": _categoryArray}, {"asin" : 1, "title": 1, "imUrl": 1}).skip(_offset).limit(_limit)
+
         for item in bookInfo:
             book_asin = item.get('asin')
             book_title = item.get('title')
