@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, make_response, render_template, request
 from flask_restful import Api
-from resources.foo import Foo, testMySql, testMongo
 from resources.book_preview import BookPreviewResource, BookCategoryResource
 from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBook, UpdateBookResource
+from resources.test import testMySql, testMongo
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
 from resources.user import UserLogin, UserSignup
+from resources.logs import LogsList, LogAPI
 from common.util import mongo, mongo_log
 import datetime
 import logging
@@ -16,8 +17,11 @@ app = Flask(__name__,
 
 logging.basicConfig(level=logging.DEBUG,
 					format="%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
+@app.route('/isit/<path:path>')
+@app.route('/isit', defaults={'path': '/isit'})
+def index(path):
+    return make_response(render_template("index.html"), 200, {'Content-type': 'text/html'})
 api = Api(app)
-api.add_resource(Foo, '/')
 api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
 api.add_resource(BookPreviewResource, '/books/previews')
@@ -34,6 +38,9 @@ api.add_resource(ReviewAPI, '/review/<id>', endpoint = 'review')
 
 api.add_resource(UserLogin, '/user/login')
 api.add_resource(UserSignup, '/user/signup')
+
+api.add_resource(LogsList, '/user/logs')
+api.add_resource(LogAPI, '/user/logs/<string:id>', endpoint='user/logs')
 # Invoked after every requests to log the timestamp, content & status
 @app.after_request
 def log_request(response):
@@ -46,6 +53,8 @@ def log_request(response):
         _id = mongo_log.db.logs.insert_one({
             "time": time,
             "body": body,
+            "method": request.method,
+            "path": request.full_path,
             "status": status_as_string,
             "status_code": status_as_integer
         })
