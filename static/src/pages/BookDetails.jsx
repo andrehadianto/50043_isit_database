@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import BookPreviewList from '../components/BookPreviewList';
 import {
     Grid, 
     Segment,
@@ -31,6 +32,7 @@ class BookDetails extends Component {
         this.state = {
             bookIsLoading: true,
             reviewIsLoading: true,
+
             bookDetails: null,
             reviewList: [],
 
@@ -64,6 +66,7 @@ class BookDetails extends Component {
                 reviewIsLoading: false
             });
         })
+
     }
 
     handleRate(e, {rating, maxRating}) {
@@ -226,7 +229,7 @@ class BookDetails extends Component {
                                         this.state.reviewIsLoading
                                         ? title_placeholder
                                         : !this.state.reviewList.length
-                                            ? <span style={{fontStyle: 'italic', lineHeight: '1.5'}}>No review</span>
+                                            ? <span style={{fontStyle: 'italic', fontSize: '120%', lineHeight: '1.5'}}>No review</span>
                                             : this.state.reviewList.reverse().map((review, index) => {
                                                 const months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                                                 const date = new Date(review.unixReviewTime * 1000);
@@ -258,6 +261,12 @@ class BookDetails extends Component {
                         </Grid>
                     </Segment>
                 </Segment.Group>
+                
+                {
+                    this.state.bookIsLoading
+                    ? title_placeholder
+                    : <BookPreviewList books={this.state.bookDetails.related.also_bought}/>
+                }
             </div>
         );
     }

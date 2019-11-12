@@ -40,7 +40,7 @@ class Home extends Component {
                         <Route path='/user_action/new_book' component={AddNewBook}/>
                         <Route exact path='/user_action/logs/:id' component={LogPreview}/>
                         <Route exact path='/user_action/logs' component={SeeLogList}/>
-                        <Route exact path='/review/:asin' component={BookDetails}/>
+                        <Route exact path='/review/:asin' component={(props) => (<BookDetails timestamp={new Date().toString()} {...props} />)}/>
                     </Switch>
                 </Container>
             </div>
