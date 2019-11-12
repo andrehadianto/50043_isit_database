@@ -15,7 +15,7 @@ import {
 const AlsoBought = () => {
     const [activePage, setActivePage] = useState(1);
     const [bookData, setBookData] = useState([]);
-    const [getBookApiUrl, setGetBookApiUrl] = useState('http://localhost:5000/books?page=1&count=18');
+    const [getBookApiUrl, setGetBookApiUrl] = useState('http://52.205.122.23:5000/books?page=1&count=18');
     const [isLoading, setIsLoading] = useState(true);
 }
 

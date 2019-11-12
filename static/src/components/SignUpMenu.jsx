@@ -18,7 +18,7 @@ const SignUpMenu = () => {
 
     const onSubmitHandler = (e) => {
         setIsLoading(true);
-        const url = `http://localhost:5000/user/signup`;
+        const url = `http://52.205.122.23:5000/user/signup`;
         const username = e.target.elements.username.value;
         const password = e.target.elements.password.value;
         const passwordVerify = e.target.elements.passwordVerify.value;

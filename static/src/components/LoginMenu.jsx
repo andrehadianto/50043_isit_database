@@ -18,7 +18,7 @@ const LoginMenu = () => {
 
     const onSubmitHandler = (e) => {
         setIsLoading(true);
-        const url = `http://localhost:5000/user/login`;
+        const url = `http://52.205.122.23:5000/user/login`;
         const username = e.target.elements.username.value;
         const password = e.target.elements.password.value;
 

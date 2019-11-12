@@ -22,7 +22,7 @@ const preview_placeholder = _.times(6, (i) => (
 ));
 
 const BookPreviewList = (props) => {
-    const [getBookPreviewUrl, setGetBookPreviewUrl] = useState('http://localhost:5000/books/previews?page=1&count=6');
+    const [getBookPreviewUrl, setGetBookPreviewUrl] = useState('http://52.205.122.23:5000/books/previews?page=1&count=6');
     const [bookList, setBookList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activePage, setActivePage] = useState(1);
@@ -44,7 +44,7 @@ const BookPreviewList = (props) => {
     const onPageChange = (e, pageInfo) => {
         setIsLoading(true);
         setActivePage(pageInfo.activePage);
-        setGetBookPreviewUrl(`http://localhost:5000/books/previews?page=${pageInfo.activePage.toString()}&count=6`);
+        setGetBookPreviewUrl(`http://52.205.122.23:5000/books/previews?page=${pageInfo.activePage.toString()}&count=6`);
     }
 
     return (

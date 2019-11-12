@@ -21,7 +21,7 @@ class AddReview extends Component {
         const review = event.target.elements.review.value;
         console.log(review);
         const book = "B000FA5SHK"; // book test
-        const url = "http://localhost:5000/review/" + book;
+        const url = "http://52.205.122.23:5000/review/" + book;
         if (review === '') {
             this.setState({isValidated: false});
             setTimeout(() => {this.setState({isValidated: true})}, timeoutLength);
