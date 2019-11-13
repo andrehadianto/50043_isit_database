@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import SignUpMenu from './SignUpMenu';
 import {
     Grid,
     Form,
     Header,
     Button,
     Segment,
-    Message,
-    Image
+    Icon,
+    Modal
 } from 'semantic-ui-react';
 
 const LoginMenu = () => {
+    const [isInvalid, setIsInvalid] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
     const onSubmitHandler = (e) => {
-        const url = `http://localhost:5000/user/login`;
+        setIsLoading(true);
+        const url = `http://52.205.122.23:5000/user/login`;
         const username = e.target.elements.username.value;
         const password = e.target.elements.password.value;
 
@@ -26,61 +31,78 @@ const LoginMenu = () => {
             body
         )
         .then(res => {
+            setIsLoading(false);
             if (res.data.name !== undefined) {
+                setIsInvalid(false);
                 sessionStorage.setItem('name', res.data.name);
-                sessionStorage.setItem('userId', res.data.id);
+                sessionStorage.setItem('id', res.data.id);
                 sessionStorage.setItem('token', res.data.token);
                 if (window.location.pathname === '/isit/') {
                     window.location.replace('/isit');
                 }
                 window.location.reload(true);
             } else {
-                alert(res.data.message);
+                setIsInvalid(true);
             }
         })
         .catch(err => (console.log(err)));
     }
     
     return (
-        <Grid.Column>
-            <Header as='h2' color='blue' textAlign='center'>
-                <Image src='https://icon-library.net/images/react-icon/react-icon-28.jpg' />
-                Log-in to your account
-            </Header>
-            <Form size='large' onSubmit={onSubmitHandler}>
-                <Segment stacked>
-                <Form.Input 
-                    name='username'
-                    fluid 
-                    icon='user' 
-                    iconPosition='left' 
-                    placeholder='Username' 
-                    required
-                />
-                <Form.Input
-                    name='password'
-                    fluid
-                    icon='lock'
-                    iconPosition='left'
-                    placeholder='Password'
-                    type='password'
-                    required
-                />
-
-                <Button 
-                    color='blue' 
-                    fluid 
-                    size='large'
-                    type='submit'
-                >
-                    Login
-                </Button>
-                </Segment>
-            </Form>
-            <Message>
-                New to us? <a href='#'>Sign Up</a>
-            </Message>
-        </Grid.Column>
+        <Modal
+            trigger={
+                <Button icon as='a'inverted labelPosition='left'>
+                    <Icon inverted name='sign in'/>
+                    Log in
+                </Button>}
+            style={{ maxWidth: '450px' }}
+        >
+            <Modal.Content>
+                <Grid textAlign='center' verticalAlign='middle'>
+                    <Grid.Column>
+                        <Header as='h2' color='blue' textAlign='center'>
+                            <Icon name='bomb' size='large'/>
+                            Log-in to your account
+                        </Header>
+                        <Form size='large' onSubmit={onSubmitHandler}>
+                            <Segment stacked>
+                                <Form.Input
+                                    error={isInvalid}
+                                    name='username'
+                                    fluid 
+                                    icon='user' 
+                                    iconPosition='left' 
+                                    placeholder='Username' 
+                                    required
+                                />
+                                <Form.Input
+                                    error={isInvalid}
+                                    name='password'
+                                    fluid
+                                    icon='lock'
+                                    iconPosition='left'
+                                    placeholder='Password'
+                                    type='password'
+                                    required
+                                />
+                                <Button 
+                                    color='blue' 
+                                    fluid 
+                                    size='large'
+                                    type='submit'
+                                    loading={isLoading}
+                                >
+                                    Login
+                                </Button>
+                            </Segment>
+                        </Form>
+                        <Modal.Actions>
+                            <SignUpMenu/>
+                        </Modal.Actions>
+                    </Grid.Column>
+                </Grid>
+            </Modal.Content>
+        </Modal>
     );
 };
 

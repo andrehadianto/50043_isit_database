@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import BookPreviewList from '../components/BookPreviewList';
 import {
     Grid, 
     Segment,
@@ -31,6 +32,7 @@ class BookDetails extends Component {
         this.state = {
             bookIsLoading: true,
             reviewIsLoading: true,
+
             bookDetails: null,
             reviewList: [],
 
@@ -43,7 +45,7 @@ class BookDetails extends Component {
 
     componentDidMount() {
         const {match: {params}} = this.props;
-        const bookUrl = `http://localhost:5000/book/${params.asin}`;
+        const bookUrl = `http://52.205.122.23:5000/book/${params.asin}`;
         axios.get(
             bookUrl
         )
@@ -54,7 +56,7 @@ class BookDetails extends Component {
             });
         })
 
-        const reviewUrl = `http://localhost:5000/reviews/${params.asin}`;
+        const reviewUrl = `http://52.205.122.23:5000/reviews/${params.asin}`;
         axios.get(
             reviewUrl
         )
@@ -64,6 +66,7 @@ class BookDetails extends Component {
                 reviewIsLoading: false
             });
         })
+
     }
 
     handleRate(e, {rating, maxRating}) {
@@ -78,15 +81,15 @@ class BookDetails extends Component {
 
         if (!review || !summary) {
             alert("Summary and Review cannot be empty");
-        } else if (sessionStorage.getItem('name') && sessionStorage.getItem('userId') && sessionStorage.getItem('token')) {
+        } else if (sessionStorage.getItem('name') && sessionStorage.getItem('id') && sessionStorage.getItem('token')) {
             const formData = new FormData();
             formData.set('overall', overall);
             formData.set('reviewText', review);
-            formData.set('reviewerID', sessionStorage.getItem('userId'));
+            formData.set('reviewerID', sessionStorage.getItem('id'));
             formData.set('reviewerName', sessionStorage.getItem('name'));
             formData.set('summary', summary);
     
-            const url = `http://localhost:5000/reviews/${params.asin}`
+            const url = `http://52.205.122.23:5000/reviews/${params.asin}`;
             axios.post(
                 url, 
                 formData
@@ -107,7 +110,7 @@ class BookDetails extends Component {
             formData.set('reviewerName', nickname);
             formData.set('summary', summary);
     
-            const url = `http://localhost:5000/reviews/${params.asin}`
+            const url = `http://52.205.122.23:5000/reviews/${params.asin}`
             axios.post(
                 url, 
                 formData
@@ -208,7 +211,7 @@ class BookDetails extends Component {
                                     <Form.Group inline>
                                         <Form.Button type='submit' primary>Submit</Form.Button>
                                         {
-                                            sessionStorage.getItem('name') && sessionStorage.getItem('userId') && sessionStorage.getItem('token')
+                                            sessionStorage.getItem('name') && sessionStorage.getItem('id') && sessionStorage.getItem('token')
                                             ? null
                                             : <Form.Input name='anonymous' placeholder='Nickname' required/>
                                         }
@@ -226,7 +229,7 @@ class BookDetails extends Component {
                                         this.state.reviewIsLoading
                                         ? title_placeholder
                                         : !this.state.reviewList.length
-                                            ? <span style={{fontStyle: 'italic', lineHeight: '1.5'}}>No review</span>
+                                            ? <span style={{fontStyle: 'italic', fontSize: '120%', lineHeight: '1.5'}}>No review</span>
                                             : this.state.reviewList.reverse().map((review, index) => {
                                                 const months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                                                 const date = new Date(review.unixReviewTime * 1000);
@@ -258,6 +261,12 @@ class BookDetails extends Component {
                         </Grid>
                     </Segment>
                 </Segment.Group>
+                
+                {
+                    this.state.bookIsLoading
+                    ? title_placeholder
+                    : <BookPreviewList books={this.state.bookDetails.related.also_bought}/>
+                }
             </div>
         );
     }

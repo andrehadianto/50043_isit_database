@@ -21,12 +21,13 @@ class AddNewBook extends Component {
     }
 
     onFormSubmit(e) {
-        const url = 'http://localhost:5000/book/new';
+        const url = 'http://52.205.122.23:5000/book/new';
         const title = e.target.elements.title.value;
         const description = e.target.elements.description.value;
         const price = e.target.elements.price.value ? e.target.elements.price.value : 0;
         const category = e.target.elements.category.value ? e.target.elements.category.value : "";
 
+        
         const json = {
             "title": title,
             "description": description,
