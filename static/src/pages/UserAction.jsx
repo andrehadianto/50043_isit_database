@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import AddNewBook from '../components/AddNewBook';
+import AddNewBook from '../pages/AddNewBook';
 import {
     Grid, Container
 } from 'semantic-ui-react';
