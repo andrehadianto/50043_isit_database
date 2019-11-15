@@ -28,32 +28,37 @@ class CategoriesResource(Resource):
         new_categories = []
         for cat in categories:
             cursor = mongo.db.categories.find_one({categories: cat})
+            
             if cursor == None:
                 new_categories.append(cat)
-
+            
+        
+        print("length new category: {}".format(len(new_categories)))
         if len(new_categories) == 0:
             return None
         else:
-            return new_categories.sort()
+            print("new category: {}".format(new_categories))
+            return new_categories
 
     """Add new category"""
     def post(self):
         req_json = request.get_json(force=True)
 
         try:
-            _categories = req_json['categories']
+            _categoriesArr = req_json.get('categories')
 
         except Exception as e:
             print(e)
             return {"message": "category is a required field"}, 400
 
-        add_categories = self.category_exists(_categories)
+        add_categories = self.category_exists(_categoriesArr)
+        print(add_categories)
         if add_categories != None:
             for cat in add_categories:
                 letter = cat[0].upper()
                 try:
                     mongo.db.categories.update_one({'letter': letter}, {'$push': {'categories': cat}})
-                
+                    print("updated database with new cat")
                 except Exception as e:
                     print(e)
                     return {"message": "error adding new category {}".format(cat)}, 400
