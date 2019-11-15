@@ -27,7 +27,7 @@ class CategoriesResource(Resource):
     def category_exists(self, categories):
         new_categories = []
         for cat in categories:
-            cursor = mongo.db.categories.find_one({categories: cat})
+            cursor = mongo.db.categories.find_one({'categories': cat})
             
             if cursor == None:
                 new_categories.append(cat)
