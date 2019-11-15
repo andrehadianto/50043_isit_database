@@ -32,12 +32,9 @@ class CategoriesResource(Resource):
             if cursor == None:
                 new_categories.append(cat)
             
-        
-        print("length new category: {}".format(len(new_categories)))
         if len(new_categories) == 0:
             return None
         else:
-            print("new category: {}".format(new_categories))
             return new_categories
 
     """Add new category"""
@@ -58,7 +55,6 @@ class CategoriesResource(Resource):
                 letter = cat[0].upper()
                 try:
                     mongo.db.categories.update_one({'letter': letter}, {'$push': {'categories': cat}})
-                    print("updated database with new cat")
                 except Exception as e:
                     print(e)
                     return {"message": "error adding new category {}".format(cat)}, 400
