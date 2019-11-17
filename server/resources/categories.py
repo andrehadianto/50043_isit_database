@@ -4,27 +4,39 @@ from flask import json
 from common.util import mongo
 from bson.json_util import dumps, default
 
-
 class CategoriesResource(Resource):
-    """Returns all categories available"""
+    """Returns list of categories"""
     def get(self):
         parser = reqparse.RequestParser()
+        parser.add_argument('initial', type=str, location='args')
+        args = parser.parse_args()
+
+        if (not args['initial']):
+            try:
+                cursor = mongo.db.categories.find({})
+                jsonstring = dumps(cursor, default=default)
+                return json.loads(jsonstring), 200
+
+            except Exception as e:
+                print(e)
+                return {"message": "Error calling all categories"}, 400
+        
+        _initial = args['initial']
 
         try:
-            cursor = mongo.db.categories.find({})
+            cursor = mongo.db.categories.find_one({'letter': _initial}, {'categories': 1})
             jsonstring = dumps(cursor, default=default)
             return json.loads(jsonstring), 200
 
         except Exception as e:
             print(e)
-            return {"message": "Error calling all categories"}, 400
-        
+            return {"message": "Error calling categories filtered by initial {}".format(_initial)}, 400
 
-    """Check if category exists
+    def category_exists(self, categories):
+        """Check if category exists
             Parameters: array of input categories
             Return: array of new categories or None
             """
-    def category_exists(self, categories):
         new_categories = []
         for cat in categories:
             cursor = mongo.db.categories.find_one({'categories': cat})
@@ -37,8 +49,8 @@ class CategoriesResource(Resource):
         else:
             return new_categories
 
-    """Add new category"""
     def post(self):
+        """Add new category"""
         req_json = request.get_json(force=True)
 
         try:
@@ -49,7 +61,7 @@ class CategoriesResource(Resource):
             return {"message": "category is a required field"}, 400
 
         add_categories = self.category_exists(_categoriesArr)
-        print(add_categories)
+        
         if add_categories != None:
             for cat in add_categories:
                 letter = cat[0].upper()
