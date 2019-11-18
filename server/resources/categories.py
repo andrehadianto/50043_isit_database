@@ -13,7 +13,7 @@ class CategoriesResource(Resource):
 
         if (not args['initial']):
             try:
-                cursor = mongo.db.categories.find({})
+                cursor = mongo.db.categories.find({}, {"letter":1, "categories": 1}).sort([('categories', 1), ('letters',1)])
                 jsonstring = dumps(cursor, default=default)
                 return json.loads(jsonstring), 200
 
