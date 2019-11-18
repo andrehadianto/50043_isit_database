@@ -1,6 +1,7 @@
 from flask import Flask, make_response, render_template, request
 from flask_restful import Api
 from resources.book_preview import BookPreviewResource, BookCategoryResource
+from resources.categories import CategoriesResource
 from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBook, UpdateBookResource
 from resources.test import testMySql, testMongo
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
@@ -26,6 +27,7 @@ api.add_resource(testMySql, '/mysql')
 api.add_resource(testMongo, '/mongo')
 api.add_resource(BookPreviewResource, '/books/previews')
 api.add_resource(BookCategoryResource, '/books/category')
+api.add_resource(CategoriesResource, '/categories')
 
 api.add_resource(GetBookDetails, '/book/<string:asin>')
 api.add_resource(BooksListResource, '/books')
