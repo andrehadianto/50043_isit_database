@@ -4,8 +4,8 @@ import _ from 'lodash';
 import NavBar from '../components/NavBar';
 import AllBooks from '../components/AllBooks';
 import BookDetails from './BookDetails';
-import AddNewBook from '../pages/AddNewBook';
-import SeeLogList from '../pages/SeeLogList';
+import AddNewBook from './AddNewBook';
+import SeeLogList from './SeeLogList';
 import LogPreview from './LogPreview';
 import {
     Container,
