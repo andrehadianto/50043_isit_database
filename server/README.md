@@ -35,10 +35,11 @@ Installing new dependencies
 # Change values according to your local machine
 
 SQL_DB=isit_database
-SQL_HOST=localhost
+SQL_HOST=18.139.175.98
 SQL_USER=root
-SQL_PW=root
+SQL_PW=password
 
+MONGO_HOST=3.134.250.90
 MONGO_DB=isit_database_mongo
 LOG_DB=log_mongo
 ```
