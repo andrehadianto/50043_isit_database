@@ -18,7 +18,7 @@ const SignUpMenu = () => {
 
     const onSubmitHandler = (e) => {
         setIsLoading(true);
-        const url = `http://52.7.180.215:5000/user/signup`;
+        const url = `${process.env.API_URL}/user/signup`;
         const username = e.target.elements.username.value;
         const password = e.target.elements.password.value;
         const passwordVerify = e.target.elements.passwordVerify.value;

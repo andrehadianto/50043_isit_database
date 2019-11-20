@@ -23,7 +23,7 @@ class LogPreview extends Component {
 
     componentDidMount() {
         const {match: {params}} = this.props;
-        const url = `http://52.7.180.215:5000/user/logs/${params.id}`;
+        const url = `${process.env.API_URL}/user/logs/${params.id}`;
         axios.get(
             url
         )

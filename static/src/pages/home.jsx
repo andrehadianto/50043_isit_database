@@ -9,8 +9,6 @@ import SeeLogList from './SeeLogList';
 import LogPreview from './LogPreview';
 import {
     Container,
-
-    Message,
     Segment,
     Grid,
     Header
@@ -18,6 +16,7 @@ import {
 
 class Home extends Component {
     render() {
+        console.log(`${process.env.API_URL}`);
         return (
             <div>
                 <NavBar/>

@@ -45,7 +45,7 @@ const preview_placeholder = _.times(50, (i) => (
 const SeeLogList = (props) => {
     const [isHidden, setIsHidden] = useState(true);
     const [logList, setLogList] = useState([]);
-    const [url, setUrl] = useState('http://52.7.180.215:5000/user/logs?page=1&count=50')
+    const [url, setUrl] = useState(`${process.env.API_URL}/user/logs?page=1&count=50`)
     const [activePage, setActivePage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -62,7 +62,7 @@ const SeeLogList = (props) => {
     const onPageChange = (e, pageInfo) => {
         setIsLoading(true);
         setActivePage(pageInfo.activePage);
-        setUrl(`http://52.7.180.215:5000/user/logs?page=${pageInfo.activePage.toString()}&count=50`)
+        setUrl(`${process.env.API_URL}/user/logs?page=${pageInfo.activePage.toString()}&count=50`)
     }
 
     return (
