@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 
+
 const config = {
     entry: path.join(__dirname, '/src/index.jsx'),
     output: {

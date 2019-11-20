@@ -45,7 +45,7 @@ class BookDetails extends Component {
 
     componentDidMount() {
         const {match: {params}} = this.props;
-        const bookUrl = `http://52.205.122.23:5000/book/${params.asin}`;
+        const bookUrl = `http://52.7.180.215:5000/book/${params.asin}`;
         axios.get(
             bookUrl
         )
@@ -56,7 +56,7 @@ class BookDetails extends Component {
             });
         })
 
-        const reviewUrl = `http://52.205.122.23:5000/reviews/${params.asin}`;
+        const reviewUrl = `http://52.7.180.215:5000/reviews/${params.asin}`;
         axios.get(
             reviewUrl
         )
@@ -89,7 +89,7 @@ class BookDetails extends Component {
             formData.set('reviewerName', sessionStorage.getItem('name'));
             formData.set('summary', summary);
     
-            const url = `http://52.205.122.23:5000/reviews/${params.asin}`;
+            const url = `http://52.7.180.215:5000/reviews/${params.asin}`;
             axios.post(
                 url, 
                 formData
@@ -110,7 +110,7 @@ class BookDetails extends Component {
             formData.set('reviewerName', nickname);
             formData.set('summary', summary);
     
-            const url = `http://52.205.122.23:5000/reviews/${params.asin}`
+            const url = `http://52.7.180.215:5000/reviews/${params.asin}`
             axios.post(
                 url, 
                 formData

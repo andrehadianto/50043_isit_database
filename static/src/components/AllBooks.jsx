@@ -29,7 +29,7 @@ const preview_placeholder = _.times(24, (i) => (
 const AllBooks = (props) => {
     const [activePage, setActivePage] = useState(1);
     const [bookData, setBookData] = useState([]);
-    const [getBookApiUrl, setGetBookApiUrl] = useState('http://52.205.122.23:5000/books?page=1&count=24');
+    const [getBookApiUrl, setGetBookApiUrl] = useState('http://52.7.180.215:5000/books?page=1&count=24');
     const [isLoading, setIsLoading] = useState(true);
     const [goToPage, setGoToPage] = useState(1);
     const [isInvalid, setIsInvalid] = useState(false);
@@ -47,7 +47,7 @@ const AllBooks = (props) => {
     const onPageChange = (e, pageInfo) => {
         setIsLoading(true);
         setActivePage(pageInfo.activePage);
-        setGetBookApiUrl(`http://52.205.122.23:5000/books?page=${pageInfo.activePage.toString()}&count=24`);
+        setGetBookApiUrl(`http://52.7.180.215:5000/books?page=${pageInfo.activePage.toString()}&count=24`);
     }
 
     const goToClickHandler = (e) => {
@@ -55,7 +55,7 @@ const AllBooks = (props) => {
             setIsInvalid(false);
             setIsLoading(true);
             setActivePage(goToPage);
-            setGetBookApiUrl(`http://52.205.122.23:5000/books?page=${goToPage.toString()}&count=24`);    
+            setGetBookApiUrl(`http://52.7.180.215:5000/books?page=${goToPage.toString()}&count=24`);    
         } else {
             setIsInvalid(true);
         }
