@@ -1,5 +1,3 @@
-# create virtualenv, install awscli and boto3
-
 # Copyright 2010-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # This file is licensed under the Apache License, Version 2.0 (the "License").
@@ -14,15 +12,16 @@
 
 from utils import create_ec2_instance, create_security_group
 import logging
+import os
 
 
 def main():
     # Assign these values before running the program
-    # Use argparse + os.environ? AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
-    keypair_name = 'pencilleaf-key-pair'
+    keypair_name = os.environ['KEY_PAIR']
     # ACCESS_KEY='AKIA54KY4G4NY2FMI4GT'
     # SECRET_KEY='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'
-    AMI = 'ami-05c859630889c79c8'
+    AMAZON_LINUX_AMI = 'ami-05c859630889c79c8'
+    UBUNTU_AMI = 'ami-061eb2b23f9f8839c'
     INSTANCE_TYPE = 't2.micro'
 
 
@@ -30,32 +29,32 @@ def main():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(levelname)s: %(asctime)s: %(message)s')
 
-    # # Create security group
-    # flask_permissions = [{'IpProtocol': 'tcp',
-    #                         'FromPort': 80,
-    #                         'ToPort': 80,
-    #                         'IpRanges': [{'CidrIp': '0.0.0.0/0'}]},
-    #                         {'IpProtocol': 'tcp',
-    #                         'FromPort': 22,
-    #                         'ToPort': 22,
-    #                         'IpRanges': [{'CidrIp': '0.0.0.0/0'}]},
-    #                         {'IpProtocol': 'tcp',
-    #                         'FromPort': 5000,
-    #                         'ToPort': 5000,
-    #                         'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}]
+    # Create security group
+    flask_permissions = [{'IpProtocol': 'tcp',
+                            'FromPort': 80,
+                            'ToPort': 80,
+                            'IpRanges': [{'CidrIp': '0.0.0.0/0'}]},
+                            {'IpProtocol': 'tcp',
+                            'FromPort': 22,
+                            'ToPort': 22,
+                            'IpRanges': [{'CidrIp': '0.0.0.0/0'}]},
+                            {'IpProtocol': 'tcp',
+                            'FromPort': 5000,
+                            'ToPort': 5000,
+                            'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}]
 
-    # flask_security_group = create_security_group("flask-webapp", flask_permissions)
+    flask_security_group = create_security_group("flask-webapp", flask_permissions)
 
-    # # Provision and launch the EC2 instance
-    # flask_instance_info = create_ec2_instance(AMI, INSTANCE_TYPE, keypair_name, ["flask-webapp"])
+    # Provision and launch the EC2 instance
+    flask_instance_info = create_ec2_instance(AMAZON_LINUX_AMI, INSTANCE_TYPE, keypair_name, ["flask-webapp"])
 
-    # if flask_instance_info is not None:
-    #     logging.info('Started ec2 instance for flask webapp')
-    #     logging.info(f'Launched EC2 Instance {flask_instance_info["InstanceId"]}')
-    #     logging.info(f'    VPC ID: {flask_instance_info["VpcId"]}')
-    #     logging.info(f'    Private IP Address: {flask_instance_info["PrivateIpAddress"]}')
-    #     logging.info(f'    Public IP Address: {flask_instance_info["PublicIpAddress"]}')
-    #     logging.info(f'    Current State: {flask_instance_info["State"]["Name"]}')
+    if flask_instance_info is not None:
+        logging.info('Started ec2 instance for flask webapp')
+        logging.info(f'Launched EC2 Instance {flask_instance_info["InstanceId"]}')
+        logging.info(f'    VPC ID: {flask_instance_info["VpcId"]}')
+        logging.info(f'    Private IP Address: {flask_instance_info["PrivateIpAddress"]}')
+        logging.info(f'    Public IP Address: {flask_instance_info["PublicIpAddress"]}')
+        logging.info(f'    Current State: {flask_instance_info["State"]["Name"]}')
 
 
 
@@ -73,7 +72,7 @@ def main():
 
     sql_security_group = create_security_group("mysql-server", sql_permissions)
 
-    sql_instance_info = create_ec2_instance(AMI, INSTANCE_TYPE, keypair_name, ["mysql-server"], SQL_SCRIPT)
+    sql_instance_info = create_ec2_instance(AMAZON_LINUX_AMI, INSTANCE_TYPE, keypair_name, ["mysql-server"], SQL_SCRIPT)
 
     if sql_instance_info is not None:
         logging.info('Started ec2 instance for mysql server')
@@ -86,7 +85,7 @@ def main():
 
 
 
-    MONGO_SCRIPT = ""
+    MONGO_SCRIPT = "mongo_script.sh"
 
     mongo_permissions = [{'IpProtocol': 'tcp',
                             'FromPort': 22,
@@ -99,7 +98,7 @@ def main():
         
     mongo_security_group = create_security_group("mongo_db", mongo_permissions)
 
-    mongo_instance_info = create_ec2_instance(AMI, INSTANCE_TYPE, keypair_name, ["mongo_db"], MONGO_SCRIPT)
+    mongo_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, keypair_name, ["mongo_db"], MONGO_SCRIPT)
 
     if mongo_instance_info is not None:
         logging.info('Started ec2 instance for mongo db')
@@ -108,7 +107,6 @@ def main():
         logging.info(f'    Private IP Address: {mongo_instance_info["PrivateIpAddress"]}')
         logging.info(f'    Public IP Address: {mongo_instance_info["PublicIpAddress"]}')
         logging.info(f'    Current State: {mongo_instance_info["State"]["Name"]}')
-
 
 if __name__ == '__main__':
     main()
