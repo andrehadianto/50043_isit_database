@@ -67,6 +67,7 @@ def create_security_group(name, permissions):
 
     return security_group_id
 
+
 def execute_cmd_ssh(instance_ip, user, key, cmd):
     
     key = paramiko.RSAKey.from_private_key_file(key)
@@ -79,18 +80,18 @@ def execute_cmd_ssh(instance_ip, user, key, cmd):
 
         # Execute a command(cmd) after connecting/ssh to an instance
         stdin, stdout, stderr = client.exec_command(cmd)
-
+        print(stdout)
     except Exception as e:
         print(e)
 
     finally:
         # Close the client connection once the job is done
         client.close()
-
+    
     return stdout.read().decode("utf-8")
 
 
-def scp_to_instance(instance_ip, user, key, file):
+def scp_to_instance(instance_ip, user, key, file_path):
 
     key = paramiko.RSAKey.from_private_key_file(key)
     client = paramiko.SSHClient()
@@ -100,23 +101,20 @@ def scp_to_instance(instance_ip, user, key, file):
     try:
         client.connect(hostname=instance_ip, username=user, pkey=key)
         
-        scp = paramiko.SCPClient(client.get_transport())
-        scp.put(file,
-                recursive=True,
-                remote_path=file)
+        scp_client = client.open_sftp()
+        scp_client.put(file_path, file_path)
 
     except Exception as e:
         print(e)
 
     finally:
         # Close the client connection once the job is done
-        scp.close
+        scp_client.close()
         client.close()
 
-    return 
 
-def check_if_complete(instance_ip, instance_id, user, key):
-    cmd = 'test -f /var/lib/cloud/instances/%s/boot-finished && echo "Complete"' % (instance_id)
+def check_if_complete(file_path, instance_ip, user, key):
+    cmd = 'test -f %s && echo "Complete"' % (file_path)
 
     out = execute_cmd_ssh(instance_ip, user, key, cmd)
 
@@ -124,4 +122,3 @@ def check_if_complete(instance_ip, instance_id, user, key):
         return True
     else:
         return False
-    
