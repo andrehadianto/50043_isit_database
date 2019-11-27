@@ -32,5 +32,7 @@ LOG_DB=log_mongo
 MONGO_HOST=$2
 EOF
 
+touch /home/ubuntu/script-finished
+
 # Run flask app
 python app.py
