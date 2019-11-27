@@ -1,6 +1,7 @@
 from flask import render_template, make_response, request
 from flask_restful import Resource, reqparse
 from flask import json
+from pymongo import ASCENDING, DESCENDING
 from common.util import mongo
 from bson.json_util import dumps, default
 
@@ -13,7 +14,7 @@ class CategoriesResource(Resource):
 
         if (not args['initial']):
             try:
-                cursor = mongo.db.categories.find({}, {"letter":1, "categories": 1}).sort([('categories', 1), ('letters',1)])
+                cursor = mongo.db.categories.find({}, {"letter":1, "categories": 1, "_id": 0}).sort([('categories', ASCENDING), ('letter', ASCENDING)])
                 jsonstring = dumps(cursor, default=default)
                 return json.loads(jsonstring), 200
 
