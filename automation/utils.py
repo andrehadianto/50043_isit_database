@@ -1,5 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError, WaiterError
+import paramiko
 
 def create_ec2_instance(image_id, instance_type, keypair_name, security_group, script_path=None):
 
@@ -65,3 +66,62 @@ def create_security_group(name, permissions):
         print(e)
 
     return security_group_id
+
+def execute_cmd_ssh(instance_ip, user, key, cmd):
+    
+    key = paramiko.RSAKey.from_private_key_file(key)
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # Connect/ssh to an instance
+    try:
+        client.connect(hostname=instance_ip, username=user, pkey=key)
+
+        # Execute a command(cmd) after connecting/ssh to an instance
+        stdin, stdout, stderr = client.exec_command(cmd)
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        # Close the client connection once the job is done
+        client.close()
+
+    return stdout.read().decode("utf-8")
+
+
+def scp_to_instance(instance_ip, user, key, file):
+
+    key = paramiko.RSAKey.from_private_key_file(key)
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # Connect/ssh to an instance
+    try:
+        client.connect(hostname=instance_ip, username=user, pkey=key)
+        
+        scp = paramiko.SCPClient(client.get_transport())
+        scp.put(file,
+                recursive=True,
+                remote_path=file)
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        # Close the client connection once the job is done
+        scp.close
+        client.close()
+
+    return 
+
+def check_if_complete(instance_ip, instance_id, user, key):
+    cmd = 'test -f /var/lib/cloud/instances/%s/boot-finished && echo "Complete"' % (instance_id)
+
+    out = execute_cmd_ssh(instance_ip, user, key, cmd)
+
+    if "Complete" in out:
+        return True
+    else:
+        return False
+    
