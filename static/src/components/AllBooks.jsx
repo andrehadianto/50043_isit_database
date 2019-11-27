@@ -4,7 +4,6 @@ import axios from 'axios';
 import _ from 'lodash';
 import {
     Grid,
-    Segment,
     Header,
     Pagination,
     Placeholder,
@@ -20,7 +19,7 @@ const { Column } = Grid;
 const preview_placeholder = _.times(24, (i) => (
     <Column  key={i}>
         <Placeholder>
-            <Placeholder.Image style={{minWidth: '100px', minHeight: '100px'}} square/>
+            <Placeholder.Image style={{minWidth: '150px', minHeight: '150px'}} square/>
             <Placeholder.Line/>
         </Placeholder>
     </Column>
@@ -62,48 +61,45 @@ const AllBooks = (props) => {
     }
 
     return (
-        <Column width={12}>
-            <Segment color='orange'>
-                <Header as='h3' dividing>
-                    List of Books
-                </Header>
-                <Grid columns={6}>
-                {
-                    isLoading
-                    ? preview_placeholder
-                    : bookData.map((book, index) => {
-                        return (
-                            <Column key={index}>
-                                <Link to={{pathname: `/review/${book.asin}`}}>
-                                    <Item>
-                                        <Item.Image verticalAlign='middle' size='small' style={{minWidth: '100px', minHeight: '100px'}} src={book.imUrl}/>
-                                        <Header textAlign='center' as='h5'>{book.asin}</Header>
-                                    </Item>
-                                </Link>
-                            </Column>
-                        )
-                    })
-                } 
-                </Grid>
-                <Divider/>
-                <Container textAlign='center'>
-                    <Pagination
-                        secondary
-                        ellipsisItem={null}
-                        activePage={ activePage }
-                        onPageChange={ onPageChange }
-                        totalPages={99}
-                    />
-                    <Input 
-                        onChange={ (e, {value}) => {setGoToPage(value)} }
-                        value={goToPage}
-                        style={{ width: '4em' }} 
-                        action={ <Button content='Go' onClick={ goToClickHandler }/> }
-                        error={isInvalid}
-                    />
-                </Container>
-            </Segment>
-        </Column>
+        <Grid>
+            <Column width={16}>
+                    <Grid columns={6}>
+                    {
+                        isLoading
+                        ? preview_placeholder
+                        : bookData.map((book, index) => {
+                            return (
+                                <Column key={index}>
+                                    <Link to={{pathname: `/review/${book.asin}`}}>
+                                        <Item>
+                                            <Item.Image verticalAlign='middle' size='small' style={{minWidth: '150px', minHeight: '150px'}} src={book.imUrl}/>
+                                            <Header textAlign='center' as='h5'>{book.asin}</Header>
+                                        </Item>
+                                    </Link>
+                                </Column>
+                            )
+                        })
+                    } 
+                    </Grid>
+                    <Divider/>
+                    <Container textAlign='center'>
+                        <Pagination
+                            secondary
+                            ellipsisItem={null}
+                            activePage={ activePage }
+                            onPageChange={ onPageChange }
+                            totalPages={99}
+                        />
+                        <Input 
+                            onChange={ (e, {value}) => {setGoToPage(value)} }
+                            value={goToPage}
+                            style={{ width: '4em' }} 
+                            action={ <Button content='Go' onClick={ goToClickHandler }/> }
+                            error={isInvalid}
+                        />
+                    </Container>
+            </Column>
+        </Grid>
     );
     
 }

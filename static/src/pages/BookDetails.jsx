@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import BookPreviewList from '../components/BookPreviewList';
 import {
@@ -126,7 +126,7 @@ class BookDetails extends Component {
 
     render() {
         return (
-            <div>
+            <Fragment>
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
@@ -267,7 +267,7 @@ class BookDetails extends Component {
                     ? title_placeholder
                     : <BookPreviewList books={this.state.bookDetails.related.also_bought}/>
                 }
-            </div>
+            </Fragment>
         );
     }
 }
