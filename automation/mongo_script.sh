@@ -33,14 +33,17 @@ echo "=== Running Set Up for Mongo Instance === "
     sudo service mongod start
 }
 
-sleep 5s
-
 # set up admin user
-{
-    mongo localhost:27017/admin setupmongo.js
-} || {
-    echo "Error: mongo - set up admin user"
-}
+
+while :
+do
+    if mongo localhost:27017/admin --eval 'db.createUser({ user: "admin", pwd: "password", roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]})' ; then
+        break
+    else
+        echo "Command failed, retrying..."
+    fi
+done
+
 
 echo "Changing mongd.conf"
 sudo sed -i "s,\\(^[[:blank:]]*bindIp:\\) .*,\\1 0.0.0.0," /etc/mongod.conf
