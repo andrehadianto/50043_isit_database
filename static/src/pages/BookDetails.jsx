@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import BookPreviewList from '../components/BookPreviewList';
 import {
@@ -45,7 +45,7 @@ class BookDetails extends Component {
 
     componentDidMount() {
         const {match: {params}} = this.props;
-        const bookUrl = `http://52.7.180.215:5000/book/${params.asin}`;
+        const bookUrl = `${process.env.API_URL}/book/${params.asin}`;
         axios.get(
             bookUrl
         )
@@ -56,7 +56,7 @@ class BookDetails extends Component {
             });
         })
 
-        const reviewUrl = `http://52.7.180.215:5000/reviews/${params.asin}`;
+        const reviewUrl = `${process.env.API_URL}/reviews/${params.asin}`;
         axios.get(
             reviewUrl
         )
@@ -89,7 +89,7 @@ class BookDetails extends Component {
             formData.set('reviewerName', sessionStorage.getItem('name'));
             formData.set('summary', summary);
     
-            const url = `http://52.7.180.215:5000/reviews/${params.asin}`;
+            const url = `${process.env.API_URL}/reviews/${params.asin}`;
             axios.post(
                 url, 
                 formData
@@ -110,7 +110,7 @@ class BookDetails extends Component {
             formData.set('reviewerName', nickname);
             formData.set('summary', summary);
     
-            const url = `http://52.7.180.215:5000/reviews/${params.asin}`
+            const url = `${process.env.API_URL}/reviews/${params.asin}`
             axios.post(
                 url, 
                 formData
@@ -126,7 +126,7 @@ class BookDetails extends Component {
 
     render() {
         return (
-            <div>
+            <Fragment>
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
@@ -267,7 +267,7 @@ class BookDetails extends Component {
                     ? title_placeholder
                     : <BookPreviewList books={this.state.bookDetails.related.also_bought}/>
                 }
-            </div>
+            </Fragment>
         );
     }
 }

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import SignUpMenu from './SignUpMenu';
 import {
@@ -18,7 +17,7 @@ const LoginMenu = () => {
 
     const onSubmitHandler = (e) => {
         setIsLoading(true);
-        const url = `http://52.7.180.215:5000/user/login`;
+        const url = `${process.env.API_URL}/user/login`;
         const username = e.target.elements.username.value;
         const password = e.target.elements.password.value;
 

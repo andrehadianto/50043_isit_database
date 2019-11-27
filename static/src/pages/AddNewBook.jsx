@@ -21,7 +21,7 @@ class AddNewBook extends Component {
     }
 
     onFormSubmit(e) {
-        const url = 'http://52.7.180.215:5000/book/new';
+        const url = `${process.env.API_URL}/book/new`;
         const title = e.target.elements.title.value;
         const description = e.target.elements.description.value;
         const price = e.target.elements.price.value ? e.target.elements.price.value : 0;
