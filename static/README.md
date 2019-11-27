@@ -10,6 +10,10 @@ React runs on javascript and it is not readable as pages on our browser. Webpack
 tl;dr: run the command below before developing to automatically recompile whenever changes are made
 - run `npm run watch` to build the page
 
+#### 3. Production
+Production `bundle.js` will ignore any dependencies listed in `DevDependencies` and most of the library modules files to further reduce the file size. This is to ensure that the file can be loaded quickly. To create production-ready bundle, run the code below.
+- run `npm run prod` 
+
 Project Structure  
 static  
 | src  
@@ -46,6 +50,3 @@ static
 | webpack.config.js    
 | README.md  
 | .gitignore  
-
-#### 3. API Hosts
-For development, API hosts should all be replaced from `localhost:5000` to `52.205.122.23:5000`
