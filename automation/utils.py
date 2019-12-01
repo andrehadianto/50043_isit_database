@@ -83,10 +83,12 @@ def execute_cmds_ssh(instance_ip, user, key, cmds):
         for cmd in cmds:
             stdin, stdout, stderr = client.exec_command(cmd, get_pty=False)
             print(stdout.read().decode("utf-8"))
+
+        return "Complete"
         
     except Exception as e:
         print(e)
-        return ""
+        return "Failed"
 
     finally:
         # Close the client connection once the job is done
@@ -107,10 +109,11 @@ def execute_bg(instance_ip, user, key, cmd):
         transport = client.get_transport()
         channel = transport.open_session()
         channel.exec_command(cmd)
+        return "Complete"
         
     except Exception as e:
         print(e)
-        return ""
+        return "Failed"
 
     finally:
         # Close the client connection once the job is done
@@ -164,7 +167,7 @@ def exists(file_path, instance_ip, user, key):
             print(res_str)
             if "complete" in res_str:
                 break
-            time.sleep(2)
+            time.sleep(10)
         return True
         
     except Exception as e:

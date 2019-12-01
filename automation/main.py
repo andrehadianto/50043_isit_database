@@ -167,13 +167,24 @@ def main():
             LOG_DB=log_mongo
             MONGO_HOST=%s""" % (MYSQL_IP, MONGO_IP)
     ]
-    execute_cmds_ssh(FLASK_IP, "ubuntu", KEY_PATH, cmds)
-    # execute_bg(FLASK_IP, "ubuntu", KEY_PATH, "sudo nohup python3 /50043_isit_database-master/server/app.py < /dev/null > /50043_isit_database-master/server/log.txt 2>&1 &")
 
-    logging.info("Flask server has started, please visit %s:5000/isit" % (FLASK_IP))
-
+    while True:
+        test = execute_cmds_ssh(FLASK_IP, "ubuntu", KEY_PATH, cmds)
+        if test == "Failed":
+            print("Connection failed, retrying...")
+            continue
+        else:
+            break
     
-
+    while True:
+        test = execute_bg(FLASK_IP, "ubuntu", KEY_PATH, "sudo nohup python3 /50043_isit_database-master/server/app.py < /dev/null > /50043_isit_database-master/server/log.txt 2>&1 &")
+        if test == "Failed":
+            print("Connection failed, retrying...")
+            continue
+        else:
+            break   
+    
+    logging.info("Flask server has started, please visit %s:5000/isit" % (FLASK_IP))
 
 if __name__ == '__main__':
     main()

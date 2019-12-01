@@ -3,7 +3,11 @@
 # Download pip3 and virtualenv
 sudo apt-get update
 sudo apt-get install -y python3-pip
-# sudo apt-get install -y python3-pip python3-venv
+curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh
+sudo bash nodesource_setup.sh
+sudo apt install -y nodejs
+nodejs -v
+npm -v
 
 # Download code
 wget -c https://www.dropbox.com/s/x6pcb278trb2hrn/50043_isit_database-master.zip?dl=0 -O 50043_isit_database.zip
@@ -21,9 +25,11 @@ chmod a+rwx log.txt
 
 # Install node modules
 cd ../static
-sudo apt install -y npm
 npm install
-sudo npm run prod
+LOCAL_PUBLIC_IP=$(curl ifconfig.co)
+export LOCAL_PUBLIC_IP
+echo $LOCAL_PUBLIC_IP
+npx webpack --env.API_URL=http://$LOCAL_PUBLIC_IP:5000 --progress -p --mode=production --config webpack.config.js 
 
 # # Create .env 
 # # cd ../server
