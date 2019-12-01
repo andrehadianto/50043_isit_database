@@ -21,7 +21,7 @@ service mysqld restart
 chkconfig mysqld on
 
 # Download dataset
-wget -c https://www.dropbox.com/s/wg4y0etqwml0dgg/kindle-reviews.zip?dl=0 -O kindle-reviews.zip
+wget -c wget -c https://istd50043.s3-ap-southeast-1.amazonaws.com/kindle-reviews.zip -O kindle-reviews.zip -O kindle-reviews.zip
 unzip kindle-reviews.zip
 rm -rf kindle_reviews.json
 
@@ -42,3 +42,5 @@ CREATE TABLE isit_database.kindle_reviews(
 SET sql_mode='NO_AUTO_VALUE_ON_ZERO';
 LOAD DATA LOCAL INFILE 'kindle_reviews.csv' INTO TABLE isit_database.kindle_reviews FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
 EOF
+
+touch /home/ec2-user/script-finished.txt
