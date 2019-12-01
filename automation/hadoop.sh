@@ -1,13 +1,11 @@
 #!/bin/bash
 
 # update yum
-sudo yum update
+sudo yum update -y
 
 # install java-1.7.0 and java-1.8.0 (is not a typo)
-sudo yum install java-1.8.0-openjdk-devel
-y
-sudo yum install java-1.8.0-openjdk-devel
-y
+sudo yum install -y java-1.8.0-openjdk-devel
+sudo yum install -y java-1.8.0-openjdk-devel
 
 # download and extract hadoop
 wget http://apache.mirrors.tds.net/hadoop/common/hadoop-2.8.5/hadoop-2.8.5.tar.gz -P ~/Downloads
