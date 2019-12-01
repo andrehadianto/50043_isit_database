@@ -1,6 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError, WaiterError
 import paramiko
+import time
 
 def create_ec2_instance(image_id, instance_type, keypair_name, security_group, script_path=None):
 
@@ -68,7 +69,7 @@ def create_security_group(name, permissions):
     return security_group_id
 
 
-def execute_cmd_ssh(instance_ip, user, key, cmd):
+def execute_cmds_ssh(instance_ip, user, key, cmds):
     
     key = paramiko.RSAKey.from_private_key_file(key)
     client = paramiko.SSHClient()
@@ -79,16 +80,41 @@ def execute_cmd_ssh(instance_ip, user, key, cmd):
         client.connect(hostname=instance_ip, username=user, pkey=key)
 
         # Execute a command(cmd) after connecting/ssh to an instance
-        stdin, stdout, stderr = client.exec_command(cmd)
-        print(stdout)
+        for cmd in cmds:
+            stdin, stdout, stderr = client.exec_command(cmd, get_pty=False)
+            print(stdout.read().decode("utf-8"))
+        
     except Exception as e:
         print(e)
+        return ""
 
     finally:
         # Close the client connection once the job is done
         client.close()
     
-    return stdout.read().decode("utf-8")
+
+def execute_bg(instance_ip, user, key, cmd):
+    
+    key = paramiko.RSAKey.from_private_key_file(key)
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # Connect/ssh to an instance
+    try:
+        client.connect(hostname=instance_ip, username=user, pkey=key)
+
+        # Execute a command(cmd) after connecting/ssh to an instance
+        transport = client.get_transport()
+        channel = transport.open_session()
+        channel.exec_command(cmd)
+        
+    except Exception as e:
+        print(e)
+        return ""
+
+    finally:
+        # Close the client connection once the job is done
+        client.close()
 
 
 def scp_to_instance(instance_ip, user, key, file_path):
@@ -101,24 +127,50 @@ def scp_to_instance(instance_ip, user, key, file_path):
     try:
         client.connect(hostname=instance_ip, username=user, pkey=key)
         
-        scp_client = client.open_sftp()
-        scp_client.put(file_path, file_path)
+        try:
+            scp_client = client.open_sftp()
+            scp_client.put(file_path, file_path)
+
+        except Exception as e:
+            print(e)
+
+        finally:
+            scp_client.close()
 
     except Exception as e:
         print(e)
 
     finally:
         # Close the client connection once the job is done
-        scp_client.close()
         client.close()
 
 
-def check_if_complete(file_path, instance_ip, user, key):
-    cmd = 'test -f %s && echo "Complete"' % (file_path)
+def exists(file_path, instance_ip, user, key):
 
-    out = execute_cmd_ssh(instance_ip, user, key, cmd)
+    cmd = 'test -f %s && echo complete' % (file_path)
+    
+    key = paramiko.RSAKey.from_private_key_file(key)
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    if "Complete" in out:
+    # Connect/ssh to an instance
+    try:
+        client.connect(hostname=instance_ip, username=user, pkey=key)
+
+        # Execute a command(cmd) after connecting/ssh to an instance
+        while True:
+            stdin, stdout, stderr = client.exec_command(cmd)
+            res_str = stdout.read().decode("utf-8")
+            print(res_str)
+            if "complete" in res_str:
+                break
+            time.sleep(2)
         return True
-    else:
-        return False
+        
+    except Exception as e:
+        print(e)
+        return "Failed"
+
+    finally:
+        # Close the client connection once the job is done
+        client.close()

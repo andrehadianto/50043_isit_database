@@ -10,7 +10,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License. 
 
-from utils import create_ec2_instance, create_security_group, check_if_complete, scp_to_instance, execute_cmd_ssh
+from utils import create_ec2_instance, create_security_group, execute_cmds_ssh, exists, execute_bg
 import logging
 import os
 from time import sleep
@@ -20,7 +20,7 @@ import urllib.request
 
 def main():
 
-    LOCAL_IP = urllib.request.urlopen('https://ident.me').read().decode('utf8')
+    LOCAL_IP = urllib.request.urlopen('http://ident.me').read().decode('utf8')
 
     KEY_PAIR = os.environ['KEY_PAIR']
    
@@ -39,6 +39,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(levelname)s: %(asctime)s: %(message)s')
 
+    flask_script = "flask_script.sh"
     # Create security group
     flask_permissions = [{'IpProtocol': 'tcp',
                             'FromPort': 22,
@@ -52,7 +53,7 @@ def main():
     flask_security_group = create_security_group("flask-webapp", flask_permissions)
 
     # Provision and launch the EC2 instance
-    flask_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, KEY_PAIR, ["flask-webapp"])
+    flask_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, KEY_PAIR, ["flask-webapp"], flask_script)
 
     if flask_instance_info is not None:
         logging.info('Started ec2 instance for flask webapp')
@@ -127,32 +128,51 @@ def main():
     MONGO_ID = mongo_instance_info["InstanceId"]
 
 
-    logging.info("Databases are up")
-
-
-    logging.info("Setting up mongodb...")
+    # Fix this???? or just heck
+    # logging.info("Setting up database...")
     
-    boot_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (MYSQL_ID)
+    # Check if database is up
+    # boot_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (MYSQL_ID)
+    # script_file_path = "/home/ec2-user/script-finished.txt"
+    # while True:
+    #     test = exists(script_file_path, MYSQL_IP, "ec2-user", KEY_PATH)
+    #     if test == "Failed":
+    #         print("Connection failed, retrying...")
+    #         continue
+    #     else:
+    #         break
+
+    # logging.info("Databases are up")
+    
+    logging.info("Setting up the flask webapp...")
+
+    # Check if script is finished
+    indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (FLASK_ID)
     while True:
-        if check_if_complete(boot_file_path, MYSQL_IP, "ec2-user", KEY_PATH):
+        test = exists(indicator_file_path, FLASK_IP, "ubuntu", KEY_PATH)
+        if test == "Failed":
+            print("Connection failed, retrying...")
+            continue
+        else:
             break
-        sleep(10)
 
-    logging.info("Databases are up")
-
-
-    scp_to_instance(FLASK_IP, "ubuntu", KEY_PATH, "flask_script.sh")
-    cmds = ["sed -i -e 's/\r$//' flask_script.sh", ". flask_script.sh %s %s" % (MYSQL_IP, MONGO_IP)]
-    for cmd in cmds:
-        execute_cmd_ssh(FLASK_IP, "ubuntu", KEY_PATH, cmd)
-
-    indicator_file_path = "/home/ubuntu/script-finished"
-    while True:
-        if check_if_complete(indicator_file_path, FLASK_IP, "ubuntu", KEY_PATH):
-            break
-        sleep(10)
+    cmds = [
+        "sudo touch /50043_isit_database-master/server/.env && echo Created .env file",
+        """sudo tee -a /50043_isit_database-master/server/.env > /dev/null << EOT
+            SQL_DB=isit_database
+            SQL_USER=root
+            SQL_PW=password
+            SQL_HOST=%s
+            MONGO_DB=isit_database_mongo
+            LOG_DB=log_mongo
+            MONGO_HOST=%s""" % (MYSQL_IP, MONGO_IP)
+    ]
+    execute_cmds_ssh(FLASK_IP, "ubuntu", KEY_PATH, cmds)
+    # execute_bg(FLASK_IP, "ubuntu", KEY_PATH, "sudo nohup python3 /50043_isit_database-master/server/app.py < /dev/null > /50043_isit_database-master/server/log.txt 2>&1 &")
 
     logging.info("Flask server has started, please visit %s:5000/isit" % (FLASK_IP))
+
+    
 
 
 if __name__ == '__main__':
