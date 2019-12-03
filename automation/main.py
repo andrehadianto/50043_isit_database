@@ -13,30 +13,21 @@
 from utils import create_ec2_instance, create_security_group, execute_cmds_ssh, exists, execute_bg
 import logging
 import os
-from time import sleep
 import urllib.request
+import argparse
 
 
 
 def main():
-
+    
     LOCAL_IP = urllib.request.urlopen('http://ident.me').read().decode('utf8')
-
-    KEY_PAIR = os.environ['KEY_PAIR']
-   
-   # How to get pem file??
-    KEY_PATH = "C:\\Users\\x-cla\\Desktop\\Term 6\\50.043 Databases\\PROJECT\\pencilleaf-key-pair.pem"
-
 
     AMAZON_LINUX_AMI = 'ami-05c859630889c79c8'
     UBUNTU_AMI = 'ami-061eb2b23f9f8839c'
     INSTANCE_TYPE = 't2.micro'
-    
-    
-
 
     # Set up logging
-    logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.INFO,
                         format='%(levelname)s: %(asctime)s: %(message)s')
 
     flask_script = "flask_script.sh"
@@ -53,7 +44,7 @@ def main():
     flask_security_group = create_security_group("flask-webapp", flask_permissions)
 
     # Provision and launch the EC2 instance
-    flask_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, KEY_PAIR, ["flask-webapp"], flask_script)
+    flask_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, ["flask-webapp"], flask_script)
 
     if flask_instance_info is not None:
         logging.info('Started ec2 instance for flask webapp')
@@ -82,7 +73,7 @@ def main():
 
     sql_security_group = create_security_group("mysql-server", sql_permissions)
 
-    sql_instance_info = create_ec2_instance(AMAZON_LINUX_AMI, INSTANCE_TYPE, KEY_PAIR, ["mysql-server"], SQL_SCRIPT)
+    sql_instance_info = create_ec2_instance(AMAZON_LINUX_AMI, INSTANCE_TYPE, ["mysql-server"], SQL_SCRIPT)
 
     if sql_instance_info is not None:
         logging.info('Started ec2 instance for mysql server')
@@ -114,7 +105,7 @@ def main():
         
     mongo_security_group = create_security_group("mongo_db", mongo_permissions)
 
-    mongo_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, KEY_PAIR, ["mongo_db"], MONGO_SCRIPT)
+    mongo_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, ["mongo_db"], MONGO_SCRIPT)
 
     if mongo_instance_info is not None:
         logging.info('Started ec2 instance for mongo db')
@@ -127,29 +118,13 @@ def main():
     MONGO_IP = mongo_instance_info["PublicIpAddress"]
     MONGO_ID = mongo_instance_info["InstanceId"]
 
-
-    # Fix this???? or just heck
-    # logging.info("Setting up database...")
-    
-    # Check if database is up
-    # boot_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (MYSQL_ID)
-    # script_file_path = "/home/ec2-user/script-finished.txt"
-    # while True:
-    #     test = exists(script_file_path, MYSQL_IP, "ec2-user", KEY_PATH)
-    #     if test == "Failed":
-    #         print("Connection failed, retrying...")
-    #         continue
-    #     else:
-    #         break
-
-    # logging.info("Databases are up")
     
     logging.info("Setting up the flask webapp...")
 
     # Check if script is finished
     indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (FLASK_ID)
     while True:
-        test = exists(indicator_file_path, FLASK_IP, "ubuntu", KEY_PATH)
+        test = exists(indicator_file_path, FLASK_IP, "ubuntu")
         if test == "Failed":
             print("Connection failed, retrying...")
             continue
@@ -169,7 +144,7 @@ def main():
     ]
 
     while True:
-        test = execute_cmds_ssh(FLASK_IP, "ubuntu", KEY_PATH, cmds)
+        test = execute_cmds_ssh(FLASK_IP, "ubuntu", cmds)
         if test == "Failed":
             print("Connection failed, retrying...")
             continue
@@ -177,7 +152,7 @@ def main():
             break
     
     while True:
-        test = execute_bg(FLASK_IP, "ubuntu", KEY_PATH, "sudo nohup python3 /50043_isit_database-master/server/app.py < /dev/null > /50043_isit_database-master/server/log.txt 2>&1 &")
+        test = execute_bg(FLASK_IP, "ubuntu", "sudo nohup python3 /50043_isit_database-master/server/app.py < /dev/null > /50043_isit_database-master/server/log.txt 2>&1 &")
         if test == "Failed":
             print("Connection failed, retrying...")
             continue
@@ -187,4 +162,18 @@ def main():
     logging.info("Flask server has started, please visit %s:5000/isit" % (FLASK_IP))
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("access", help="AWS access key")
+    parser.add_argument("secret", help="Your secret access key")
+    parser.add_argument("keypair", help="AWS key pair")
+    parser.add_argument("keypath", help="Absolute path of your .pem file")
+    args = parser.parse_args()
+
+    # Set up variables
+    ACCESS_KEY = args.access
+    SECRET_KEY = args.secret
+    KEY_PAIR = args.keypair
+    KEY_PATH = args.keypath
+
     main()
