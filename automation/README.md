@@ -23,11 +23,4 @@ Installing Python Dependencies
 
 #### Running the script
 
-After activating the virtualenv,
-- run `aws configure`
-- type in your credentials, use region 'ap-southeast-1'
-
-For Windows user,
-- run `set KEY_PAIR=<your aws keypair>`
-
-- run `python main.py` and boto3 will use your key to create ec2 instances
+- run `python main.py <access key> <secret access key> <key pair> <absolute path of .pem file>` and boto3 will use your key to create ec2 instances
