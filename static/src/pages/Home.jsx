@@ -37,7 +37,7 @@ const HomepageBanner = () => {
             />
             <Header
                 as='h2'
-                content='Forget physical library. The future is now old man.'
+                content='Forget physical library. The future is now, old man.'
                 inverted
                 style={{
                     fontSize: '1.4em',

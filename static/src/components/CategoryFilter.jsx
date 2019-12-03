@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -10,6 +10,7 @@ import {
 } from 'semantic-ui-react';
 
 const categoryOptions = []
+let filter = []
 
 const CategoryFilter = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -17,8 +18,28 @@ const CategoryFilter = () => {
     const [catData, setCatData] = useState([]);
 
     const onSubmitHandler = (e) => {
-        console.log("submitting");
-        console.log(e);
+        console.log(filter)
+        if (!!!filter.length) {
+            console.log('filter is empty')
+        } else {
+            const body = {
+                "categoryArray": filter
+            };
+            const header = {
+                "Content-type": "application/json"
+            };
+            axios.post(
+                `${process.env.API_URL}/books/category?page=1&count=24`, 
+                body,
+                header
+            ).then(res => {
+                console.log(res)
+            })
+        }
+    }
+
+    const categorySelectionHandler = (e, data) => {
+        filter = data.value;
     }
 
     useEffect(() => {
@@ -33,7 +54,7 @@ const CategoryFilter = () => {
 
     return (
         <Menu secondary inverted size="small">
-            <Container>
+            <Container textAlign='center'>
                     { 
                         isLoading 
                         ? null 
@@ -43,26 +64,29 @@ const CategoryFilter = () => {
                                 })
                             })
                     }
-                    <Form onSubmit={ onSubmitHandler }>
-                        <Form.Field>
+                    <Form style={{ width: 'inherit'}} onSubmit={ onSubmitHandler }>
+                        <Form.Group>
                             <Dropdown
                                 style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                                 placeholder='Filter by category' 
                                 options={ categoryOptions }
+                                id='idd'
+                                onChange={ categorySelectionHandler }
                                 multiple
                                 search
                                 clearable
                                 selection
+                                fluid
                             />
                             {/* <Link to={{ pathname: `/categories/` }}> */}
-                        <Button 
-                            color='teal'
-                            type='submit'
-                            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-                        >
-                            Filter
-                        </Button>
-                        </Form.Field>
+                            <Button 
+                                color='teal'
+                                type='submit'
+                                style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                            >
+                                Filter
+                            </Button>
+                        </Form.Group>
                         {/* </Link> */}
                     </Form>
             </Container>
