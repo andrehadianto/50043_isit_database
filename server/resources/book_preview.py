@@ -54,15 +54,15 @@ class BookCategoryResource(Resource):
         parser.add_argument('count', type=int, location='args')
         args = parser.parse_args()
         json_request = request.get_json(force=True)
-        _categoryArray = json_request.get('categories')
+        _categoryArray = json_request.get('categoryArray')
         filteredArray = list()
 
         if (not args['count'] or not args['page']):
-            bookInfo = mongo.db.kindle_metadata.find({"categories": _categoryArray}, {"asin" : 1, "title": 1, "imUrl": 1})
+            bookInfo = mongo.db.kindle_metadata.find({"categories.0": {"$elemMatch": {"$in": _categoryArray}}}, {"asin" : 1, "title": 1, "imUrl": 1})
         else:
             _limit = args['count']
             _offset = (args['page']-1) * args['count']
-            bookInfo = mongo.db.kindle_metadata.find({"categories": _categoryArray}, {"asin" : 1, "title": 1, "imUrl": 1}).skip(_offset).limit(_limit)
+            bookInfo = mongo.db.kindle_metadata.find({"categories.0": {"$elemMatch": {"$in": _categoryArray}}}, {"asin" : 1, "title": 1, "imUrl": 1}).skip(_offset).limit(_limit)
 
         for item in bookInfo:
             book_asin = item.get('asin')
