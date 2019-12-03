@@ -2,16 +2,16 @@ from botocore.exceptions import ClientError, WaiterError
 import boto3
 import paramiko
 import time
+import utils.user
 
-from main import SECRET_KEY, ACCESS_KEY, KEY_PAIR, KEY_PATH
 
 def create_ec2_instance(image_id, instance_type, security_group, script_path=None):
 
     # Provision and launch the EC2 instance
     ec2_client = boto3.client(
         'ec2',
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY)
+        aws_access_key_id=utils.user.ACCESS_KEY,
+        aws_secret_access_key=utils.user.SECRET_KEY)
 
     try:
         if script_path != None:
@@ -19,7 +19,7 @@ def create_ec2_instance(image_id, instance_type, security_group, script_path=Non
                 script = '\n'.join(f)
                 response = ec2_client.run_instances(ImageId=image_id,
                                                     InstanceType=instance_type,
-                                                    KeyName=KEY_PAIR,
+                                                    KeyName=utils.user.KEY_PAIR,
                                                     MinCount=1,
                                                     MaxCount=1,
                                                     SecurityGroups=security_group,
@@ -27,7 +27,7 @@ def create_ec2_instance(image_id, instance_type, security_group, script_path=Non
         else:
             response = ec2_client.run_instances(ImageId=image_id,
                                                     InstanceType=instance_type,
-                                                    KeyName=KEY_PAIR,
+                                                    KeyName=utils.user.KEY_PAIR,
                                                     MinCount=1,
                                                     MaxCount=1,
                                                     SecurityGroups=security_group)
@@ -52,8 +52,8 @@ def create_ec2_instance(image_id, instance_type, security_group, script_path=Non
 def create_security_group(name, permissions):    
     ec2 = boto3.client(
         'ec2',
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY)
+        aws_access_key_id=utils.user.ACCESS_KEY,
+        aws_secret_access_key=utils.user.SECRET_KEY)
 
     response = ec2.describe_vpcs()
     vpc_id = response.get('Vpcs', [{}])[0].get('VpcId', '')
@@ -78,7 +78,7 @@ def create_security_group(name, permissions):
 
 def execute_cmds_ssh(instance_ip, user, cmds):
     
-    key = paramiko.RSAKey.from_private_key_file(KEY_PATH)
+    key = paramiko.RSAKey.from_private_key_file(utils.user.KEY_PATH)
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -104,7 +104,7 @@ def execute_cmds_ssh(instance_ip, user, cmds):
 
 def execute_bg(instance_ip, user, cmd):
     
-    key = paramiko.RSAKey.from_private_key_file(KEY_PATH)
+    key = paramiko.RSAKey.from_private_key_file(utils.user.KEY_PATH)
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -129,7 +129,7 @@ def execute_bg(instance_ip, user, cmd):
 
 def scp_to_instance(instance_ip, user, file_path):
 
-    key = paramiko.RSAKey.from_private_key_file(KEY_PATH)
+    key = paramiko.RSAKey.from_private_key_file(utils.user.KEY_PATH)
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -159,7 +159,7 @@ def exists(file_path, instance_ip, user):
 
     cmd = 'test -f %s && echo complete' % (file_path)
     
-    key = paramiko.RSAKey.from_private_key_file(KEY_PATH)
+    key = paramiko.RSAKey.from_private_key_file(utils.user.KEY_PATH)
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 

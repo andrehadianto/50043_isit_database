@@ -10,11 +10,13 @@
 # OF ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License. 
 
-from utils import create_ec2_instance, create_security_group, execute_cmds_ssh, exists, execute_bg
+from utils.utils import create_ec2_instance, create_security_group, execute_cmds_ssh, exists, execute_bg
 import logging
 import os
 import urllib.request
 import argparse
+
+import utils.user as user
 
 
 
@@ -30,7 +32,7 @@ def main():
     logging.basicConfig(level=logging.INFO,
                         format='%(levelname)s: %(asctime)s: %(message)s')
 
-    flask_script = "flask_script.sh"
+    flask_script = os.path.join("scripts", "flask_script.sh")
     # Create security group
     flask_permissions = [{'IpProtocol': 'tcp',
                             'FromPort': 22,
@@ -59,7 +61,7 @@ def main():
 
 
 
-    SQL_SCRIPT = "sql_script.sh"
+    SQL_SCRIPT = os.path.join("scripts", "sql_script.sh")
 
     sql_permissions = [{'IpProtocol': 'tcp',
                             'FromPort': 22,
@@ -91,7 +93,7 @@ def main():
 
 
 
-    MONGO_SCRIPT = "mongo_script.sh"
+    MONGO_SCRIPT = os.path.join("scripts", "mongo_script.sh")
 
     mongo_permissions = [{'IpProtocol': 'tcp',
                             'FromPort': 22,
@@ -159,6 +161,8 @@ def main():
         else:
             break   
     
+    logging.info("Mongodb can be found at %s" % (MONGO_IP))
+    logging.info("MySQL database can be found at %s" % (MYSQL_IP))
     logging.info("Flask server has started, please visit %s:5000/isit" % (FLASK_IP))
 
 if __name__ == '__main__':
@@ -171,9 +175,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Set up variables
-    ACCESS_KEY = args.access
-    SECRET_KEY = args.secret
-    KEY_PAIR = args.keypair
-    KEY_PATH = args.keypath
+    user.init()
+    
+    user.ACCESS_KEY = args.access
+    user.SECRET_KEY = args.secret
+    user.KEY_PAIR = args.keypair
+    user.KEY_PATH = args.keypath
 
     main()
