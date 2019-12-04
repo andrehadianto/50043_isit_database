@@ -12,7 +12,9 @@ import {
     Form,
     Container,
     Divider,
-    Label
+    Label,
+    Icon,
+    Comment
 } from 'semantic-ui-react';
 
 const image_placeholder = (
@@ -26,6 +28,13 @@ const title_placeholder = (
         <Placeholder.Line/>
     </Placeholder>
 )
+
+const purchase_benefits = [
+    {icon: "truck", text: " Free delivery for self collection"},
+    {icon: "check circle outline", text: " Available at Kinokuniya"},
+    {icon: "universal access", text: " Suitable for all"}
+]
+
 class BookDetails extends Component {
     constructor(props) {
         super(props);
@@ -65,8 +74,8 @@ class BookDetails extends Component {
                 reviewList: [...res.data],
                 reviewIsLoading: false
             });
+            console.log(this.state)
         })
-
     }
 
     handleRate(e, {rating, maxRating}) {
@@ -129,30 +138,36 @@ class BookDetails extends Component {
             <Fragment>
                 <Grid>
                     <Grid.Row>
-                        <Grid.Column>
-                            <Segment>
-                                Category
-                            </Segment>
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
                         <Grid.Column width={12}>
-                            <Segment color='blue'>
-                                <Grid>
-                                    <Grid.Row>
-                                        <Grid.Column width={5}>
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column width={6}>
+                                        {
+                                            this.state.bookIsLoading
+                                            ? image_placeholder
+                                            : <Image style={{minWidth: '325', minHeight: '325'}} src={this.state.bookDetails.imUrl}/>
+                                        }
+                                    </Grid.Column>
+                                    <Grid.Column width={10}>
+                                        <Segment vertical>
                                             {
                                                 this.state.bookIsLoading
-                                                ? image_placeholder
-                                                : <Image style={{minWidth: '250px', minHeight: '250px'}} src={this.state.bookDetails.imUrl}/>
+                                                ? title_placeholder
+                                                : <Header as='h3' dividing>{this.state.bookDetails.asin}</Header>
                                             }
-                                        </Grid.Column>
-                                        <Grid.Column width={10}>
-                                            <Segment vertical>
+                                            <Item.Group>
                                                 {
                                                     this.state.bookIsLoading
                                                     ? title_placeholder
-                                                    : <Header as='h3' dividing>{this.state.bookDetails.asin}</Header>
+                                                    : <Item>
+                                                        {
+                                                            this.state.bookDetails.categories[0].map((category, index) => {
+                                                                return (
+                                                                    <Label content={ category } key={ index }/>
+                                                                )
+                                                            })
+                                                        }
+                                                    </Item>
                                                 }
                                                 <Item.Description>
                                                     {
@@ -163,110 +178,148 @@ class BookDetails extends Component {
                                                             : this.state.bookDetails.description
                                                     }
                                                 </Item.Description>
-                                            </Segment>
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                </Grid>
-                            </Segment>
+                                            </Item.Group>
+                                        </Segment>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
                         </Grid.Column>
                         <Grid.Column width={4}>
-                            <Segment color='grey'>
-                                {
-                                    this.state.bookIsLoading
-                                    ? title_placeholder
-                                    : (this.state.bookDetails.price !== undefined && this.state.bookDetails.price !== 0)
-                                    ? <Header textAlign='center' dividing color='pink'>SGD ${this.state.bookDetails.price}</Header>
-                                    : <Header textAlign='center' dividing><Label tag color='pink'>Free of charge</Label></Header>
-                                }
-                            </Segment>
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column>
+                                        <Segment vertical>
+                                            {
+                                                this.state.bookIsLoading
+                                                ? title_placeholder
+                                                : (this.state.bookDetails.price !== undefined && this.state.bookDetails.price !== 0)
+                                                ? <Header as='h3' textAlign='center' dividing color='pink'>SGD {this.state.bookDetails.price}</Header>
+                                                : <Header as='h3' textAlign='center' dividing color='pink'>Free of charge</Header>
+                                            }
+                                            <Item.Group link>
+                                                {
+                                                    purchase_benefits.map((item, index) => {
+                                                        return (
+                                                            <Item key={ index }>
+                                                                <Item.Content verticalAlign='middle'>
+                                                                    <Item.Description>
+                                                                        <Icon size='large' name={item.icon}/>
+                                                                        { item.text }
+                                                                    </Item.Description>
+                                                                </Item.Content>
+                                                            </Item>
+                                                        )
+                                                    })
+                                                }
+                                            </Item.Group>
+                                        </Segment>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Container>
+                                <Grid>
+                                    <Grid.Column>
+                                        <Comment.Group>
+                                            <Header as='h3' dividing content='Reviews'/>
+                                            {
+                                                this.state.reviewIsLoading
+                                                ? title_placeholder
+                                                : !this.state.reviewList.length
+                                                    ? <Comment content='Be the first one to leave a review!'/>
+                                                    : this.state.reviewList.reverse().map((review, index) => {
+                                                        const months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                                                        const date = new Date(review.unixReviewTime * 1000);
+                                                        const day = date.getDate();
+                                                        const month = months_arr[date.getMonth()];
+                                                        const year = date.getFullYear();
+                                                        return (
+                                                            <Fragment key={index}>
+                                                                <Comment>
+                                                                    <Comment.Avatar as='a' src={`https://api.adorable.io/avatars/50/${review.reviewerName}.png`}/>
+                                                                    <Comment.Content>
+                                                                        <Comment.Author as='a'>{review.reviewerName}</Comment.Author>
+                                                                        <Comment.Metadata>{`${day} ${month} ${year}`}</Comment.Metadata>
+                                                                        {/* <Comment.Text><Rating defaultRating={review.overall} maxRating={5} disabled/></Comment.Text> */}
+                                                                        <Comment.Text as='h5'><Rating defaultRating={review.overall} maxRating={5} disabled/>&nbsp;&nbsp;&nbsp;{ review.summary }</Comment.Text>
+                                                                        <Comment.Text>{ review.reviewText }</Comment.Text>
+                                                                    </Comment.Content>
+                                                                </Comment>
+                                                            </Fragment>
+                                                        )
+                                                    })
+                                            }
+                                        </Comment.Group>
+                                    </Grid.Column>
+                                </Grid>
+                            </Container>
+
+                            <Divider hidden/>
+                            <Divider hidden/>
+                            <Divider hidden/>
+
+                            <Container>
+                                <Grid>
+                                    <Grid.Column>
+                                        <Header as='h3' dividing content='Leave your Review'/>
+                                        <Form onSubmit={this.submitReviewHandler}>
+                                            <Container>
+                                                <Rating
+                                                    name='overall'
+                                                    onRate={this.handleRate}
+                                                    style={{marginBottom: '10px'}}
+                                                    size='large'
+                                                    icon='star'
+                                                    maxRating={5}/>
+                                            </Container>
+                                            <Form.Input
+                                                name='summary'
+                                                placeholder='Summary'
+                                                required
+                                            />
+                                            <Form.TextArea
+                                                name='review'
+                                                placeholder='Share your thoughts!'
+                                                style={{minHeight: '6em'}}
+                                                required
+                                            />
+                                            <Form.Group inline>
+                                                <Form.Button type='submit' content='Submit' labelPosition='left' icon='edit' primary/>
+                                                {
+                                                    sessionStorage.getItem('name') && sessionStorage.getItem('id') && sessionStorage.getItem('token')
+                                                    ? null
+                                                    : <Form.Input name='anonymous' placeholder='Nickname' required/>
+                                                }
+                                            </Form.Group>
+                                        </Form>
+                                    </Grid.Column>
+                                </Grid>
+                            </Container>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
 
-                <Segment.Group>
-                    <Segment padded vertical>
-                        <Grid container>
-                            <Grid.Column>
-                                <Form onSubmit={this.submitReviewHandler}>
-                                    <Container>
-                                        <Rating
-                                            name='overall'
-                                            onRate={this.handleRate}
-                                            style={{marginBottom: '10px'}}
-                                            size='large'
-                                            icon='star'
-                                            maxRating={5}/>
-                                    </Container>
-                                    <Form.Input
-                                        name='summary'
-                                        placeholder='Summary'
-                                        required
-                                    />
-                                    <Form.TextArea
-                                        name='review'
-                                        placeholder='Share your thoughts!'
-                                        style={{minHeight: '6em'}}
-                                        required
-                                    />
-                                    <Form.Group inline>
-                                        <Form.Button type='submit' primary>Submit</Form.Button>
-                                        {
-                                            sessionStorage.getItem('name') && sessionStorage.getItem('id') && sessionStorage.getItem('token')
-                                            ? null
-                                            : <Form.Input name='anonymous' placeholder='Nickname' required/>
-                                        }
-                                    </Form.Group>
+                <Divider hidden/>
+                <Divider hidden/>
+                <Divider hidden/>
 
-                                </Form>
-                            </Grid.Column>
-                        </Grid>
-                    </Segment>
-                    <Segment padded vertical>
-                        <Grid container>
-                            <Grid.Column>
-                                <Item.Group>
-                                    {
-                                        this.state.reviewIsLoading
-                                        ? title_placeholder
-                                        : !this.state.reviewList.length
-                                            ? <span style={{fontStyle: 'italic', fontSize: '120%', lineHeight: '1.5'}}>No review</span>
-                                            : this.state.reviewList.reverse().map((review, index) => {
-                                                const months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                                                const date = new Date(review.unixReviewTime * 1000);
-                                                const day = date.getDate();
-                                                const month = months_arr[date.getMonth()];
-                                                const year = date.getFullYear();
-                                                return (
-                                                    <div key={index}>
-                                                        <Item>
-                                                            <Item.Content>
-                                                                <Item.Header as='h4'><span style={{color: 'blue'}}>{review.reviewerName}</span></Item.Header>
-                                                                <Rating defaultRating={review.overall} maxRating={5} disabled/>
-                                                                <span style={{ marginLeft: '2em' }}>{`${day} ${month} ${year}`}</span>
-                                                                <Item.Meta>
-                                                                    <h5>{review.summary}</h5>
-                                                                </Item.Meta>
-                                                                <Item.Description>
-                                                                    {review.reviewText}
-                                                                </Item.Description>
-                                                            </Item.Content>
-                                                        </Item>
-                                                        <Divider/>
-                                                    </div>
-                                                )
-                                            })
-                                    }
-                                </Item.Group>
-                            </Grid.Column>
-                        </Grid>
-                    </Segment>
-                </Segment.Group>
-                
+                <Container>
+                    <Header as='h3' dividing content='People who bought this also bought'/>
                 {
                     this.state.bookIsLoading
                     ? title_placeholder
-                    : <BookPreviewList books={this.state.bookDetails.related.also_bought}/>
+                    : !this.state.bookDetails.related
+                        ? <Comment content='This book is forever alone.'/>
+                        : !this.state.bookDetails.related.also_bought
+                            ? <Comment content='This book is forever alone.'/>
+                            : <BookPreviewList books={this.state.bookDetails.related.also_bought}/>
                 }
+                </Container>
             </Fragment>
         );
     }

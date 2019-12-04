@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { Link } from 'react-router-dom'
 import axios from 'axios';
 import _ from 'lodash';
 import { 
-Segment, 
-Grid, 
-Item,
-Header,
-Placeholder,
-Container,
-Pagination
+    Grid, 
+    Item,
+    Header,
+    Placeholder,
+    Container,
+    Pagination
 } from 'semantic-ui-react';
 
 const preview_placeholder = _.times(6, (i) => (
@@ -51,10 +50,7 @@ const BookPreviewList = (props) => {
     }
 
     return (
-        <Segment>
-            <Header as='h3' dividing>
-                Also Bought
-            </Header>
+        <Fragment>
             <Grid columns={6}>
                 {
                     isLoading
@@ -82,7 +78,7 @@ const BookPreviewList = (props) => {
                     totalPages={99}
                 />
             </Container>
-        </Segment>
+        </Fragment>
     )
 }
 
