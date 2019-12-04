@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import SignUpMenu from './SignUpMenu';
 import {
-    Grid,
     Form,
-    Header,
     Button,
-    Segment,
     Icon,
-    Modal
+    Modal,
+    Container,
+    Divider
 } from 'semantic-ui-react';
 
 const LoginMenu = () => {
@@ -54,52 +53,45 @@ const LoginMenu = () => {
                     <Icon inverted name='sign in'/>
                     Log in
                 </Button>}
-            style={{ maxWidth: '450px' }}
+            size='tiny'
         >
-            <Modal.Content>
-                <Grid textAlign='center' verticalAlign='middle'>
-                    <Grid.Column>
-                        <Header as='h2' color='blue' textAlign='center'>
-                            <Icon name='bomb' size='large'/>
-                            Log-in to your account
-                        </Header>
-                        <Form size='large' onSubmit={onSubmitHandler}>
-                            <Segment stacked>
-                                <Form.Input
-                                    error={isInvalid}
-                                    name='username'
-                                    fluid 
-                                    icon='user' 
-                                    iconPosition='left' 
-                                    placeholder='Username' 
-                                    required
-                                />
-                                <Form.Input
-                                    error={isInvalid}
-                                    name='password'
-                                    fluid
-                                    icon='lock'
-                                    iconPosition='left'
-                                    placeholder='Password'
-                                    type='password'
-                                    required
-                                />
-                                <Button 
-                                    color='blue' 
-                                    fluid 
-                                    size='large'
-                                    type='submit'
-                                    loading={isLoading}
-                                >
-                                    Login
-                                </Button>
-                            </Segment>
-                        </Form>
-                        <Modal.Actions>
-                            <SignUpMenu/>
-                        </Modal.Actions>
-                    </Grid.Column>
-                </Grid>
+            <Modal.Content style={{ 'padding': 30 }}>
+                <Container>
+                    <Form size='small' onSubmit={onSubmitHandler}>
+                        <Form.Input
+                            error={isInvalid}
+                            name='username'
+                            label='Username'
+                            placeholder='Username' 
+                            required
+                            fluid 
+                        />
+                        <Form.Input
+                            error={isInvalid}
+                            name='password'
+                            label='Password'
+                            placeholder='Password'
+                            type='password'
+                            required
+                            fluid
+                        />
+                        <Button 
+                            color='blue' 
+                            size='large'
+                            type='submit'
+                            loading={isLoading}
+                            fluid 
+                        >
+                            Login
+                        </Button>
+                    </Form>
+
+                    <Divider hidden/>
+
+                    <Modal.Actions>
+                        <SignUpMenu/>
+                    </Modal.Actions>
+                </Container>
             </Modal.Content>
         </Modal>
     );
