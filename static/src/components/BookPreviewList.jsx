@@ -29,11 +29,14 @@ const BookPreviewList = (props) => {
     const [bookProps, setBookProps] = useState(props.books);
 
     useEffect(() => {
+        const source = axios.CancelToken.source();
+
+        const body = { "asinArray": bookProps };
+        const header = { cancelToken: source.token };
         axios.post(
             getBookPreviewUrl,
-            {
-                "asinArray": bookProps
-            }
+            body,
+            header
         )
         .then(res => {
             setBookList([...res.data.body]);
