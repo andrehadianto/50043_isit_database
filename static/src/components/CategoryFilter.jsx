@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {
     Menu,
@@ -13,58 +13,36 @@ const categoryOptions = []
 let filter = []
 
 const CategoryFilter = () => {
-    const [isLoading, setIsLoading] = useState(true);
     const [getCategoryAPI, setCategoryAPI] = useState(`${process.env.API_URL}/categories`);
-    const [catData, setCatData] = useState([]);
-
-    const onSubmitHandler = (e) => {
-        console.log(filter)
-        if (!!!filter.length) {
-            console.log('filter is empty')
-        } else {
-            const body = {
-                "categoryArray": filter
-            };
-            const header = {
-                "Content-type": "application/json"
-            };
-            axios.post(
-                `${process.env.API_URL}/books/category?page=1&count=24`, 
-                body,
-                header
-            ).then(res => {
-                console.log(res)
-            })
-        }
-    }
+    const [redirect, setRedirect] = useState(false);
 
     const categorySelectionHandler = (e, data) => {
         filter = data.value;
     }
 
     useEffect(() => {
-        axios.get(
-            getCategoryAPI
-        )
-        .then(res => {
-            setCatData(res.data);
-            setIsLoading(false);
-        });
+        if (sessionStorage.getItem('categories') == null) {
+            axios.get(
+                getCategoryAPI
+            )
+            .then(res => {
+                sessionStorage.setItem('categories', JSON.stringify(res.data));
+            });
+        }
+        JSON.parse(sessionStorage.getItem('categories')).map((catList, index) => {
+            catList.categories.map((cat, index) => {
+                categoryOptions.push({ key: cat.toString().trim(), value: cat.toString().trim(), text: cat.toString() })
+            })
+        })
     }, []);
 
-    return (
-        <Menu secondary inverted size="small">
-            <Container textAlign='center'>
-                    { 
-                        isLoading 
-                        ? null 
-                        : catData.map((catList, index) => {
-                                catList.categories.map((cat, index) => {
-                                    categoryOptions.push({ key: cat.toString().trim(), value: cat.toString().trim(), text: cat.toString() })
-                                })
-                            })
-                    }
-                    <Form style={{ width: 'inherit'}} onSubmit={ onSubmitHandler }>
+    if (redirect) {
+        return ( <Redirect to={{pathname: '/filter', state: {filter: filter}}}/> )
+    } else {
+        return (
+            <Menu secondary inverted size="small">
+                <Container textAlign='center'>
+                    <Form style={{ width: 'inherit'}}>
                         <Form.Group>
                             <Dropdown
                                 style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
@@ -78,20 +56,20 @@ const CategoryFilter = () => {
                                 selection
                                 fluid
                             />
-                            {/* <Link to={{ pathname: `/categories/` }}> */}
                             <Button 
                                 color='teal'
                                 type='submit'
                                 style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                                onClick={() => {setRedirect(true)}}
                             >
                                 Filter
                             </Button>
                         </Form.Group>
-                        {/* </Link> */}
                     </Form>
-            </Container>
-        </Menu>
-    )
+                </Container>
+            </Menu>
+        )
+    }
 }
 
 export default CategoryFilter;

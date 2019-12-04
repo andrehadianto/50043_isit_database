@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import _ from 'lodash';
 import NavBar from '../components/NavBar';
 import AllBooks from '../components/AllBooks';
+import FilteredBooks from '../components/FilteredBooks';
 import CategoryFilter from '../components/CategoryFilter';
 import BookDetails from './BookDetails';
 import AddNewBook from './AddNewBook';
@@ -63,11 +64,12 @@ class Home extends Component {
                         <CategoryFilter/>
                         <HomepageBanner/>
                     </Route>
+                    <Route exact path='/filter' component={CategoryFilter}/>
                 </Segment>
                 <Container style={{marginTop: '2em', marginBottom: '4em'}}>
                     <Switch>
                         <Route exact path='/' component={AllBooks}/>
-                        {/* <Route path='/category/:cat' component={}/> */}
+                        <Route exact path='/filter' component={FilteredBooks}/>
                         <Route path='/user_action/new_book' component={AddNewBook}/>
                         <Route exact path='/user_action/logs/:id' component={LogPreview}/>
                         <Route exact path='/user_action/logs' component={SeeLogList}/>
