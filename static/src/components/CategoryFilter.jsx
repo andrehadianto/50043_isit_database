@@ -37,18 +37,24 @@ const CategoryFilter = () => {
             )
             .then(res => {
                 sessionStorage.setItem('categories', JSON.stringify(res.data));
+                JSON.parse(sessionStorage.getItem('categories')).map((catList, index) => {
+                    catList.categories.map((cat, index) => {
+                        categoryOptions.push({ key: cat.toString().trim(), value: cat.toString().trim(), text: cat.toString() })
+                    })
+                })
             });
+        } else {
+            JSON.parse(sessionStorage.getItem('categories')).map((catList, index) => {
+                catList.categories.map((cat, index) => {
+                    categoryOptions.push({ key: cat.toString().trim(), value: cat.toString().trim(), text: cat.toString() })
+                })
+            })
         }
     }, []);
 
     if (redirect) {
         return ( <Redirect to={{pathname: '/filter', state: {filter: filter}}}/> )
     } else {
-        JSON.parse(sessionStorage.getItem('categories')).map((catList, index) => {
-            catList.categories.map((cat, index) => {
-                categoryOptions.push({ key: cat.toString().trim(), value: cat.toString().trim(), text: cat.toString() })
-            })
-        })
         return (
             <Menu secondary inverted size="small">
                 <Container textAlign='center'>
@@ -61,7 +67,6 @@ const CategoryFilter = () => {
                                         style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                                         placeholder='Filter by category' 
                                         options={ categoryOptions }
-                                        id='idd'
                                         onChange={ categorySelectionHandler }
                                         multiple
                                         search
