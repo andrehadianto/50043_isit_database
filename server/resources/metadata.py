@@ -68,7 +68,7 @@ class RegisterNewBook(Resource):
         query = self.get_filled_fields(field_names, fields)
         try:
             mongo.db.kindle_metadata.insert_one(query)
-            return {"message": "Book registered", "body": dumps(query)}, 200
+            return {"message": "Book registered", "body": json.loads(dumps(query))}, 200
             
         except Exception as e:
             print(e)
