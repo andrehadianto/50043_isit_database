@@ -1,73 +1,97 @@
-import React, { useEffect, useState, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {
     Menu,
     Container,
     Dropdown,
     Button,
-    Form
+    Form,
+    Popup
 } from 'semantic-ui-react';
 
-const categoryOptions = []
+let filter = []
 
 const CategoryFilter = () => {
-    const [isLoading, setIsLoading] = useState(true);
     const [getCategoryAPI, setCategoryAPI] = useState(`${process.env.API_URL}/categories`);
-    const [catData, setCatData] = useState([]);
+    const [redirect, setRedirect] = useState(false);
+    const [isInvalid, setIsInvalid] = useState(false);
+    const categoryOptions = []
 
-    const onSubmitHandler = (e) => {
-        console.log("submitting");
-        console.log(e);
+    const categorySelectionHandler = (e, data) => {
+        filter = data.value;
+    }
+
+    const redirectHandler = () => {
+        if (!!filter.length) {
+            setRedirect(true);
+        } else {
+            setIsInvalid(true)
+        }
     }
 
     useEffect(() => {
-        axios.get(
-            getCategoryAPI
-        )
-        .then(res => {
-            setCatData(res.data);
-            setIsLoading(false);
-        });
+        if (sessionStorage.getItem('categories') == null) {
+            axios.get(
+                getCategoryAPI
+            )
+            .then(res => {
+                sessionStorage.setItem('categories', JSON.stringify(res.data));
+                JSON.parse(sessionStorage.getItem('categories')).map((catList, index) => {
+                    catList.categories.map((cat, index) => {
+                        categoryOptions.push({ key: cat.toString().trim(), value: cat.toString().trim(), text: cat.toString() })
+                    })
+                })
+            });
+        } else {
+            JSON.parse(sessionStorage.getItem('categories')).map((catList, index) => {
+                catList.categories.map((cat, index) => {
+                    categoryOptions.push({ key: cat.toString().trim(), value: cat.toString().trim(), text: cat.toString() })
+                })
+            })
+        }
     }, []);
 
-    return (
-        <Menu secondary inverted size="small">
-            <Container>
-                    { 
-                        isLoading 
-                        ? null 
-                        : catData.map((catList, index) => {
-                                catList.categories.map((cat, index) => {
-                                    categoryOptions.push({ key: cat.toString().trim(), value: cat.toString().trim(), text: cat.toString() })
-                                })
-                            })
-                    }
-                    <Form onSubmit={ onSubmitHandler }>
-                        <Form.Field>
-                            <Dropdown
-                                style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-                                placeholder='Filter by category' 
-                                options={ categoryOptions }
-                                multiple
-                                search
-                                clearable
-                                selection
+    if (redirect) {
+        return ( <Redirect to={{pathname: '/filter', state: {filter: filter}}}/> )
+    } else {
+        return (
+            <Menu secondary inverted size="small">
+                <Container textAlign='center'>
+                    <Form style={{ width: 'inherit'}}>
+                        <Form.Group>
+                            <Popup
+                                content='Filter cannot be empty'
+                                trigger={
+                                    <Dropdown
+                                        style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                                        placeholder='Filter by category' 
+                                        options={ categoryOptions }
+                                        onChange={ categorySelectionHandler }
+                                        multiple
+                                        search
+                                        clearable
+                                        selection
+                                        fluid
+                                    />
+                                }
+                                position='bottom left'
+                                open={ isInvalid }
                             />
-                            {/* <Link to={{ pathname: `/categories/` }}> */}
-                        <Button 
-                            color='teal'
-                            type='submit'
-                            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-                        >
-                            Filter
-                        </Button>
-                        </Form.Field>
-                        {/* </Link> */}
+                            <Button 
+                                color='teal'
+                                type='button'
+                                style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                                onClick={ redirectHandler }
+                            >
+                                Filter
+                            </Button>
+                        </Form.Group>
                     </Form>
-            </Container>
-        </Menu>
-    )
+                </Container>
+            </Menu>
+        )
+    }
 }
 
 export default CategoryFilter;

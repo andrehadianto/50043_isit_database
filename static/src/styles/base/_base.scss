@@ -1,3 +1,8 @@
 ::-webkit-scrollbar {
     display: none;
 }
+
+.book-preview:hover {
+    outline: solid 2.5px #00B5AD59;
+    outline-offset: -10px;
+}
