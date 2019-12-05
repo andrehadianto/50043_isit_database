@@ -220,5 +220,4 @@ def terminate_instances(ids):
     except ClientError as e:
         print(e)
 
-    print(response_final)
-    return response_final
+    return response_final["Reservations"][0]["Instances"]
