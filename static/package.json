@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "watch": "webpack --env.API_URL=http://localhost:5000 --progress -d --config webpack.config.js --watch",
-    "prod": "webpack --env.API_URL=http://52.7.180.215:5000    --progress -p --mode=production --config webpack.config.js"
+    "prod": "webpack --env.API_URL=http://52.7.180.215:5000 --progress -p --mode=production --config webpack.config.js"
   },
   "engines": {
     "node": "10.16.3",
