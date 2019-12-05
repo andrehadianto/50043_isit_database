@@ -153,7 +153,9 @@ class BookDetails extends Component {
                                             {
                                                 this.state.bookIsLoading
                                                 ? title_placeholder
-                                                : <Header as='h3' dividing>{this.state.bookDetails.asin}</Header>
+                                                : this.state.bookDetails.title
+                                                    ? <Header as='h3' dividing>{this.state.bookDetails.title}</Header>
+                                                    : <Header as='h3' dividing>{this.state.bookDetails.asin}</Header>
                                             }
                                             <Item.Group>
                                                 {

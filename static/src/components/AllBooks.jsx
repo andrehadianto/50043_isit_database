@@ -69,7 +69,7 @@ const AllBooks = (props) => {
                     ? preview_placeholder
                     : bookData.map((book, index) => {
                         return (
-                            <Column key={index}>
+                            <Column className='book-preview' key={index}>
                                 <Link to={{pathname: `/review/${book.asin}`}}>
                                     <Item>
                                         <Item.Image verticalAlign='middle' size='small' style={{minWidth: '150px', minHeight: '150px'}} src={book.imUrl}/>
