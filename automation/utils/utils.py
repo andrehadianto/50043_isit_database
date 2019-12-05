@@ -40,32 +40,32 @@ def create_ec2_instance(image_id, instance_type, security_group, script_path=Non
             response_final = ec2_client.describe_instances(InstanceIds=[instanceId])
     
         except WaiterError as e:
-            logging.error(e)
+            print(e)
 
     except ClientError as e:
-        logging.error(e)
+        print(e)
         return None
     
     return response_final['Reservations'][0]['Instances'][0]
 
 
 def create_security_group(name, permissions):    
-    ec2 = boto3.client(
+    ec2_client = boto3.client(
         'ec2',
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 
-    response = ec2.describe_vpcs()
+    response = ec2_client.describe_vpcs()
     vpc_id = response.get('Vpcs', [{}])[0].get('VpcId', '')
 
     try:
-        response = ec2.create_security_group(GroupName=name,
+        response = ec2_client.create_security_group(GroupName=name,
                                             Description="DESCRIPTION",
                                             VpcId=vpc_id)
         security_group_id = response['GroupId']
         print('Security Group Created %s in vpc %s.' % (security_group_id, vpc_id))
 
-        data = ec2.authorize_security_group_ingress(
+        data = ec2_client.authorize_security_group_ingress(
             GroupId=security_group_id,
             IpPermissions=permissions)
         print('Ingress Successfully Set %s' % data)
@@ -184,3 +184,41 @@ def exists(file_path, instance_ip, user):
     finally:
         # Close the client connection once the job is done
         client.close()
+
+
+def del_security_group(id):    
+    ec2_client = boto3.client(
+        'ec2',
+        aws_access_key_id=utils.user.ACCESS_KEY,
+        aws_secret_access_key=utils.user.SECRET_KEY)
+
+    try:
+        response = ec2_client.delete_security_group(GroupId=id)
+
+    except ClientError as e:
+        print(e)
+
+    return response
+
+def terminate_instances(ids):
+    ec2_client = boto3.client(
+        'ec2',
+        aws_access_key_id=utils.user.ACCESS_KEY,
+        aws_secret_access_key=utils.user.SECRET_KEY)
+
+    try:
+        ec2_client.terminate_instances(
+                InstanceIds=ids)
+
+        try:
+            ec2_client.get_waiter('instance_terminated').wait(InstanceIds=ids)
+            response_final = ec2_client.describe_instances(InstanceIds=ids)
+    
+        except WaiterError as e:
+            print(e)
+
+    except ClientError as e:
+        print(e)
+
+    print(response_final)
+    return response_final
