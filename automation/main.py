@@ -15,9 +15,9 @@ import logging
 import os
 import urllib.request
 import argparse
+import yaml
 
 import utils.user as user
-
 
 
 def main():
@@ -27,6 +27,9 @@ def main():
     AMAZON_LINUX_AMI = 'ami-05c859630889c79c8'
     UBUNTU_AMI = 'ami-061eb2b23f9f8839c'
     INSTANCE_TYPE = 't2.micro'
+
+    CONFIG = dict()
+    CONFIG["AWS_CREDENTIALS"] = {"ACCESS_KEY": user.ACCESS_KEY,"SECRET_KEY": user.SECRET_KEY, "KEY_PAIR": user.KEY_PAIR, "KEY_PATH": user.KEY_PATH}
 
     # Set up logging
     logging.basicConfig(level=logging.INFO,
@@ -44,6 +47,7 @@ def main():
                             'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}]
 
     flask_security_group = create_security_group("flask-webapp", flask_permissions)
+    CONFIG["SECURITY_GROUPS"] = [flask_security_group]
 
     # Provision and launch the EC2 instance
     flask_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, ["flask-webapp"], flask_script)
@@ -56,10 +60,7 @@ def main():
         logging.info(f'    Public IP Address: {flask_instance_info["PublicIpAddress"]}')
         logging.info(f'    Current State: {flask_instance_info["State"]["Name"]}')
 
-    FLASK_IP = flask_instance_info["PublicIpAddress"]
-    FLASK_ID = flask_instance_info["InstanceId"]
-
-
+    CONFIG["FLASK"] = {"IP": flask_instance_info["PublicIpAddress"], "ID": flask_instance_info["InstanceId"]}
 
     SQL_SCRIPT = os.path.join("scripts", "sql_script.sh")
 
@@ -70,10 +71,11 @@ def main():
                             {'IpProtocol': 'tcp',
                             'FromPort': 3306,
                             'ToPort': 3306,
-                            'IpRanges': [{'CidrIp': FLASK_IP + '/32'},
+                            'IpRanges': [{'CidrIp': CONFIG["FLASK"]["IP"] + '/32'},
                                         {'CidrIp': LOCAL_IP + '/32'}]}] # only allow flask to access mysql
 
     sql_security_group = create_security_group("mysql-server", sql_permissions)
+    CONFIG["SECURITY_GROUPS"].append(sql_security_group)
 
     sql_instance_info = create_ec2_instance(AMAZON_LINUX_AMI, INSTANCE_TYPE, ["mysql-server"], SQL_SCRIPT)
 
@@ -85,12 +87,9 @@ def main():
         logging.info(f'    Public IP Address: {sql_instance_info["PublicIpAddress"]}')
         logging.info(f'    Current State: {sql_instance_info["State"]["Name"]}')
 
-    MYSQL_IP = sql_instance_info["PublicIpAddress"]
-    MYSQL_ID = sql_instance_info["InstanceId"]
+    CONFIG["MYSQL"] = {"IP": sql_instance_info["PublicIpAddress"], "ID": sql_instance_info["InstanceId"]}
     
     logging.info("Setting up mysql...")
-
-
 
 
     MONGO_SCRIPT = os.path.join("scripts", "mongo_script.sh")
@@ -102,10 +101,11 @@ def main():
                             {'IpProtocol': 'tcp',
                             'FromPort': 27017,
                             'ToPort': 27017,
-                            'IpRanges': [{'CidrIp': FLASK_IP + '/32'},
+                            'IpRanges': [{'CidrIp': CONFIG["FLASK"]["IP"] + '/32'},
                                         {'CidrIp': LOCAL_IP + '/32'}]}]
         
     mongo_security_group = create_security_group("mongo_db", mongo_permissions)
+    CONFIG["SECURITY_GROUPS"].append(mongo_security_group)
 
     mongo_instance_info = create_ec2_instance(UBUNTU_AMI, INSTANCE_TYPE, ["mongo_db"], MONGO_SCRIPT)
 
@@ -117,16 +117,17 @@ def main():
         logging.info(f'    Public IP Address: {mongo_instance_info["PublicIpAddress"]}')
         logging.info(f'    Current State: {mongo_instance_info["State"]["Name"]}')
 
-    MONGO_IP = mongo_instance_info["PublicIpAddress"]
-    MONGO_ID = mongo_instance_info["InstanceId"]
+    CONFIG["MONGO"] = {"IP": mongo_instance_info["PublicIpAddress"], "ID": mongo_instance_info["InstanceId"]}
 
+    with open('config/config.yml', 'w') as file:
+        documents = yaml.dump(CONFIG, file)
     
     logging.info("Setting up the flask webapp...")
 
     # Check if script is finished
-    indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (FLASK_ID)
+    indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (CONFIG["FLASK"]["ID"])
     while True:
-        test = exists(indicator_file_path, FLASK_IP, "ubuntu")
+        test = exists(indicator_file_path, CONFIG["FLASK"]["IP"], "ubuntu")
         if test == "Failed":
             print("Connection failed, retrying...")
             continue
@@ -142,11 +143,11 @@ def main():
             SQL_HOST=%s
             MONGO_DB=isit_database_mongo
             LOG_DB=log_mongo
-            MONGO_HOST=%s""" % (MYSQL_IP, MONGO_IP)
+            MONGO_HOST=%s""" % (CONFIG["MYSQL"]["IP"], CONFIG["MONGO"]["IP"])
     ]
 
     while True:
-        test = execute_cmds_ssh(FLASK_IP, "ubuntu", cmds)
+        test = execute_cmds_ssh(CONFIG["FLASK"]["IP"], "ubuntu", cmds)
         if test == "Failed":
             print("Connection failed, retrying...")
             continue
@@ -154,16 +155,16 @@ def main():
             break
     
     while True:
-        test = execute_bg(FLASK_IP, "ubuntu", "sudo nohup python3 /50043_isit_database-master/server/app.py < /dev/null > /50043_isit_database-master/server/log.txt 2>&1 &")
+        test = execute_bg(CONFIG["FLASK"]["IP"], "ubuntu", "sudo nohup python3 /50043_isit_database-master/server/app.py < /dev/null > /50043_isit_database-master/server/log.txt 2>&1 &")
         if test == "Failed":
             print("Connection failed, retrying...")
             continue
         else:
             break   
-    
-    logging.info("Mongodb can be found at %s" % (MONGO_IP))
-    logging.info("MySQL database can be found at %s" % (MYSQL_IP))
-    logging.info("Flask server has started, please visit %s:5000/isit" % (FLASK_IP))
+
+    logging.info("Mongodb can be found at %s" % (CONFIG["MONGO"]["IP"]))
+    logging.info("MySQL database can be found at %s" % (CONFIG["MYSQL"]["IP"]))
+    logging.info("Flask server has started, please visit %s:5000/isit" % (CONFIG["FLASK"]["IP"]))
 
 if __name__ == '__main__':
 
@@ -176,7 +177,6 @@ if __name__ == '__main__':
 
     # Set up variables
     user.init()
-    
     user.ACCESS_KEY = args.access
     user.SECRET_KEY = args.secret
     user.KEY_PAIR = args.keypair
