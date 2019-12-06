@@ -13,7 +13,8 @@ import {
     Container,
     Segment,
     Header,
-    Menu
+    Menu,
+    Grid
 } from 'semantic-ui-react';
 
 const HomepageBanner = () => {
@@ -63,10 +64,14 @@ class Home extends Component {
                     <NavBar/>
                     <Route exact path='/'>
                         <Menu secondary inverted size='small'>
-                            <Container style={{ display: 'flex' }}>
-                                <BookSearch/>
-                                <CategoryFilter/>
-                            </Container>
+                                <Grid container>
+                                    <Grid.Column floated='left' width={8}>
+                                        <BookSearch/>
+                                    </Grid.Column>
+                                    <Grid.Column floated='right' width={8}>
+                                        <CategoryFilter/>
+                                    </Grid.Column>
+                                </Grid>
                         </Menu>
                         <HomepageBanner/>
                     </Route>

@@ -324,7 +324,7 @@ class BookDetails extends Component {
                                                 {
                                                     _.times(6, (i) => {
                                                         return (
-                                                            <Grid.Row style={{ padding: 0, alignItems: 'center' }}>
+                                                            <Grid.Row key={i} style={{ padding: 0, alignItems: 'center' }}>
                                                                 <Grid.Column width={2}>
                                                                     {i}
                                                                 </Grid.Column>

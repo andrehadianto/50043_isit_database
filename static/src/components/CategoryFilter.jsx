@@ -55,8 +55,8 @@ const CategoryFilter = () => {
         return ( <Redirect to={{pathname: '/filter', state: {filter: filter}}}/> )
     } else {
         return (
-                <Form style={{ display: 'flex', flexGrow: 1 }}>
-                    <Form.Group style={{ flex: 'auto', paddingLeft: 10 }}>
+                <Form>
+                    <Form.Group>
                         <Popup
                             content='Filter cannot be empty'
                             trigger={
