@@ -33,6 +33,7 @@ const FilteredBooks = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [goToPage, setGoToPage] = useState(1);
     const [isInvalid, setIsInvalid] = useState(false);
+    const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
         const body = { "categoryArray": props.location.state.filter };
@@ -43,6 +44,7 @@ const FilteredBooks = (props) => {
             header
         )
         .then(res => {
+            setTotalPage(parseInt(res.data.count/24) + 1);
             setBookData([...res.data.body]);
             setIsLoading(false);
         });
@@ -103,7 +105,7 @@ const FilteredBooks = (props) => {
                                 ellipsisItem={null}
                                 activePage={ activePage }
                                 onPageChange={ onPageChange }
-                                totalPages={99}
+                                totalPages={ totalPage }
                             />
                             <Input 
                                 onChange={ (e, {value}) => {setGoToPage(value)} }

@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { Switch, Route } from 'react-router-dom';
-import _ from 'lodash';
 import NavBar from '../components/NavBar';
 import AllBooks from '../components/AllBooks';
 import FilteredBooks from '../components/FilteredBooks';
 import CategoryFilter from '../components/CategoryFilter';
+import BookSearch from '../components/BookSearch';
 import BookDetails from './BookDetails';
 import AddNewBook from './AddNewBook';
 import SeeLogList from './SeeLogList';
@@ -12,7 +12,9 @@ import LogPreview from './LogPreview';
 import {
     Container,
     Segment,
-    Header
+    Header,
+    Menu,
+    Grid
 } from 'semantic-ui-react';
 
 const HomepageBanner = () => {
@@ -61,7 +63,16 @@ class Home extends Component {
                 >
                     <NavBar/>
                     <Route exact path='/'>
-                        <CategoryFilter/>
+                        <Menu secondary inverted size='small'>
+                                <Grid container>
+                                    <Grid.Column floated='left' width={8}>
+                                        <BookSearch/>
+                                    </Grid.Column>
+                                    <Grid.Column floated='right' width={8}>
+                                        <CategoryFilter/>
+                                    </Grid.Column>
+                                </Grid>
+                        </Menu>
                         <HomepageBanner/>
                     </Route>
                     <Route exact path='/filter' component={CategoryFilter}/>
