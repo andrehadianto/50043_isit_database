@@ -2,15 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {
-    Menu,
-    Container,
     Dropdown,
     Button,
     Form,
-    Popup
+    Popup,
+    Icon
 } from 'semantic-ui-react';
 
-let filter = []
+let filter = [];
 
 const CategoryFilter = () => {
     const [getCategoryAPI, setCategoryAPI] = useState(`${process.env.API_URL}/categories`);
@@ -56,40 +55,39 @@ const CategoryFilter = () => {
         return ( <Redirect to={{pathname: '/filter', state: {filter: filter}}}/> )
     } else {
         return (
-            <Menu secondary inverted size="small">
-                <Container textAlign='center'>
-                    <Form style={{ width: 'inherit'}}>
-                        <Form.Group>
-                            <Popup
-                                content='Filter cannot be empty'
-                                trigger={
-                                    <Dropdown
-                                        style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-                                        placeholder='Filter by category' 
-                                        options={ categoryOptions }
-                                        onChange={ categorySelectionHandler }
-                                        multiple
-                                        search
-                                        clearable
-                                        selection
-                                        fluid
-                                    />
-                                }
-                                position='bottom left'
-                                open={ isInvalid }
-                            />
-                            <Button 
-                                color='teal'
-                                type='button'
-                                style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-                                onClick={ redirectHandler }
-                            >
-                                Filter
-                            </Button>
-                        </Form.Group>
-                    </Form>
-                </Container>
-            </Menu>
+                <Form style={{ display: 'flex', flexGrow: 1 }}>
+                    <Form.Group style={{ flex: 'auto', paddingLeft: 10 }}>
+                        <Popup
+                            content='Filter cannot be empty'
+                            trigger={
+                                <Dropdown
+                                    style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                                    placeholder='Filter by category' 
+                                    options={ categoryOptions }
+                                    onChange={ categorySelectionHandler }
+                                    multiple
+                                    search
+                                    clearable
+                                    selection
+                                    fluid
+                                />
+                            }
+                            position='bottom left'
+                            open={ isInvalid }
+                        />
+                        <Button 
+                            icon
+                            labelPosition='right'
+                            color='teal'
+                            type='button'
+                            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                            onClick={ redirectHandler }
+                        >
+                            <Icon name='filter'/>
+                            Filter
+                        </Button>
+                    </Form.Group>
+                </Form>
         )
     }
 }
