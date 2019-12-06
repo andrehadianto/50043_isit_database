@@ -5,11 +5,12 @@ import time
 import utils.user
 
 
-def create_ec2_instance(image_id, instance_type, security_group, script_path=None):
+def create_ec2_instance(count, image_id, instance_type, security_group, script_path=None):
 
     # Provision and launch the EC2 instance
     ec2_client = boto3.client(
         'ec2',
+        region_name="ap-southeast-1",
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 
@@ -20,24 +21,24 @@ def create_ec2_instance(image_id, instance_type, security_group, script_path=Non
                 response = ec2_client.run_instances(ImageId=image_id,
                                                     InstanceType=instance_type,
                                                     KeyName=utils.user.KEY_PAIR,
-                                                    MinCount=1,
-                                                    MaxCount=1,
+                                                    MinCount=count,
+                                                    MaxCount=count,
                                                     SecurityGroups=security_group,
                                                     UserData=script)
         else:
             response = ec2_client.run_instances(ImageId=image_id,
                                                     InstanceType=instance_type,
                                                     KeyName=utils.user.KEY_PAIR,
-                                                    MinCount=1,
-                                                    MaxCount=1,
+                                                    MinCount=count,
+                                                    MaxCount=count,
                                                     SecurityGroups=security_group)
                                             
 
-        instanceId = response['Instances'][0]["InstanceId"]
+        instanceId = [response['Instances'][i]["InstanceId"] for i in range(count)]
 
         try:
-            ec2_client.get_waiter('instance_running').wait(InstanceIds=[instanceId])
-            response_final = ec2_client.describe_instances(InstanceIds=[instanceId])
+            ec2_client.get_waiter('instance_running').wait(InstanceIds=instanceId)
+            response_final = ec2_client.describe_instances(InstanceIds=instanceId)
     
         except WaiterError as e:
             print(e)
@@ -46,12 +47,14 @@ def create_ec2_instance(image_id, instance_type, security_group, script_path=Non
         print(e)
         return None
     
-    return response_final['Reservations'][0]['Instances'][0]
+    print(response_final)
+    return response_final['Reservations'][0]['Instances']
 
 
 def create_security_group(name, permissions):    
     ec2_client = boto3.client(
         'ec2',
+        region_name="ap-southeast-1",
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 
@@ -189,6 +192,7 @@ def exists(file_path, instance_ip, user):
 def del_security_group(id):    
     ec2_client = boto3.client(
         'ec2',
+        region_name="ap-southeast-1",
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 
@@ -203,6 +207,7 @@ def del_security_group(id):
 def terminate_instances(ids):
     ec2_client = boto3.client(
         'ec2',
+        region_name="ap-southeast-1",
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 
