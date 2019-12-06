@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import BookPreviewList from '../components/BookPreviewList';
+import _ from 'lodash';
 import {
     Grid, 
     Segment,
@@ -14,7 +15,11 @@ import {
     Divider,
     Label,
     Icon,
-    Comment
+    Comment,
+    TransitionablePortal,
+    Button,
+    Progress,
+    Statistic
 } from 'semantic-ui-react';
 
 const image_placeholder = (
@@ -43,10 +48,20 @@ class BookDetails extends Component {
             reviewIsLoading: true,
 
             bookDetails: null,
+            overallRating: {
+                0: 0,
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 0,
+                5: 0,
+                total: 0,
+            },
             reviewList: [],
 
-            rating: 0
+            rating: 0,
 
+            open: false
         }
         this.submitReviewHandler = this.submitReviewHandler.bind(this);
         this.handleRate = this.handleRate.bind(this);
@@ -61,20 +76,31 @@ class BookDetails extends Component {
         .then(res => {
             this.setState({
                 bookDetails: res.data,
-                bookIsLoading: false
             });
         })
+        .then(
+            axios.get(
+                `https://randomuser.me/api/?inc=name`
+                )
+                .then(res => {
+                    this.state.bookDetails.author = res.data.results[0].name;
+                    this.setState({bookIsLoading: false});
+            })
+        )
 
         const reviewUrl = `${process.env.API_URL}/reviews/${params.asin}`;
         axios.get(
             reviewUrl
         )
         .then(res => {
+            this.state.overallRating.total = res.data.reviews.length; 
+            res.data.reviews.map((review, index) => {
+                this.state.overallRating[review.overall]++ 
+            })
             this.setState({
-                reviewList: [...res.data],
+                reviewList: [...res.data.reviews].reverse(),
                 reviewIsLoading: false
             });
-            console.log(this.state)
         })
     }
 
@@ -134,6 +160,8 @@ class BookDetails extends Component {
     }
 
     render() {
+        const { overallRating } = this.state;
+        const averageRating = !this.state.reviewList.length ? 0.0 : ((overallRating[1] + overallRating[2]*2 + overallRating[3]*3 + overallRating[4]*4 + overallRating[5]*5)/overallRating.total).toFixed(1)
         return (
             <Fragment>
                 <Grid>
@@ -161,14 +189,18 @@ class BookDetails extends Component {
                                                 {
                                                     this.state.bookIsLoading
                                                     ? title_placeholder
-                                                    : <Item>
-                                                        {
-                                                            this.state.bookDetails.categories[0].map((category, index) => {
-                                                                return (
-                                                                    <Label content={ category } key={ index }/>
-                                                                )
-                                                            })
-                                                        }
+                                                    : 
+                                                    <Item>
+                                                        <Item.Content>
+                                                            {
+                                                                this.state.bookDetails.categories[0].map((category, index) => {
+                                                                    return (
+                                                                        <Label content={ category } key={ index }/>
+                                                                    )
+                                                                })
+                                                            }
+                                                            <Item.Description>By&nbsp;&nbsp;<b>{`${this.state.bookDetails.author.first} ${this.state.bookDetails.author.last}`}</b></Item.Description>
+                                                        </Item.Content>
                                                     </Item>
                                                 }
                                                 <Item.Description>
@@ -198,7 +230,7 @@ class BookDetails extends Component {
                                                 ? <Header as='h3' textAlign='center' dividing color='pink'>SGD {this.state.bookDetails.price}</Header>
                                                 : <Header as='h3' textAlign='center' dividing color='pink'>Free of charge</Header>
                                             }
-                                            <Item.Group link>
+                                            <Item.Group>
                                                 {
                                                     purchase_benefits.map((item, index) => {
                                                         return (
@@ -214,6 +246,29 @@ class BookDetails extends Component {
                                                     })
                                                 }
                                             </Item.Group>
+                                            <Button
+                                                content='Buy now'
+                                                fluid
+                                                color='green'
+                                                onClick={() => this.setState((prevState) => ({ open: !prevState.open}))}
+                                            />
+                                            <TransitionablePortal
+                                                open={this.state.open}
+                                                transition={{ animation: 'fly right', duration: 500 }}
+                                            >
+                                                <Segment
+                                                    style={{
+                                                        left: '40%',
+                                                        position: 'fixed',
+                                                        top: '50%',
+                                                        zIndex: 1000,
+                                                    }}
+                                                >
+                                                    <Header>Success!</Header>
+                                                    <p>This book has been delivered to you by our imaginary postman!</p>
+                                                    <p>Share your review with the rest</p>
+                                                </Segment>
+                                            </TransitionablePortal>
                                         </Segment>
                                     </Grid.Column>
                                 </Grid.Row>
@@ -226,7 +281,7 @@ class BookDetails extends Component {
                         <Grid.Column>
                             <Container>
                                 <Grid>
-                                    <Grid.Column>
+                                    <Grid.Column width={10}>
                                         <Comment.Group>
                                             <Header as='h3' dividing content='Reviews'/>
                                             {
@@ -234,7 +289,7 @@ class BookDetails extends Component {
                                                 ? title_placeholder
                                                 : !this.state.reviewList.length
                                                     ? <Comment content='Be the first one to leave a review!'/>
-                                                    : this.state.reviewList.reverse().map((review, index) => {
+                                                    : this.state.reviewList.map((review, index) => {
                                                         const months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                                                         const date = new Date(review.unixReviewTime * 1000);
                                                         const day = date.getDate();
@@ -257,6 +312,32 @@ class BookDetails extends Component {
                                                     })
                                             }
                                         </Comment.Group>
+                                    </Grid.Column>
+                                    <Grid.Column width={6}>
+
+                                        <Divider hidden/>
+
+                                        <Segment vertical>
+                                            <Statistic value={ averageRating } size='large' label='overall'/>
+
+                                            <Grid style={{ marginTop: 13 }}>
+                                                {
+                                                    _.times(6, (i) => {
+                                                        return (
+                                                            <Grid.Row key={i} style={{ padding: 0, alignItems: 'center' }}>
+                                                                <Grid.Column width={2}>
+                                                                    {i}
+                                                                </Grid.Column>
+                                                                <Grid.Column width={14}>
+                                                                    <Progress style={{ margin : 0 }} value={ overallRating[i] } total={ overallRating.total } progress='value' size='small' warning />
+                                                                </Grid.Column>
+                                                            </Grid.Row>
+                                                        )
+                                                    })
+                                                }
+                                            </Grid>
+
+                                        </Segment>
                                     </Grid.Column>
                                 </Grid>
                             </Container>

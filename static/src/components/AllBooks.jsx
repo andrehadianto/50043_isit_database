@@ -32,13 +32,15 @@ const AllBooks = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [goToPage, setGoToPage] = useState(1);
     const [isInvalid, setIsInvalid] = useState(false);
+    const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
         axios.get(
             getBookApiUrl
         )
         .then(res => {
-            setBookData([...res.data]);
+            setTotalPage(parseInt(res.data.count/24) + 1)
+            setBookData([...res.data.books]);
             setIsLoading(false);
         });
     }, [getBookApiUrl]);
@@ -88,14 +90,14 @@ const AllBooks = (props) => {
                         ellipsisItem={null}
                         activePage={ activePage }
                         onPageChange={ onPageChange }
-                        totalPages={99}
+                        totalPages={ totalPage }
                     />
                     <Input 
                         onChange={ (e, {value}) => {setGoToPage(value)} }
-                        value={goToPage}
+                        value={ goToPage }
                         style={{ width: '4em' }} 
                         action={ <Button content='Go' onClick={ goToClickHandler }/> }
-                        error={isInvalid}
+                        error={ isInvalid }
                     />
                 </Container>
             </Column>

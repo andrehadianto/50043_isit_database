@@ -10,7 +10,6 @@ def dictfetchall(cursor):
     return [dict(zip([col[0] for col in desc], row)) 
             for row in cursor.fetchall()]
 
-
 class ReviewsAPI(Resource):
     def get(self, asin):
         parser = reqparse.RequestParser()
@@ -21,20 +20,20 @@ class ReviewsAPI(Resource):
         args = parser.parse_args()
 
         if not args['count'] or not args['page']:
-            _limit = 15
+            _limit = 100
             _offset = 0
         else:
             _limit = args['count']
             _offset = (args['page'] - 1) * args['count']
 
-        
         con, cursor = connect()
         try:
             cursor.execute("SELECT * FROM kindle_reviews where asin=%s LIMIT %s OFFSET %s", (asin, _limit, _offset))
             results = dictfetchall(cursor)
-            return results
+            return {"message": "Successfully retrieve all reviews","reviews": results}, 200
         except Exception as e:
             print(e)
+            return {"message": "Something goes wrong"}, 500
 
         finally:
             con.close()

@@ -26,6 +26,7 @@ const BookPreviewList = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [activePage, setActivePage] = useState(1);
     const [bookProps, setBookProps] = useState(props.books);
+    const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
         const source = axios.CancelToken.source();
@@ -38,6 +39,7 @@ const BookPreviewList = (props) => {
             header
         )
         .then(res => {
+            setTotalPage(parseInt(res.data.count/6) + 1);
             setBookList([...res.data.body]);
             setIsLoading(false);
         });
@@ -75,7 +77,7 @@ const BookPreviewList = (props) => {
                     ellipsisItem={null}
                     activePage={activePage}
                     onPageChange={onPageChange}
-                    totalPages={99}
+                    totalPages={totalPage}
                 />
             </Container>
         </Fragment>
