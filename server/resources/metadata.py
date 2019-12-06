@@ -4,6 +4,16 @@ from common.util import mongo
 from bson.json_util import dumps, default
 from random import random
 
+class GetBookTitles(Resource):
+    """Returns all book titles"""
+    def get(self):
+        try:
+            cursor = mongo.db.kindle_metadata.find({'title': {'$exists': 1}}, {'title': 1})
+            json_query = json.loads(dumps(cursor, default=default))
+            return {"message": "Successfully retrieve all titles", "titles": json_query}, 200
+        except:
+            return {"message": "Failed to retrieve all titles"}, 500
+
 class GetBookDetails(Resource):
     """Returns book details (all available fields)"""
     def get(self, asin):
@@ -19,18 +29,20 @@ class BooksListResource(Resource):
         parser.add_argument('count', type=int, location='args')
         args = parser.parse_args()
 
+        _total_count = mongo.db.kindle_metadata.count()
+
         if (not args['count'] or not args['page']):
             cursor = mongo.db.kindle_metadata.find({},
                 {"asin" : 1, "imUrl" : 1, "title" : 1}).skip(0).limit(15)
-            jsonstring = dumps(cursor, default=default)
-            return json.loads(jsonstring)
+            json_query = json.loads(dumps(cursor, default=default))
+            return {"message": "Successfully retrieve all books", "books": json_query, "count": _total_count}, 200
         
         _limit = args['count']
         _offset = (args['page']-1) * args['count']
         cursor = mongo.db.kindle_metadata.find({},
              {"asin" : 1, "imUrl" : 1}).skip(_offset).limit(_limit)
-        jsonstring = dumps(cursor, default=default)
-        return json.loads(jsonstring)
+        json_query = json.loads(dumps(cursor, default=default))
+        return {"message": "Successfully retrieve all books", "books": json_query, "count": _total_count}, 200
 
 class RegisterNewBook(Resource):
     def get_filled_fields(self, field_names, fields):
