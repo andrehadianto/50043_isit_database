@@ -97,6 +97,7 @@ def main():
                                 "ID": hadoop_instance_info[i]["InstanceId"],
                                 "DNS": hadoop_instance_info[i]["PublicDnsName"]} for i in range(1, int(user.NODES))]
 
+    
 
 
     # sql_permissions = [{'IpProtocol': 'tcp',

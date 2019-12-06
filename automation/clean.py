@@ -19,8 +19,11 @@ def clean():
     user.KEY_PAIR = CONFIG["AWS_CREDENTIALS"]["KEY_PAIR"]
     user.KEY_PATH = CONFIG["AWS_CREDENTIALS"]["KEY_PATH"]
 
-    instance_ids = [CONFIG["FLASK"]["ID"], CONFIG["MYSQL"]["ID"], CONFIG["MONGO"]["ID"]]
-    
+    instance_ids = [CONFIG["MASTER"]["ID"]]
+    # instance_ids = [CONFIG["MASTER"]["ID"], CONFIG["FLASK"]["ID"], CONFIG["MYSQL"]["ID"], CONFIG["MONGO"]["ID"]]
+    for i in CONFIG["SLAVES"]:
+        instance_ids.append(i["ID"])
+
     logging.info("Terminating instances...")
     
     terminate_instances(instance_ids)
