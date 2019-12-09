@@ -135,6 +135,3 @@ $3
 $4
 $5
 EOF
-
-#sudo /bin/bash /home/ubuntu/start_hadoop_cluster.sh 
-

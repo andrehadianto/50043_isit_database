@@ -21,9 +21,22 @@ sudo chown -R ubuntu:ubuntu /usr/local/hadoop/hdfs/data
 
 ssh-keygen -t rsa -f /home/ubuntu/.ssh/id_rsa -q -P "" 
 
-cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i /home/ubuntu/$1 ubuntu@$2 "cat >> /home/ubuntu/.ssh/authorized_keys"
 
-cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i /home/ubuntu/$1 ubuntu@$3 "cat >> /home/ubuntu/.ssh/authorized_keys"
+cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "cat >> /home/ubuntu/.ssh/authorized_keys"
+
+cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$3 "cat >> /home/ubuntu/.ssh/authorized_keys"
+
+cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$4 "cat >> /home/ubuntu/.ssh/authorized_keys"
+
+cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$5 "cat >> /home/ubuntu/.ssh/authorized_keys"
+
+cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$6 "cat >> /home/ubuntu/.ssh/authorized_keys"
+
+cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$7 "cat >> /home/ubuntu/.ssh/authorized_keys"
+
+cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$8 "cat >> /home/ubuntu/.ssh/authorized_keys"
+
+cat /home/ubuntu/.ssh/id_rsa.pub | ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$9 "cat >> /home/ubuntu/.ssh/authorized_keys"
 
 cat >> /home/ubuntu/.ssh/config << EOF
 Host nnode
@@ -35,11 +48,41 @@ Host dnode1
   HostName $3
   User ubuntu
   IdentityFile ~/.ssh/id_rsa
- 
+
+Host dnode2
+  HostName $4
+  User ubuntu
+  IdentityFile ~/.ssh/id_rsa
+
+Host dnode3
+  HostName $5
+  User ubuntu
+  IdentityFile ~/.ssh/id_rsa
+
+Host dnode4
+  HostName $6
+  User ubuntu
+  IdentityFile ~/.ssh/id_rsa
+
+Host dnode5
+  HostName $7
+  User ubuntu
+  IdentityFile ~/.ssh/id_rsa
+
+Host dnode6
+  HostName $8
+  User ubuntu
+  IdentityFile ~/.ssh/id_rsa    
+
+Host dnode7
+  HostName $9
+  User ubuntu
+  IdentityFile ~/.ssh/id_rsa 
 EOF
 
 
 #  setup hdfs properties
+
 sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
 sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
 sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
@@ -61,7 +104,7 @@ EOF
 
 
 #  setup mapred properties
-sudo rm -f /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml
+sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml
 sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml
 sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml << EOF 
@@ -105,16 +148,22 @@ cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/yarn-site.xml << EOF
 EOF
 
 #  setup master and slaves
-sudo rm -f /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters
+sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters
 sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters
-sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters 
+sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters << EOF
 $2
 EOF
 # need to make it vary depending on arg oso because your no of dnode changes.
-sudo rm -f /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves
+sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves
 sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves
 sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves << EOF
 $3
+$4
+$5
+$6
+$7
+$8
+$9
 EOF
