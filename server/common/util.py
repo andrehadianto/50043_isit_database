@@ -18,9 +18,9 @@ MONGO_DB = os.getenv("MONGO_DB")
 LOG_DB = os.getenv("LOG_DB")
 app = Flask(__name__)
 # kindle metadata
-mongo = PyMongo(app, uri="mongodb://admin:password@{}:27017/{}?authSource=admin".format(MONGO_HOST, MONGO_DB))
+mongo = PyMongo(app, uri="mongodb://{}:27017/{}".format(MONGO_HOST, MONGO_DB))
 # logs
-mongo_log = PyMongo(app, uri="mongodb://admin:password@{}:27017/{}?authSource=admin".format(MONGO_HOST, LOG_DB))
+mongo_log = PyMongo(app, uri="mongodb://{}:27017/{}".format(MONGO_HOST, LOG_DB))
 
 # Connect to MySQL
 def connect():
