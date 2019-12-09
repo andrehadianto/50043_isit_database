@@ -18,3 +18,5 @@ ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "/bin/bash /home/ubuntu/hadoop_n
 echo "Just a little longer..."
 
 ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "/home/ubuntu/start_hadoop_cluster.sh"
+
+echo "Hdfs is up! Please visit $2:5000"

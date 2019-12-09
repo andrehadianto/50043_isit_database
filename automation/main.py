@@ -34,6 +34,8 @@ def main():
     SQL_SCRIPT = os.path.join("scripts", "sql_script.sh")
     MONGO_SCRIPT = os.path.join("scripts", "mongo_script.sh")
 
+    # HADOOP_CONFIG_SCRIPT = os.path.join("scripts", "", "initialize_hadoop_setup.sh")
+
     CONFIG = dict()
     CONFIG["AWS_CREDENTIALS"] = {"ACCESS_KEY": user.ACCESS_KEY,"SECRET_KEY": user.SECRET_KEY, "KEY_PAIR": user.KEY_PAIR, "KEY_PATH": user.KEY_PATH}
 
@@ -229,11 +231,14 @@ def main():
             break
 
     # Call bash script to do config for hadoop
+
     prefix = ["/bin/bash", "scripts/initialize_hadoop_setup_2node.sh", CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["DNS"]]
     slave_dns = [i["DNS"] for i in CONFIG["SLAVES"]]
     process_cmd = prefix + slave_dns
 
-    run_command_bash(process_cmd)
+    print(process_cmd)
+    
+    # run_command_bash(process_cmd)
 
 
 
