@@ -16,6 +16,7 @@ import os
 import urllib.request
 import argparse
 import yaml
+import subprocess
 
 import utils.user as user
 
@@ -96,8 +97,21 @@ def main():
     CONFIG["SLAVES"] = [{"IP": hadoop_instance_info[i]["PublicIpAddress"], 
                                 "ID": hadoop_instance_info[i]["InstanceId"],
                                 "DNS": hadoop_instance_info[i]["PublicDnsName"]} for i in range(1, int(user.NODES))]
-
     
+    # Call bash script to do config for hadoop
+    
+    # # Check if script is finished
+    # indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (CONFIG["FLASK"]["ID"])
+    # while True:
+    #     test = exists(indicator_file_path, CONFIG["FLASK"]["IP"], "ubuntu")
+    #     if test == "Failed":
+    #         print("Connection failed, retrying...")
+    #         continue
+    #     else:
+    #         break
+    
+    process = subprocess.Popen(["/bin/bash", "scripts/initialize_hadoop_setup_2node.sh", CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["DNS"], CONFIG["SLAVES"][0]["DNS"]])
+
 
 
     # sql_permissions = [{'IpProtocol': 'tcp',
@@ -220,20 +234,23 @@ def main():
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("access", help="AWS access key")
-    parser.add_argument("secret", help="Your secret access key")
-    parser.add_argument("keypair", help="AWS key pair")
-    parser.add_argument("keypath", help="Absolute path of your .pem file")
-    parser.add_argument("nodes", help="Number of datanodes to spin up", type=int, choices=[1,2,4,8])
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("access", help="AWS access key")
+    # parser.add_argument("secret", help="Your secret access key")
+    # parser.add_argument("keypair", help="AWS key pair")
+    # parser.add_argument("keypath", help="Absolute path of your .pem file")
+    # parser.add_argument("nodes", help="Number of datanodes to spin up", type=int, choices=[2,4,8])
+    # args = parser.parse_args()
 
-    # Set up variables
-    user.init()
-    user.ACCESS_KEY = args.access
-    user.SECRET_KEY = args.secret
-    user.KEY_PAIR = args.keypair
-    user.KEY_PATH = args.keypath
-    user.NODES = args.nodes
+    # # Set up variables
+    # user.init()
+    # user.ACCESS_KEY = args.access
+    # user.SECRET_KEY = args.secret
+    # user.KEY_PAIR = args.keypair
+    # user.KEY_PATH = args.keypath
+    # user.NODES = args.nodes
 
-    main()
+    # main()
+    subprocess.Popen(['/bin/bash', '/scripts/test.sh'])
+
+    
