@@ -74,11 +74,9 @@ class BookDetails extends Component {
             bookUrl
         )
         .then(res => {
-            this.setState({
-                bookDetails: res.data,
-            });
+            this.setState({ bookDetails: res.data });
         })
-        .then(
+        .then(res => {
             axios.get(
                 `https://randomuser.me/api/?inc=name`
                 )
@@ -86,7 +84,7 @@ class BookDetails extends Component {
                     this.state.bookDetails.author = res.data.results[0].name;
                     this.setState({bookIsLoading: false});
             })
-        )
+        })
 
         const reviewUrl = `${process.env.API_URL}/reviews/${params.asin}`;
         axios.get(
