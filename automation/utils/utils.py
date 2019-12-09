@@ -160,7 +160,7 @@ def scp_to_instance(instance_ip, user, file_path):
 
 def exists(file_path, instance_ip, user):
 
-    cmd = 'test -f %s && echo complete' % (file_path)
+    cmd = 'test -f %s && echo Complete' % (file_path)
     
     key = paramiko.RSAKey.from_private_key_file(utils.user.KEY_PATH)
     client = paramiko.SSHClient()
@@ -175,9 +175,10 @@ def exists(file_path, instance_ip, user):
             stdin, stdout, stderr = client.exec_command(cmd)
             res_str = stdout.read().decode("utf-8")
             print(res_str)
-            if "complete" in res_str:
+            if "Complete" in res_str:
                 break
             time.sleep(10)
+            print("Instantiating...")
         return True
         
     except Exception as e:
