@@ -42,7 +42,7 @@ MONGO_DB=isit_database_mongo
 LOG_DB=log_mongo
 ```
 ### 3. Set up mongo database
-(you can refer to `../automation/scripts/mongo_script.sh`)
+(you can refer to `../automation/scripts/mongo_script.sh` from master branch)
 - Install mongodb
 - Create a new database called `isit_database_mongo`
 - Download the `meta_kindle_store` data and the `categories.json` data:
@@ -77,21 +77,19 @@ LOAD DATA LOCAL INFILE 'kindle_reviews.csv' INTO TABLE isit_database.kindle_revi
 ```
 
 ### 5. Set up front-end
-(you can refer to `../automation/scripts/flash_script.sh`)
+(you can refer to `../automation/scripts/flash_script.sh` from master branch)
 - Install nodejs, npm
 - After installation, run:
 ```
 # Install node modules
 cd ../static
 npm install
-LOCAL_PUBLIC_IP=$(curl ifconfig.co)
-export LOCAL_PUBLIC_IP
-echo $LOCAL_PUBLIC_IP
-npx webpack --env.API_URL=http://$LOCAL_PUBLIC_IP:5000 --progress -p --mode=production --config webpack.config.js 
 ```
+- run `npm run watch`
 
 ### 6. Running the Server
 Running:
 ```
 python app.py
 ```
+Go to `http://localhost:5000/isit` 

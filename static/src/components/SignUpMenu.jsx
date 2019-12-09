@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
-    Grid,
+    Container,
     Form,
-    Header,
     Button,
-    Segment,
     Modal,
-    Message,
     Divider
 } from 'semantic-ui-react';
 
 const SignUpMenu = () => {
     const [isInvalid, setIsInvalid] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
 
     const onSubmitHandler = (e) => {
         setIsLoading(true);
-        const url = `http://52.7.180.215:5000/user/signup`;
+        const url = `${process.env.API_URL}/user/signup`;
         const username = e.target.elements.username.value;
         const password = e.target.elements.password.value;
         const passwordVerify = e.target.elements.passwordVerify.value;
@@ -49,61 +45,59 @@ const SignUpMenu = () => {
     return (
         <Modal
             trigger={
-                <Message>
+                <Container textAlign='center'>
                     New to us? <a href='#'>Sign Up</a>
-                </Message>
+                </Container>
             }
-            style={{ maxWidth: '600px' }}
+            size='tiny'
         >
-            <Modal.Content>
-                <Grid>
-                    <Grid.Column>
-                        <Header as='h2' color='red' textAlign='center'>
-                            Create your very own account!
-                        </Header>
-                        <Form size='large' onSubmit={onSubmitHandler}>
-                            <Segment>
+            <Modal.Content style={{ 'padding': 30 }}>
+                <Container>
+                        <Form size='small' onSubmit={onSubmitHandler}>
                                 <Form.Input
                                     error={isInvalid}
                                     name='username'
-                                    fluid
                                     icon='user'
                                     iconPosition='left'
+                                    label='Username'
                                     placeholder='Username'
                                     required
+                                    fluid
                                 />
                                 <Form.Input
                                     error={isInvalid}
                                     name='password'
                                     type='password'
-                                    fluid
                                     icon='lock'
                                     iconPosition='left'
+                                    label='Password'
                                     placeholder='Password'
                                     required
+                                    fluid
                                 />
                                 <Form.Input
                                     error={isInvalid}
                                     name='passwordVerify'
                                     type='password'
-                                    fluid
                                     icon='lock'
                                     iconPosition='left'
                                     placeholder='Re-enter password'
                                     required
+                                    fluid
                                 />
                                 <Divider hidden/>
                                 <Form.Input
                                     error={isInvalid}
                                     name='name'
-                                    fluid
                                     icon='font'
                                     iconPosition='left'
+                                    label='Display Name'
                                     placeholder='Display Name'
                                     required
+                                    fluid
                                 />
                                 <Button
-                                    color='youtube'
+                                    color='teal'
                                     fluid
                                     size='large'
                                     type='submit'
@@ -111,10 +105,8 @@ const SignUpMenu = () => {
                                 >
                                     Sign Up
                                 </Button>
-                            </Segment>
                         </Form>
-                    </Grid.Column>
-                </Grid>
+                </Container>
             </Modal.Content>
         </Modal>
     )

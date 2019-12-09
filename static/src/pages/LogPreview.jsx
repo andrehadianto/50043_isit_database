@@ -17,13 +17,14 @@ class LogPreview extends Component {
         super(props);
         this.state = {
             isLoading: true,
-            log: {}
+            log: {},
+            body: ''
         }
     }
 
     componentDidMount() {
         const {match: {params}} = this.props;
-        const url = `http://52.7.180.215:5000/user/logs/${params.id}`;
+        const url = `${process.env.API_URL}/user/logs/${params.id}`;
         axios.get(
             url
         )
@@ -32,7 +33,13 @@ class LogPreview extends Component {
                 log: res.data,
                 isLoading: false
             })
-            console.log(this.state)
+            try {
+                this.setState({
+                    body: JSON.stringify(JSON.parse(res.data.body), null, 1)
+                })
+            } catch(err) {
+                this.setState({ body: res.data.body })
+            }
         })
     }
 
@@ -45,27 +52,37 @@ class LogPreview extends Component {
                             this.state.isLoading
                             ? title_placeholder
                             : 
-                            <Table>
+                            <Table definition>
                                 <Table.Header>
                                     <Table.Row>
+                                        <Table.HeaderCell/>
                                         <Table.HeaderCell>{this.state.log.id}</Table.HeaderCell>
                                     </Table.Row>
                                 </Table.Header>
                                 <Table.Body>
                                     <Table.Row>
+                                        <Table.Cell>Time</Table.Cell>
                                         <Table.Cell>{this.state.log.time}</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
+                                        <Table.Cell>Method</Table.Cell>
                                         <Table.Cell>{this.state.log.method}</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
+                                        <Table.Cell>Path</Table.Cell>
                                         <Table.Cell>{this.state.log.path}</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
+                                        <Table.Cell>Status Code</Table.Cell>
                                         <Table.Cell>{this.state.log.status}</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
-                                        <Table.Cell>{this.state.log.body}</Table.Cell>
+                                        <Table.Cell>Body</Table.Cell>
+                                        <Table.Cell>
+                                            <pre>
+                                                { this.state.body }
+                                            </pre>
+                                        </Table.Cell>
                                     </Table.Row>
                                 </Table.Body>
 

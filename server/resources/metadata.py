@@ -2,6 +2,17 @@ from flask import json
 from flask_restful import Resource, request, reqparse
 from common.util import mongo
 from bson.json_util import dumps, default
+from random import random
+
+class GetBookTitles(Resource):
+    """Returns all book titles"""
+    def get(self):
+        try:
+            cursor = mongo.db.kindle_metadata.find({'title': {'$exists': 1}}, {'title': 1})
+            json_query = json.loads(dumps(cursor, default=default))
+            return {"message": "Successfully retrieve all titles", "titles": json_query}, 200
+        except:
+            return {"message": "Failed to retrieve all titles"}, 500
 
 class GetBookDetails(Resource):
     """Returns book details (all available fields)"""
@@ -18,27 +29,34 @@ class BooksListResource(Resource):
         parser.add_argument('count', type=int, location='args')
         args = parser.parse_args()
 
+        _total_count = mongo.db.kindle_metadata.count()
+
         if (not args['count'] or not args['page']):
             cursor = mongo.db.kindle_metadata.find({},
                 {"asin" : 1, "imUrl" : 1, "title" : 1}).skip(0).limit(15)
-            jsonstring = dumps(cursor, default=default)
-            return json.loads(jsonstring)
+            json_query = json.loads(dumps(cursor, default=default))
+            return {"message": "Successfully retrieve all books", "books": json_query, "count": _total_count}, 200
         
         _limit = args['count']
         _offset = (args['page']-1) * args['count']
         cursor = mongo.db.kindle_metadata.find({},
              {"asin" : 1, "imUrl" : 1}).skip(_offset).limit(_limit)
-        jsonstring = dumps(cursor, default=default)
-        return json.loads(jsonstring)
+        json_query = json.loads(dumps(cursor, default=default))
+        return {"message": "Successfully retrieve all books", "books": json_query, "count": _total_count}, 200
 
 class RegisterNewBook(Resource):
     def get_filled_fields(self, field_names, fields):
-        "helper function"
+        """helper function"""
         to_be_updated = {}
         for field_name, field in zip(field_names, fields):
             if field != None:
                 to_be_updated[field_name] = field
         return to_be_updated
+
+    def generate_padded_number(self):
+        random_int = int(random() * 10000000000)
+        int2str = str(random_int)
+        return int2str.zfill(10)
 
     def post(self):
         """Returns a dictionary of fields that were updated"""
@@ -51,20 +69,18 @@ class RegisterNewBook(Resource):
         except Exception as e:
             print(e)
             return {"message": "title, imUrl and description are required fields"}, 400
-        #TODO: implement checker for imUrl 
 
-        _price = req_json.get('price')
+        _price = round(float(req_json.get('price')),2)
         _categories = req_json.get('categories')
         _related = req_json.get('related')
-        
-        field_names = ['title', 'imUrl', 'description', 'price', 'description', 'related']
-        fields = [_title, _imUrl, _description, _price, _description, _related]
-        to_be_updated = self.get_filled_fields(field_names, fields)
+        _asin = self.generate_padded_number()
 
+        field_names = ['asin', 'title', 'imUrl', 'description', 'price', 'categories', 'description', 'related']
+        fields = [_asin, _title, _imUrl, _description, _price, [_categories], _description, _related]
+        query = self.get_filled_fields(field_names, fields)
         try:
-            cursor = mongo.db.kindle_metadata.insert({"asin": 'B000000000'}, {"$set": to_be_updated})
-            #TODO: generate asin dynamically
-            return {"message": "Book registered", "insertedId": str(cursor), "body": to_be_updated}, 200
+            mongo.db.kindle_metadata.insert_one(query)
+            return {"message": "Book registered", "body": json.loads(dumps(query))}, 200
             
         except Exception as e:
             print(e)

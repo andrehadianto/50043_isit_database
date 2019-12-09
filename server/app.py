@@ -2,7 +2,7 @@ from flask import Flask, make_response, render_template, request
 from flask_restful import Api
 from resources.book_preview import BookPreviewResource, BookCategoryResource
 from resources.categories import CategoriesResource
-from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBook, UpdateBookResource
+from resources.metadata import GetBookDetails, BooksListResource, RegisterNewBook, UpdateBookResource, GetBookTitles
 from resources.test import testMySql, testMongo
 from resources.review import ReviewsAPI, ReviewsByUserAPI, ReviewAPI
 from resources.user import UserLogin, UserSignup
@@ -31,6 +31,7 @@ api.add_resource(CategoriesResource, '/categories')
 
 api.add_resource(GetBookDetails, '/book/<string:asin>')
 api.add_resource(BooksListResource, '/books')
+api.add_resource(GetBookTitles, '/books_titles')
 api.add_resource(RegisterNewBook, '/book/new')
 api.add_resource(UpdateBookResource, '/book/update/<string:asin>')
 
@@ -60,10 +61,10 @@ def log_request(response):
             "status": status_as_string,
             "status_code": status_as_integer
         })
-        app.logger.debug("Successful log insert with _id %s" % _id)
+        app.logger.debug("Successful log insert with _id %s" % _id.inserted_id)
     except:
         app.logger.warning("Error encountered during insertion of log to database")    
     return response
     
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run()

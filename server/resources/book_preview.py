@@ -28,6 +28,8 @@ class BookPreviewResource(Resource):
         _asinArray = json_request.get('asinArray')
         booksJSONArray = list()
 
+        _count = mongo.db.kindle_metadata.find({"asin": {"$regex": self.regex_generator(_asinArray) }}).count()
+
         if (not args['count'] or not args['page']):
             bookInfo = mongo.db.kindle_metadata.find({"asin" : {"$regex": self.regex_generator(_asinArray) }}, {"asin" : 1, "title": 1, "imUrl": 1})
         else:
@@ -42,7 +44,7 @@ class BookPreviewResource(Resource):
             bookLW = {"asin": book_asin, "title": book_title, "imUrl":book_imUrl}
             booksJSONArray.append(bookLW)
 
-        return {"message": "Book previews shown", "asinArray": str(_asinArray), "body": booksJSONArray}, 200
+        return {"message": "Book previews shown", "asinArray": str(_asinArray), "body": booksJSONArray, "count": _count}, 200
 
 class BookCategoryResource(Resource):
     def post(self):
@@ -54,15 +56,16 @@ class BookCategoryResource(Resource):
         parser.add_argument('count', type=int, location='args')
         args = parser.parse_args()
         json_request = request.get_json(force=True)
-        _categoryArray = json_request.get('categories')
+        _categoryArray = json_request.get('categoryArray')
         filteredArray = list()
+        _count = mongo.db.kindle_metadata.find({"categories.0": {"$elemMatch": {"$in": _categoryArray}}}).count()
 
         if (not args['count'] or not args['page']):
-            bookInfo = mongo.db.kindle_metadata.find({"categories": _categoryArray}, {"asin" : 1, "title": 1, "imUrl": 1})
+            bookInfo = mongo.db.kindle_metadata.find({"categories.0": {"$elemMatch": {"$in": _categoryArray}}}, {"asin" : 1, "title": 1, "imUrl": 1})
         else:
             _limit = args['count']
             _offset = (args['page']-1) * args['count']
-            bookInfo = mongo.db.kindle_metadata.find({"categories": _categoryArray}, {"asin" : 1, "title": 1, "imUrl": 1}).skip(_offset).limit(_limit)
+            bookInfo = mongo.db.kindle_metadata.find({"categories.0": {"$elemMatch": {"$in": _categoryArray}}}, {"asin" : 1, "title": 1, "imUrl": 1}).skip(_offset).limit(_limit)
 
         for item in bookInfo:
             book_asin = item.get('asin')
@@ -70,6 +73,7 @@ class BookCategoryResource(Resource):
             book_imUrl = item.get('imUrl')  
             bookLW = {"asin": book_asin, "title": book_title, "imUrl":book_imUrl}
             filteredArray.append(bookLW)
-        return {"message": "Books filtered based on categories", "categoryArray": str(_categoryArray), "body": filteredArray}, 200
+
+        return {"message": "Books filtered based on categories", "categoryArray": str(_categoryArray), "body": filteredArray, "count": _count}, 200
 
 

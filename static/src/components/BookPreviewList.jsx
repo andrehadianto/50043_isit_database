@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { Link } from 'react-router-dom'
 import axios from 'axios';
 import _ from 'lodash';
 import { 
-Segment, 
-Grid, 
-Item,
-Header,
-Placeholder,
-Container,
-Pagination
+    Grid, 
+    Item,
+    Header,
+    Placeholder,
+    Container,
+    Pagination
 } from 'semantic-ui-react';
 
 const preview_placeholder = _.times(6, (i) => (
@@ -22,20 +21,25 @@ const preview_placeholder = _.times(6, (i) => (
 ));
 
 const BookPreviewList = (props) => {
-    const [getBookPreviewUrl, setGetBookPreviewUrl] = useState('http://52.7.180.215:5000/books/previews?page=1&count=6');
+    const [getBookPreviewUrl, setGetBookPreviewUrl] = useState(`${process.env.API_URL}` + '/books/previews?page=1&count=6');
     const [bookList, setBookList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activePage, setActivePage] = useState(1);
     const [bookProps, setBookProps] = useState(props.books);
+    const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
+        const source = axios.CancelToken.source();
+
+        const body = { "asinArray": bookProps };
+        const header = { cancelToken: source.token };
         axios.post(
             getBookPreviewUrl,
-            {
-                "asinArray": bookProps
-            }
+            body,
+            header
         )
         .then(res => {
+            setTotalPage(parseInt(res.data.count/6) + 1);
             setBookList([...res.data.body]);
             setIsLoading(false);
         });
@@ -44,14 +48,11 @@ const BookPreviewList = (props) => {
     const onPageChange = (e, pageInfo) => {
         setIsLoading(true);
         setActivePage(pageInfo.activePage);
-        setGetBookPreviewUrl(`http://52.7.180.215:5000/books/previews?page=${pageInfo.activePage.toString()}&count=6`);
+        setGetBookPreviewUrl(`${process.env.API_URL}/books/previews?page=${pageInfo.activePage.toString()}&count=6`);
     }
 
     return (
-        <Segment>
-            <Header as='h3' dividing>
-                Also Bought
-            </Header>
+        <Fragment>
             <Grid columns={6}>
                 {
                     isLoading
@@ -76,10 +77,10 @@ const BookPreviewList = (props) => {
                     ellipsisItem={null}
                     activePage={activePage}
                     onPageChange={onPageChange}
-                    totalPages={99}
+                    totalPages={totalPage}
                 />
             </Container>
-        </Segment>
+        </Fragment>
     )
 }
 
