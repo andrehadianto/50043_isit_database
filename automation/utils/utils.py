@@ -3,6 +3,7 @@ import boto3
 import paramiko
 import time
 import utils.user
+import subprocess
 
 
 def create_ec2_instance(count, image_id, instance_type, security_group, script_path=None):
@@ -227,3 +228,14 @@ def terminate_instances(ids):
         print(e)
 
     return response_final["Reservations"][0]["Instances"]
+
+def run_command_bash(command):
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    while True:
+        output = process.stdout.readline()
+        if output == '' and process.poll() is not None:
+            break
+        if output:
+            print(output.strip().decode('utf-8'))
+    rc = process.poll()
+    return rc

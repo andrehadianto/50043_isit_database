@@ -10,7 +10,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License. 
 
-from utils.utils import create_ec2_instance, create_security_group, execute_cmds_ssh, exists, execute_bg
+from utils.utils import create_ec2_instance, create_security_group, execute_cmds_ssh, exists, execute_bg, run_command_bash
 import logging
 import os
 import urllib.request
@@ -41,31 +41,31 @@ def main():
     logging.basicConfig(level=logging.INFO,
                         format='%(levelname)s: %(asctime)s: %(message)s')
 
-    # # Create security group
-    # flask_permissions = [{'IpProtocol': 'tcp',
-    #                         'FromPort': 22,
-    #                         'ToPort': 22,
-    #                         'IpRanges': [{'CidrIp': LOCAL_IP + '/32'}]},
-    #                         {'IpProtocol': 'tcp',
-    #                         'FromPort': 5000,
-    #                         'ToPort': 5000,
-    #                         'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}]
+    # Create security group
+    flask_permissions = [{'IpProtocol': 'tcp',
+                            'FromPort': 22,
+                            'ToPort': 22,
+                            'IpRanges': [{'CidrIp': LOCAL_IP + '/32'}]},
+                            {'IpProtocol': 'tcp',
+                            'FromPort': 5000,
+                            'ToPort': 5000,
+                            'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}]
 
-    # flask_security_group = create_security_group("flask-webapp", flask_permissions)
-    # CONFIG["SECURITY_GROUPS"] = [flask_security_group]
+    flask_security_group = create_security_group("flask-webapp", flask_permissions)
+    CONFIG["SECURITY_GROUPS"] = [flask_security_group]
 
-    # # Provision and launch the EC2 instance
-    # flask_instance_info = create_ec2_instance(1, UBUNTU_AMI, INSTANCE_TYPE, ["flask-webapp"], FLASK_SCRIPT)[0]
+    # Provision and launch the EC2 instance
+    flask_instance_info = create_ec2_instance(1, UBUNTU_AMI, INSTANCE_TYPE, ["flask-webapp"], FLASK_SCRIPT)[0]
 
-    # if flask_instance_info is not None:
-    #     logging.info('Started ec2 instance for flask webapp')
-    #     logging.info(f'Launched EC2 Instance {flask_instance_info["InstanceId"]}')
-    #     logging.info(f'    VPC ID: {flask_instance_info["VpcId"]}')
-    #     logging.info(f'    Private IP Address: {flask_instance_info["PrivateIpAddress"]}')
-    #     logging.info(f'    Public IP Address: {flask_instance_info["PublicIpAddress"]}')
-    #     logging.info(f'    Current State: {flask_instance_info["State"]["Name"]}')
+    if flask_instance_info is not None:
+        logging.info('Started ec2 instance for flask webapp')
+        logging.info(f'Launched EC2 Instance {flask_instance_info["InstanceId"]}')
+        logging.info(f'    VPC ID: {flask_instance_info["VpcId"]}')
+        logging.info(f'    Private IP Address: {flask_instance_info["PrivateIpAddress"]}')
+        logging.info(f'    Public IP Address: {flask_instance_info["PublicIpAddress"]}')
+        logging.info(f'    Current State: {flask_instance_info["State"]["Name"]}')
 
-    # CONFIG["FLASK"] = {"IP": flask_instance_info["PublicIpAddress"], "ID": flask_instance_info["InstanceId"]}
+    CONFIG["FLASK"] = {"IP": flask_instance_info["PublicIpAddress"], "ID": flask_instance_info["InstanceId"]}
 
 
 
@@ -77,8 +77,8 @@ def main():
                             'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}]
 
     hadoop_security_group = create_security_group("hadoop", hadoop_permissions)
-    # CONFIG["SECURITY_GROUPS"].append(hadoop_security_group)
-    CONFIG["SECURITY_GROUPS"] = [hadoop_security_group]
+    CONFIG["SECURITY_GROUPS"].append(hadoop_security_group)
+    # CONFIG["SECURITY_GROUPS"] = [hadoop_security_group]
     logging.info('Starting hadoop namenodes and datanodes...')
 
     hadoop_instance_info = create_ec2_instance(int(user.NODES), UBUNTU_AMI, INSTANCE_TYPE, ["hadoop"], HADOOP_SCRIPT)
@@ -98,19 +98,6 @@ def main():
                                 "ID": hadoop_instance_info[i]["InstanceId"],
                                 "DNS": hadoop_instance_info[i]["PublicDnsName"]} for i in range(1, int(user.NODES))]
     
-    # Call bash script to do config for hadoop
-    
-    # # Check if script is finished
-    # indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (CONFIG["FLASK"]["ID"])
-    # while True:
-    #     test = exists(indicator_file_path, CONFIG["FLASK"]["IP"], "ubuntu")
-    #     if test == "Failed":
-    #         print("Connection failed, retrying...")
-    #         continue
-    #     else:
-    #         break
-    
-    process = subprocess.Popen(["/bin/bash", "scripts/initialize_hadoop_setup_2node.sh", CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["DNS"], CONFIG["SLAVES"][0]["DNS"]])
 
 
 
@@ -123,7 +110,7 @@ def main():
     #                         'ToPort': 3306,
     #                         'IpRanges': [{'CidrIp': CONFIG["FLASK"]["IP"] + '/32'},
     #                                     {'CidrIp': LOCAL_IP + '/32'},
-    #                                     {'CidrIp': CONFIG["HADOOP_MASTER"]["IP"] + '/32'}]}] # only allow flask to access mysql
+    #                                     {'CidrIp': CONFIG["MASTER"]["IP"] + '/32'}]}] # only allow flask to access mysql
 
     # sql_security_group = create_security_group("mysql-server", sql_permissions)
 
@@ -157,7 +144,7 @@ def main():
     #                         'ToPort': 27017,
     #                         'IpRanges': [{'CidrIp': CONFIG["FLASK"]["IP"] + '/32'},
     #                                     {'CidrIp': LOCAL_IP + '/32'},
-    #                                     {'CidrIp': CONFIG["HADOOP_MASTER"] + '/32'}]}]
+    #                                     {'CidrIp': CONFIG["MASTER"]["IP"] + '/32'}]}]
         
     # mongo_security_group = create_security_group("mongo_db", mongo_permissions)
 
@@ -231,26 +218,44 @@ def main():
     # logging.info("Flask server has started, please visit %s:5000/isit" % (CONFIG["FLASK"]["IP"]))
  
 
+    # Check if hadoop installed
+    indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (CONFIG["MASTER"]["ID"])
+    while True:
+        test = exists(indicator_file_path, CONFIG["MASTER"]["IP"], "ubuntu")
+        if test == "Failed":
+            print("Connection failed, retrying...")
+            continue
+        else:
+            break
+
+    # Call bash script to do config for hadoop
+    prefix = ["/bin/bash", "scripts/initialize_hadoop_setup_2node.sh", CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["DNS"]]
+    slave_dns = [i["DNS"] for i in CONFIG["SLAVES"]]
+    process_cmd = prefix + slave_dns
+
+    run_command_bash(process_cmd)
+
+
 
 if __name__ == '__main__':
 
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("access", help="AWS access key")
-    # parser.add_argument("secret", help="Your secret access key")
-    # parser.add_argument("keypair", help="AWS key pair")
-    # parser.add_argument("keypath", help="Absolute path of your .pem file")
-    # parser.add_argument("nodes", help="Number of datanodes to spin up", type=int, choices=[2,4,8])
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("access", help="AWS access key")
+    parser.add_argument("secret", help="Your secret access key")
+    parser.add_argument("keypair", help="AWS key pair")
+    parser.add_argument("keypath", help="Absolute path of your .pem file")
+    parser.add_argument("nodes", help="Number of datanodes to spin up", type=int, choices=[2,4,8])
+    args = parser.parse_args()
 
-    # # Set up variables
-    # user.init()
-    # user.ACCESS_KEY = args.access
-    # user.SECRET_KEY = args.secret
-    # user.KEY_PAIR = args.keypair
-    # user.KEY_PATH = args.keypath
-    # user.NODES = args.nodes
+    # Set up variables
+    user.init()
+    user.ACCESS_KEY = args.access
+    user.SECRET_KEY = args.secret
+    user.KEY_PAIR = args.keypair
+    user.KEY_PATH = args.keypath
+    user.NODES = args.nodes
 
-    # main()
-    subprocess.Popen(['/bin/bash', '/scripts/test.sh'])
+    main()
+    
 
     

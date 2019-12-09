@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #Note $1 is absolute AWS keypath, $2 is NameNode, $3 is SlaveNode1, $4 slavenode2, $5 slavenode3                                                                                hadoop_1_all.sh                                                                                  Modified  
 
-rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
+sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
+sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
+sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml << EOF 
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -9,7 +11,7 @@ cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml << EOF
 <configuration>
   <property>
     <name>fs.defaultFS</name>
-    <value>$2:9000</value>
+    <value>hdfs://$2:9000</value>
   </property>
 </configuration>
 EOF
@@ -38,7 +40,9 @@ EOF
 
 
 #  setup hdfs properties
-rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
+sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
+sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
+sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml << EOF 
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -57,8 +61,9 @@ EOF
 
 
 #  setup mapred properties
-rm -f /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xmlec2-54-255-220-37.ap-southeast-1.compute.amazonaws.com: Host key verification failed.
-
+sudo rm -f /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml
+sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml
+sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml << EOF 
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -76,7 +81,9 @@ cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/mapred-site.xml << EOF
 EOF
 
 #  setup yarn properties
-rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/yarn-site.xml
+sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/yarn-site.xml
+sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/yarn-site.xml
+sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/yarn-site.xml
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/yarn-site.xml << EOF 
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -98,18 +105,16 @@ cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/yarn-site.xml << EOF
 EOF
 
 #  setup master and slaves
-rm -f /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters
+sudo rm -f /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters
+sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters
+sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters 
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/masters << EOF
 $2
 EOF
 # need to make it vary depending on arg oso because your no of dnode changes.
-rm  /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves
+sudo rm -f /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves
+sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves
+sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/slaves << EOF
 $3
 EOF
-
-yes | /bin/bash /home/ubuntu/start_hadoop_cluster.sh 
-
-
-
-
