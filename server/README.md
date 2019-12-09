@@ -10,16 +10,16 @@ Creating a virtualenv
 - type `virtualenv .pyenv`
 
 To activate the isolated virtualenv  
-If you are using powershell or powershell-based VSCode terminal
+If you are using `powershell` or `powershell-based` VSCode terminal
 - go to server folder
 - run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` once
 - run `.\\.pyenv\Scripts\activate`
 
-If you are using command prompt
+If you are using `command prompt`
 - go to server folder
 - run `.\\.pyenv\Scripts\activate`
 
-Installing Python Dependencies
+Installing Python Dependencies in the Environment
 - go to server folder
 - run `python -m pip install -r requirements.txt`
 
@@ -31,9 +31,9 @@ Installing new dependencies
 #### 3. Use .env
 - Create .env file in server folder
 - Add in the following:
-```
-# Change values according to your local machine
 
+ Change values according to your local machine
+```
 SQL_DB=isit_database
 SQL_HOST=18.139.175.98
 SQL_USER=root
@@ -47,10 +47,18 @@ LOG_DB=log_mongo
 #### 4. Development
 Project Structure
 server  
+| .pyenv `(contains python dependencies for this project)`  
 | common `(contains all the connectors to the Dbs and some shared function)`  
 |-| util.py `(utilities function such as connectors)`  
+|-| env.py  
 | resources `(contains more specific functions)`  
-|-| `(insert function)`  
+|-| book_preview.py  
+|-| categories.py  
+|-| logs.py  
+|-| metadata.py  
+|-| review.py  
+|-| test.py  
+|-| user.py  
 | app.py `(contains all the route and endpoints)`  
 | README.md  
 | requirements.txt
@@ -80,7 +88,7 @@ Create new endpoint
 - create a new database called `isit_database_mongo`
 - make sure mongo server is running on port:27017
 - run `mongod` in any shell
-- create an admin user with username: isit_database_mongo password: password
+- create an admin user with username: `isit_database_mongo` password: `password`
 
 for the API, go [here](https://docs.mongodb.com/manual/reference/method/)
 To GET data from the database
@@ -134,4 +142,6 @@ Login workflow
 - Getting the user secret and reencode the entered password with the secret to see if the result match
 - Will return the jwt token if successful
 
-
+#### 8. Categories
+- Create a new collection under `isit_database` db named `categories` and download and import 
+[categories.json](https://sutdapac-my.sharepoint.com/:f:/g/personal/andre_hadianto_mymail_sutd_edu_sg/Ev8VGVvdq4tMoNijJmy7oSkBE0G-PDxe13UgN70wbY8E5A?e=1CNZZB) to the collection.
