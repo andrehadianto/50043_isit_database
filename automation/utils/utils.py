@@ -229,13 +229,18 @@ def terminate_instances(ids):
 
     return response_final["Reservations"][0]["Instances"]
 
+# def run_command_bash(command):
+#     process = subprocess.Popen(command, stdout=subprocess.PIPE)
+#     while True:
+#         output = process.stdout.readline()
+#         if output == '' and process.poll() is not None:
+#             break
+#         if output:
+#             print(output.strip().decode('utf-8'))
+#     rc = process.poll()
+#     return rc
+
 def run_command_bash(command):
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    while True:
-        output = process.stdout.readline()
-        if output == '' and process.poll() is not None:
-            break
-        if output:
-            print(output.strip().decode('utf-8'))
-    rc = process.poll()
-    return rc
+    with subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1,universal_newlines=True) as p:
+        for line in p.stdout:
+            print(line, end='')

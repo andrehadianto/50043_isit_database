@@ -3,12 +3,12 @@
 echo "Preparing namenode and datanode..."
 scp -o StrictHostKeyChecking=no -i $1 $1  ubuntu@$2:/home/ubuntu/aws_key.pem
 ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "chmod 400 /home/ubuntu/aws_key.pem"
-scp -o StrictHostKeyChecking=no -i $1 "hadoop_namenode_setup.sh"  ubuntu@$2:/home/ubuntu/hadoop_namenode_setup.sh
-scp -o StrictHostKeyChecking=no -i $1 "start_hadoop_cluster.sh"  ubuntu@$2:/home/ubuntu/start_hadoop_cluster.sh
+scp -o StrictHostKeyChecking=no -i $1 "scripts/2nodesetup/hadoop_namenode_setup.sh"  ubuntu@$2:/home/ubuntu/hadoop_namenode_setup.sh
+scp -o StrictHostKeyChecking=no -i $1 "scripts/2nodesetup/start_hadoop_cluster.sh"  ubuntu@$2:/home/ubuntu/start_hadoop_cluster.sh
 
 #Run datanode setup first arg is namenode dns
 #Test this line first
-scp -o StrictHostKeyChecking=no -i $1 "hadoop_datanode_setup.sh"  ubuntu@$3:/home/ubuntu/hadoop_datanode_setup.sh
+scp -o StrictHostKeyChecking=no -i $1 "scripts/2nodesetup/hadoop_datanode_setup.sh"  ubuntu@$3:/home/ubuntu/hadoop_datanode_setup.sh
 ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$3 "chmod +x /home/ubuntu/hadoop_datanode_setup.sh"
 ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$3 "/bin/bash  /home/ubuntu/hadoop_datanode_setup.sh $2" 
 
@@ -21,4 +21,4 @@ echo "Just a little longer..."
 
 ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "/bin/bash /home/ubuntu/start_hadoop_cluster.sh"
 
-echo "Hdfs is up! Please visit $2:5000"
+echo "Hdfs is up! Please visit $2:50070"
