@@ -16,13 +16,13 @@ sudo mv sqoop-1.99.7-bin-hadoop200 /usr/lib/
 # export HADOOP_YARN_HOME=$HOME/hadoop-2.7.3
 
 echo "Setting Sqoop ENV variables and PATH..."
-cat >> ~/etc/profile << EOF
-export SQOOP_HOME=/usr/lib/sqoop-1.99.7-bin-hadoop200'
-export PATH=$PATH:$SQOOP_HOME/bin'
-export SQOOP_CONF_DIR=$SQOOP_HOME/conf'
-export SQOOP_CLASS_PATH=$SQOOP_CONF_DIR'
-EOF
-source ~/etc/profile
+
+sudo bash -c 'echo "export SQOOP_HOME=/usr/lib/sqoop-1.99.7-bin-hadoop200" >> /etc/profile'
+sudo bash -c 'echo "export PATH=$PATH:$SQOOP_HOME/bin" >> /etc/profile'
+sudo bash -c 'echo "export SQOOP_CONF_DIR=$SQOOP_HOME/conf" >> /etc/profile'
+sudo bash -c 'echo "export SQOOP_CLASS_PATH=$SQOOP_CONF_DIR" >> /etc/profile'
+
+source /etc/profile
 
 echo "Copying Hadoop jar files..."
 # copy Hadoop jar files to Sqoop server/lib/
@@ -40,18 +40,26 @@ echo "Editing Hadoop core-site..."
 # impersonate user access to HDFS
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml << EOF 
 <property>
-<name>hadoop.proxyuser.ubuntu.hosts</name>
-<value>*</value>
+    <name>hadoop.proxyuser.ubuntu.hosts</name>
+    <value>*</value>
 </property>
 <property>
-<name>hadoop.proxyuser.ubuntu.groups</name>
-<value>*</value>
+    <name>hadoop.proxyuser.ubuntu.groups</name>
+    <value>*</value>
 </property>
 EOF
 
 echo "Initializing and starting Sqoop server..."
- ./usr/lib/sqoop-1.99.7-bin-hadoop200/bin/sqoop2-tool upgrade
- ./usr/lib/sqoop-1.99.7-bin-hadoop200/bin/sqoop2-server start
+. /usr/lib/sqoop-1.99.7-bin-hadoop200/bin/sqoop2-tool upgrade
+. /usr/lib/sqoop-1.99.7-bin-hadoop200/bin/sqoop2-server start
+
+# ./sqoop.sh server tools [need args]
+# ./sqoop.sh server start
+# Setting conf dir: ./../conf
+# Sqoop home directory: /usr/lib/sqoop-1.99.7-bin-hadoop200
+# 'Cant load the Hadoop related java lib, please check the setting for the following environment variables:
+#     HADOOP_COMMON_HOME, HADOOP_HDFS_HOME, HADOOP_MAPRED_HOME, HADOOP_YARN_HOME
+# ubuntu@ip-172-31-29-2:/usr/lib/sqoop-1.99.7-bin-hadoop200/bin$'
 
 echo "=== Sqoop setup done ==="
 
