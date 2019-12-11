@@ -7,13 +7,26 @@ wget http://archive.apache.org/dist/sqoop/1.99.7/sqoop-1.99.7-bin-hadoop200.tar.
 tar -xvf sqoop-1.99.7-bin-hadoop200.tar.gz
 sudo mv sqoop-1.99.7-bin-hadoop200 /usr/lib/
 
-# Set Hadoop-related environment variables
-# export HADOOP_HOME=$HOME/hadoop-2.7.3
-# export HADOOP_CONF_DIR=$HOME/hadoop-2.7.3/etc/hadoop
-# export HADOOP_MAPRED_HOME=$HOME/hadoop-2.7.3
-# export HADOOP_COMMON_HOME=$HOME/hadoop-2.7.3
-# export HADOOP_HDFS_HOME=$HOME/hadoop-2.7.3
-# export HADOOP_YARN_HOME=$HOME/hadoop-2.7.3
+echo "Setting Hadoop-related env variables..."
+# cat >> /etc/profile << EOF 
+# HADOOP_HOME=$HOME/hadoop-2.8.5
+# HADOOP_CONF_DIR=$HOME/hadoop-2.8.5/etc/hadoop
+# HADOOP_MAPRED_HOME=$HOME/hadoop-2.8.5
+# HADOOP_COMMON_HOME=$HOME/hadoop-2.8.5
+# HADOOP_HDFS_HOME=$HOME/hadoop-2.8.5
+# HADOOP_YARN_HOME=$HOME/hadoop-2.8.5
+# EOF
+
+sudo bash -c 'echo "export HADOOP_HOME=$HOME/server/hadoop-2.8.5" >> /etc/profile'
+sudo bash -c 'echo "export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop" >> /etc/profile'
+# sudo bash -c 'echo "export HADOOP_MAPRED_HOME=$HADOOP_HOME/share/hadoop/mapreduce" >> /etc/profile'
+# sudo bash -c 'echo "export HADOOP_COMMON_HOME=$HADOOP_HOME/share/hadoop/common" >> /etc/profile'
+# sudo bash -c 'echo "export HADOOP_HDFS_HOME=$HADOOP_HOME/share/hadoop/hdfs" >> /etc/profile'
+# sudo bash -c 'echo "export HADOOP_YARN_HOME=$HADOOP_HOME/share/hadoop/yarn" >> /etc/profile'
+sudo bash -c 'echo "export HADOOP_MAPRED_HOME=$HADOOP_HOME" >> /etc/profile'
+sudo bash -c 'echo "export HADOOP_COMMON_HOME=$HADOOP_HOME" >> /etc/profile'
+sudo bash -c 'echo "export HADOOP_HDFS_HOME=$HADOOP_HOME" >> /etc/profile'
+sudo bash -c 'echo "export HADOOP_YARN_HOME=$HADOOP_HOME" >> /etc/profile'
 
 echo "Setting Sqoop ENV variables and PATH..."
 
@@ -50,16 +63,9 @@ cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml << EOF
 EOF
 
 echo "Initializing and starting Sqoop server..."
-. /usr/lib/sqoop-1.99.7-bin-hadoop200/bin/sqoop2-tool upgrade
-. /usr/lib/sqoop-1.99.7-bin-hadoop200/bin/sqoop2-server start
-
-# ./sqoop.sh server tools [need args]
-# ./sqoop.sh server start
-# Setting conf dir: ./../conf
-# Sqoop home directory: /usr/lib/sqoop-1.99.7-bin-hadoop200
-# 'Cant load the Hadoop related java lib, please check the setting for the following environment variables:
-#     HADOOP_COMMON_HOME, HADOOP_HDFS_HOME, HADOOP_MAPRED_HOME, HADOOP_YARN_HOME
-# ubuntu@ip-172-31-29-2:/usr/lib/sqoop-1.99.7-bin-hadoop200/bin$'
+cd /usr/lib/sqoop-1.99.7-bin-hadoop200/bin
+./sqoop2-tool upgrade
+./sqoop2-server start
 
 echo "=== Sqoop setup done ==="
 
