@@ -59,45 +59,45 @@ static
 
 ## Features
 -----
-![Homepage](/images/01.png)  
+![Homepage](/static/images/01.png)  
 Homepage of our webiste shows a list of all books available in our database. User may sign up and login to our website.  
 
-![Filter](/images/02.png)  
+![Filter](/static/images/02.png)  
 Filter the books by multiple categories. Type inside the input form for category suggestions.  
 
-![Filtered Book](/images/07.png)  
+![Filtered Book](/static/images/07.png)  
 Filtered books will show the filtered categories in the labels by upper-left corner.  
 
-![Search](/images/03.png)  
+![Search](/static/images/03.png)  
 Search a book by its asin code.  
 
-![Login](/images/04.png)  
+![Login](/static/images/04.png)  
 User may login to gain access to user-only features.  
 
-![Signup](/images/06.png)  
+![Signup](/static/images/06.png)  
 User may sign up a new account. Username is unique.  
 
-![User-only Features](/images/05.png)  
+![User-only Features](/static/images/05.png)  
 User-only features consist of Adding new books, Seeing logs, and logging out.  
 
-![Book details](/images/09.png)  
+![Book details](/static/images/09.png)  
 Selecting a book will show the book details. You can see the title if available, the genre, author, description, and its price. Below shows all the available reviews by other users and the overall ratings.  
 
-![Share a review](/images/10.png)  
+![Share a review](/static/images/10.png)  
 Anonymous user may post a review using a nickname of their own choice.  
 
-![Share a review logged in](/images/08.png)  
+![Share a review logged in](/static/images/08.png)  
 Logged in user does not have to choose a nickname and their review will be based on their entered display name.  
 
-![Add new book](/images/11.png)  
+![Add new book](/static/images/11.png)  
 Logged in user can add a new book. The preview of the book can be seen before submitting the book.  
 
-![Successfully add new book](/images/14.png)  
+![Successfully add new book](/static/images/14.png)  
 User can check the details of successful new book submission immediately.  
 
-![List of logs](/images/12.png)  
+![List of logs](/static/images/12.png)  
 Logged in user may see the list of logs.  
 
-![Log details](/images/13.png)  
+![Log details](/static/images/13.png)  
 Details of a log.  
 
