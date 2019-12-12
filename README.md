@@ -15,12 +15,17 @@ After cleaning the dataset, we loaded the data into the respective databases.
 * [Frontend](#frontend)
   + [Requirements](#requirements)
   + [Framework](#framework)
-  + [Implemented Features](#implemented-features)
+  + [Features](#features)
   + [Preview](#preview)
 * [Production Backend](#production-backend)
   + [Requirements](#requirements-1)
+  + [Framework](#framework-1)
   + [Design](#design)
 * [Analytics Backend](#analytics-backend)
+  + [Requirements](#requirements-2)
+* [Automation](#automation)
+  + [Requirements](#requirements-3)
+  + [Implementation](#implementation)
 
 ## Frontend
 ### Requirements
@@ -32,9 +37,10 @@ You are free to use any Web framework you want, and free to decide your own stru
 And feel free to add more functionalities as the project progresses.
 
 ### Framework
-We used ReactJS for our frontend because it is fast, scalable, and simple. It allows us to create a web application which can change data, without reloading the page. React also allows us to create reusable UI components, making our code lighter and less repetitive. 
+We used ReactJS for our frontend because it is fast, scalable, and simple. It allows us to create a web application which can change data, without reloading the page. React also allows us to create reusable UI components, making our code lighter and less repetitive.
+The full documentation on the usage can be found [here](/static).
 
-### Implemented Features
+### Features
 The features implemented on our web application is as follows:
 * Homepage of our webiste shows a list of all books available in our database. User may sign up and login to our website.  
 * Filter the books by multiple categories. Type inside the input form for category suggestions.  
@@ -49,11 +55,11 @@ The features implemented on our web application is as follows:
 * Logged in user can add a new book. The preview of the book can be seen before submitting the book.  
 * User can check the details of successful new book submission immediately.  
 * Logged in user may see the list of logs.  
-* Details of a log.  
+* View details of a log.  
 
 ### Preview
 This is a preview of our frontend
-<img src="static/images/01.png)" width=1000px/>
+<img src="static/images/01.png" width=700px/><br />
 The full implementation of our frontend and the various features supported by our web application can be found [here](/static).
 
 ## Production Backend
@@ -66,9 +72,13 @@ The full implementation of our frontend and the various features supported by ou
   + What type of request is being served
   + What is the response
 
+### Framework
+Our server uses Flask because it allows for more control about which components to use, such as what databases and how to interact with them. Since our project requires us to connect with multiple SQL and Mongo databases, we decided that Flask was most suitable.
+The full documentation on the usage can be found [here](/server).
+
 ### Design
 #### 1. Books Metadata
-##### Schema (MongoDB)
+**Schema (MongoDB)**
 * id: ObjectId, primary key
 * asin: String
 * title: String
@@ -80,7 +90,9 @@ The full implementation of our frontend and the various features supported by ou
   + bought_together: string[] 
 * price?: Double
 * description?: String
-##### Endpoints
+
+**Endpoints**
+
 | Endpoint                    | REST | Description                                                  |
 |-----------------------------|------|--------------------------------------------------------------|
 | /book/:asin                 | GET  | Returns book details (all available fields), erroneous asin in array will be ignored<br/><ul><li>Parameter: asin</li><li>Body: json(id, asin, title, categories, imUrl, related?, price?, description?)</li></ul> |
@@ -96,7 +108,7 @@ The full implementation of our frontend and the various features supported by ou
 | /user/signup                | POST | Sign up a new account into the database |
 
 #### 2. Kindle Reviews
-##### Schema (MySQL)
+**Schema (MySQL)**
 * id: Integer, primary key
 * asin: String
 * helpful: String
@@ -107,7 +119,9 @@ The full implementation of our frontend and the various features supported by ou
 * reviewerName: String
 * summary: String
 * unixReviewTime: Integer
-##### Endpoints    
+
+**Endpoints**  
+
 | Endpoint                        | REST   | Description                                                  |
 |---------------------------------|--------|--------------------------------------------------------------|
 | /reviews/:asin?page={}&count={} | GET    | Returns reviews details (all fields) for a book with pagination<br/><ul><li>Body: Array of json(id, asin, helpful, overall, reviewText, reviewTime, reviewerID, reviewerName, summary, unixReviewTime)</li></ul> |
@@ -116,6 +130,34 @@ The full implementation of our frontend and the various features supported by ou
 | /review/:id                     | DELETE | Delete review |
 | /review/:id                     | PUT    | Edit review by user<br/><ul><li>Body: json(overall, reviewText, summary)</li></ul> |
 
-
+#### 3. Logs
+**Schema (MongoDB)**
+* id: Integer, primary key
+* time: String
+* body: String
+* method: String
+* path: String
+* status: String
+* statuCode: Integer
 
 ### Analytics Backend
+#### Requirements
+You will build a analytics pipeline and system that comprises:
+1. You will first write a script that saves data from the production system, and then loads the data to a distributed file system (HDFS) in the analytics systems.
+2. Write the following applications in Spark.
+  + *Correlation*: compute the Pearson correlation between price and average review length. You are to implement in a map-reduce fashion, and are not allowed to use mllib.stat.Satistics.
+  + *TF-IDF*: compute the term frequency inverse document frequency metric on the review text. Treat one review as a document.
+
+### Automation
+#### Requirements
+The requirements for the scripts are as follows:
+* No managed service such as EMR and RDS.
+* Your scripts are expected to:
+  + Take my AWS credentials as input. (For the analytic tasks, your scripts also take the number of nodes).
+  + Spin up new instances from a base Ubuntu image. Only most basic OS packages are installed in the base image.
+  + Configure and start your systems (both production and analytics). Your scripts tell me how/where to access the front end.
+  + Have options to start the analytic tasks.
+  + You can save the results of the analytic tasks to file, and tell me how/where to access the file.
+
+#### Implementation
+The full documentation of the usage can be found [here](/automation).
