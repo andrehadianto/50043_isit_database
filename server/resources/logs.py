@@ -26,6 +26,7 @@ class LogsList(Resource):
 
         log_array = []
         logs = mongo_log.db.logs.find({}).limit(_limit).skip(_offset)
+        logs_count = mongo_log.db.logs.find({}).count()
         for log in logs:
             log_id = str(log.get('_id'))
             time = log.get('time').strftime("%d-%m-%Y, %H:%M:%S")
@@ -44,7 +45,7 @@ class LogsList(Resource):
                 "body": body
             }
             log_array.append(json)
-        return log_array
+        return {"message": "Successful returns logs list", "body": log_array, "count": logs_count}, 200
 
 class LogAPI(Resource):
     """ Returns a specific log with respect to mongo ObjectId """

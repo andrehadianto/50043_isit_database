@@ -7,18 +7,23 @@ import {
     Icon
 } from 'semantic-ui-react';
 
+let value = '';
+
 const BookSearch = () => {
     const [redirect, setRedirect] = useState(false);
 
     const searchHandler = (e) => {
         e.preventDefault();
-        const value = e.target.elements.asin.value;
+        value = e.target.elements.asin.value;
+        console.log(value)
         if (!!value.length) {
+            console.log('someting here')
             setRedirect(true);
         }
     }
 
     if ( redirect ) {
+        console.log(`${value} is my value`)
         return ( <Redirect to={{pathname: `/review/${value}`}}/> )
     } else {
         return (
