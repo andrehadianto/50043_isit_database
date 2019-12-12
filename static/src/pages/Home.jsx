@@ -75,7 +75,18 @@ class Home extends Component {
                         </Menu>
                         <HomepageBanner/>
                     </Route>
-                    <Route exact path='/filter' component={CategoryFilter}/>
+                    <Route exact path='/filter'>
+                        <Menu secondary inverted size='small'>
+                                <Grid container>
+                                    <Grid.Column floated='left' width={8}>
+                                        <BookSearch/>
+                                    </Grid.Column>
+                                    <Grid.Column floated='right' width={8}>
+                                        <CategoryFilter/>
+                                    </Grid.Column>
+                                </Grid>
+                        </Menu>
+                    </Route>
                 </Segment>
                 <Container style={{marginTop: '2em', marginBottom: '4em'}}>
                     <Switch>
