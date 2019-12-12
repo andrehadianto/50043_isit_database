@@ -39,7 +39,7 @@ const AllBooks = (props) => {
             getBookApiUrl
         )
         .then(res => {
-            setTotalPage(parseInt(res.data.count/24) + 1)
+            setTotalPage(parseInt(res.data.count/24) + 1);
             setBookData([...res.data.books]);
             setIsLoading(false);
         });
