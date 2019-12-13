@@ -23,6 +23,7 @@ After cleaning the dataset, we loaded the data into the respective databases.
   + [Design](#design)
 * [Analytics Backend](#analytics-backend)
   + [Requirements](#requirements-2)
+  + [Approach](#approach)
 * [Automation](#automation)
   + [Requirements](#requirements-3)
   + [Design](#design-1)
@@ -148,6 +149,106 @@ You will build a analytics pipeline and system that comprises:
 2. Write the following applications in Spark.
   + *Correlation*: compute the Pearson correlation between price and average review length. You are to implement in a map-reduce fashion, and are not allowed to use mllib.stat.Satistics.
   + *TF-IDF*: compute the term frequency inverse document frequency metric on the review text. Treat one review as a document.
+
+#### Approach
+##### (1) Correlation
+To compute the Pearson correlation between price and average review length, we would first need to retrieve these data from HDFS. Since price is from the `Meta` dataset while the reviews are from the `Reviews` dataset, we would need to fetch the two datasets and do some preprocessing. 
+
+The proprocessing includes getting the average `reviewText` length for each book (`asin`). Thereafter, we join the two datasets using `asin` and extracted the `average_reviewLength` and `price` required for our correlation computation. 
+
+We made use of the **MapReduce** concept for the computation. In the mapping stage, we mapped each row to its `x`, `x**2`, `xy`, `y` and `y**2` values. (Let x = price and y = average_reviewLength). This is done via:
+
+```
+flatdata = data.flatMap(lambda row: (     #row -> price, average_reviewLength
+	("x", row[0]),
+	("y", row[1]),
+	("x2", row[0] * row[0]),
+	("y2", row[1] * row[1]),
+	("xy", row[0] * row[1])))
+```
+
+Next, in the reducing stage, we reduced by key and summed up all the values in each keys. Thereafter, we sorted by key so that we can get an absolute order we can slice from.
+
+```
+# Sort by key so that we will get an order we can slice from
+reduced_data = flatdata.reduceByKey(lambda x,y: x+y).sortByKey()
+
+# Retrieving our terms required for calculating the correlation
+end_data = reduced_data.take(5)
+x = end_data[0][1]
+xx = end_data[1][1]
+xy = end_data[2][1]
+y = end_data[3][1]
+yy = end_data[4][1]
+```
+
+Now that we have <img src="https://latex.codecogs.com/svg.latex?\small&space;\sum&space;x,&space;\sum&space;x^{2},&space;\sum&space;xy,&space;\sum&space;y,&space;\sum&space;y^{2}" title="\small \sum x, \sum x^{2}, \sum xy, \sum y, \sum y^{2}" />, computing the Pearson correlation is straightforward. We simply use the formula as follows in order to do the computation.
+
+<p align="center">
+  <img src="https://latex.codecogs.com/svg.latex?\small&space;r&space;=&space;\frac{n&space;\sum&space;xy&space;-&space;\sum&space;x&space;\sum&space;y}{\sqrt&space;{(n&space;\sum&space;x^{2}&space;-&space;(\sum&space;x)^{2})&space;(n&space;\sum&space;y^{2}&space;-&space;(\sum&space;y)^{2})}}" title="\small r = \frac{n \sum xy - \sum x \sum y}{\sqrt {(n \sum x^{2} - (\sum x)^{2}) (n \sum y^{2} - (\sum y)^{2})}}" />
+</p>
+
+After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /corr/ directory 
+```
+hadoop fs -ls /corr
+```
+
+
+##### (2) TF-IDF
+The second analytic task was to compute the term frequency inverse document frequency metric on the reviews where each review is a document.
+
+(a) **Convert each review to an array of words**
+```
+tokenizer = Tokenizer(inputCol="reviewText", outputCol="words")
+wordsData = tokenizer.transform(data)
+```
+
+(b) **Get the term frequency vectors**
+
+We used `CountVectorizer` to compute the term frequency vectors instead of `HashingTF` even though it is slower because `CountVectorizer` is able to restore the word vocabulary.
+```
+cv = CountVectorizer(inputCol="words", outputCol="rawFeatures")
+model = cv.fit(wordsData)
+featurizedData = model.transform(wordsData)
+```
+
+(c) **Apply IDF**
+```
+featurizedData.cache()
+idf = IDF(inputCol="rawFeatures", outputCol="features")
+idfModel = idf.fit(featurizedData)
+rescaledData = idfModel.transform(featurizedData)
+```
+
+(d) **Convert word index back to word**
+
+After using `CountVectorizer`, it indexes each word and thus each word is now represented by an integer index. In order to recover the words back we created a user-defined function (`udf`) and apply it to our dataframe. 
+
+```
+# trying to map the index of word -> actual word cause CountVectorizer gives index
+def map_to_word1(row, vocab):
+    d = {}
+    array = row.toArray()
+    for i in range(len(row)):
+        # if it is 0 -> ignore, else change the key to corresponding word
+        if (array[i] != 0):
+            tfidf = array[i]
+            word = vocab[i]
+            d[word] = tfidf
+    return str(d)
+
+def map_to_word(vocab):
+    return udf(lambda row: map_to_word1(row, vocab))
+
+# apply udf to convert index back to word
+df = rescaledData.withColumn("modified", map_to_word(vocab)(rescaledData.features))
+```
+
+After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /corr/ directory 
+```
+hadoop fs -ls /tfidf
+```
+
 
 ### Automation
 #### Requirements
