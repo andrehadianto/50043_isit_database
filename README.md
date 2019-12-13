@@ -25,7 +25,8 @@ After cleaning the dataset, we loaded the data into the respective databases.
   + [Requirements](#requirements-2)
 * [Automation](#automation)
   + [Requirements](#requirements-3)
-  + [Implementation](#implementation)
+  + [Design](#design-1)
+  + [Use Flow](#use-flow)
 
 ## Frontend
 ### Requirements
@@ -159,5 +160,38 @@ The requirements for the scripts are as follows:
   + Have options to start the analytic tasks.
   + You can save the results of the analytic tasks to file, and tell me how/where to access the file.
 
-#### Implementation
-The full documentation of the usage can be found [here](/automation).
+#### Design
+The EC2 instances will be setup as in the following structure
+<img src="readme/automation.jpg" width=500px/><br />
+
+| Instance Number | Content                 | Details        |
+|-----------------|-------------------------|----------------|
+| 1               | <ul><li>Frontend (React)</li><li>Backend (Flask)</li></ul> | The frontend and backend is hosted at port 5000, the website can be viewed at &lt;public IP 1&gt;:5000/isit. The backend retrieves information from the databases via their IP addresses. |
+| 2               | Kindle Reviews (MySQL)  | The data can be accessed by the backend and namenode at &lt;public IP 2&gt;:3306. |
+| 3               | <ul><li>Books Metadata (MongoDB)</li><li>Logs (MongoDB)</li>User Data (MongoDB)</li></ul> | The data can be accessed by the backend and namenode at &lt;public IP 3&gt;:27017. |
+| 4               | <ul><li>Namenode (HDFS)</li><li>Driver (Spark)</li></ul> | The namenode is configured to store the public DNS of the datanodes. The HDFS cluster can be view at &lt;public IP 4&gt;:50070. When the client issues an analytics job, data is retrieved from the databases via their IP addresses. The driver delegates tasks to the workers by ssh-ing into the datanodes. Upon completion, the driver returns the output file. |
+| 5+              | <ul><li>Datanode (HDFS)</li><li>Worker (Spark)</li></ul> | The worker performs the tasks assigned by the driver. |
+
+#### Use Flow
+1. Clone the project repository using the following command
+    ```
+    git clone https://github.com/andrehadianto/50043_isit_database.git
+    ```
+2. In the automation folder, create a virtual environment and install the requirements
+    ```
+    virtualenv .pyenv
+    source .pyenv\Scripts\activate
+    python -m pip install -r requirements.txt
+    ```
+3. Run main.py to setup and configure the EC2 instances, this will take 10-20min.
+    ```
+    python3 main.py <access key> <secret access key> <key pair name> <**absolute** pem file directory> <cluster size>
+    ```
+4. The public IP of the EC2 instance hosting the web application will be printed on the console. The website can then be viewed at `<public IP>:5000/isit`
+5. To initiate the analytics, run 
+    ```
+    python3 analytics.py
+    ```
+6. The analytics results can be found in `file-path/filename`, the file location will be printed on the console. A sample of the file is shown below.
+    <img src="readme/analytics.jpg" width=700px/><br />
+    
