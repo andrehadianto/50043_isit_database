@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #Note $1 is absolute AWS keypath, $2 is NameNode dns, $3 is SlaveNode dns, $4 is slavenode ip
 
-echo "arguments are $1 $2 $3 $4"
 echo "Changing config files..."
 
 sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
@@ -126,28 +125,6 @@ EOF
 
 touch /usr/lib/spark/conf/slaves
 echo $4 >> /usr/lib/spark/conf/slaves
-
-# install sqoop
-echo "=== Set Up for SQOOP === "
-echo "Installing Apache Sqoop 1.4.7..."
-wget https://www-us.apache.org/dist/sqoop/1.4.7/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
-tar -zxvf sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
-sudo mv sqoop-1.4.7.bin__hadoop-2.6.0 /usr/lib
-sudo chmod -R 757 /usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0
-
-
-echo "export SQOOP_HOME=/usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0" >> /etc/profile
-echo "export SQOOP_CONF_DIR=/usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0/conf" >> /etc/profile
-echo "export PATH=$PATH:/usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0/bin" >> /etc/profile
-
-echo "Installing JDBC driver..."
-wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.38.tar.gz
-tar -xvzf mysql-connector-java-5.1.38.tar.gz
-sudo cp mysql-connector-java-5.1.38/mysql-connector-java-5.1.38-bin.jar $SQOOP_HOME/lib/
-
-sudo chmod a+rw /etc/profile
-
-
 
 echo "Installing Mongo..."
 # download mongo

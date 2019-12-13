@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# $1 namenode dns, $2 datanode1 ip, $3 datanode2 ip, $4 datanode3 ip
 sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
 sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
 sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
@@ -33,6 +34,11 @@ cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml << EOF
   </property>
 </configuration>
 EOF
+
+touch /usr/lib/spark/conf/slaves
+echo $2 >> /usr/lib/spark/conf/slaves
+echo $3 >> /usr/lib/spark/conf/slaves
+echo $4 >> /usr/lib/spark/conf/slaves
 
 sudo mkdir -p /usr/local/hadoop/hdfs/data
 sudo chown -R ubuntu:ubuntu /usr/local/hadoop/hdfs/data

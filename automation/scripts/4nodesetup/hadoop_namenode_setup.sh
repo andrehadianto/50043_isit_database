@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-#Note $1 is absolute AWS keypath, $2 is NameNode, $3 is SlaveNode1, $4 slavenode2, $5 slavenode3                                                                                hadoop_1_all.sh                                                                                  Modified  
-
+# $1 is absolute AWS keypath, $2 is NameNode, $3 is SlaveNode1, $4 slavenode2, $5 slavenode3
+# $6 datanode1 ip, $7 datanode2 ip, $8 datanode3 ip
 sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
 sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
 sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
@@ -135,3 +135,29 @@ $3
 $4
 $5
 EOF
+
+touch /usr/lib/spark/conf/slaves
+echo $6 >> /usr/lib/spark/conf/slaves
+echo $7 >> /usr/lib/spark/conf/slaves
+echo $8 >> /usr/lib/spark/conf/slaves
+
+echo "Installing Mongo..."
+# download mongo
+{
+    wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
+    echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+    sudo apt-get update
+    sudo apt-get install -y mongodb-org
+} || {
+    # catch
+    echo "ERROR: installing mongodb"
+}
+
+{
+    sudo service mongod start
+} || {
+    sudo systemctl enable mongod
+    sudo service mongod start
+}
+
+sudo apt install -y mysql-server-5.7
