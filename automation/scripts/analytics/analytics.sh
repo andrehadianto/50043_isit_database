@@ -11,3 +11,8 @@ ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "tr '\t' ',' < /home/ubuntu/kind
 scp -o StrictHostKeyChecking=no -i $1 "scripts/analytics/ACTIVATE.sh"  ubuntu@$2:/home/ubuntu/ACTIVATE.sh
 ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "chmod +x /home/ubuntu/ACTIVATE.sh"
 ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "/bin/bash /home/ubuntu/ACTIVATE.sh"
+
+echo "Output files are stored in hdfs. Name node: $2"
+echo "Output of Task 1 can be found at /corr directory in hdfs"
+echo "Output of Task 2 can be found at /tfidf directory in hdfs"
+echo "Refer to https://github.com/andrehadianto/50043_isit_database"
