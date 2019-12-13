@@ -2,8 +2,11 @@
 
 # $1 namenode dns, $2,$3,$4,$5,$6,$7,$8 datanode ip
 sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
+sleep 1 
 sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
+sleep 1 
 sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml
+sleep 1 
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml << EOF 
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -19,10 +22,13 @@ cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/hdfs-site.xml << EOF
   </property>
 </configuration>
 EOF
-
+sleep 1 
 sudo rm /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
+sleep 1 
 sudo touch /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
+sleep 1 
 sudo chmod a+rwx /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml
+sleep 1 
 cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml << EOF 
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -35,14 +41,27 @@ cat >> /home/ubuntu/server/hadoop-2.8.5/etc/hadoop/core-site.xml << EOF
 </configuration>
 EOF
 
-touch /usr/lib/spark/conf/slaves
-echo $2 >> /usr/lib/spark/conf/slaves
-echo $3 >> /usr/lib/spark/conf/slaves
-echo $4 >> /usr/lib/spark/conf/slaves
-echo $5 >> /usr/lib/spark/conf/slaves
-echo $6 >> /usr/lib/spark/conf/slaves
-echo $7 >> /usr/lib/spark/conf/slaves
-echo $8 >> /usr/lib/spark/conf/slaves
 
+sleep 1 
+touch /usr/lib/spark/conf/slaves
+sleep 1
+echo $1 >> /usr/lib/spark/conf/slaves
+sleep 1  
+echo $2 >> /usr/lib/spark/conf/slaves
+sleep 1 
+echo $3 >> /usr/lib/spark/conf/slaves
+sleep 1 
+echo $4 >> /usr/lib/spark/conf/slaves
+sleep 1 
+echo $5 >> /usr/lib/spark/conf/slaves
+sleep 1 
+echo $6 >> /usr/lib/spark/conf/slaves
+sleep 1 
+echo $7 >> /usr/lib/spark/conf/slaves
+sleep 1 
+echo $8 >> /usr/lib/spark/conf/slaves
+sleep 1 
 sudo mkdir -p /usr/local/hadoop/hdfs/data
+sleep 1 
 sudo chown -R ubuntu:ubuntu /usr/local/hadoop/hdfs/data
+sleep 1 

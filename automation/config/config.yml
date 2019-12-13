@@ -1,0 +1,45 @@
+AWS_CREDENTIALS:
+  ACCESS_KEY: AKIARUP33XTU6NT63S44
+  KEY_PAIR: AWS_YC_SEA
+  KEY_PATH: /home/osboxes/Documents/AWS_YC_SEA.pem
+  SECRET_KEY: xaq4BAxRuiCTFn9V/oKpUhIGxLj5ppwVjTQxroIi
+FLASK:
+  ID: i-0fb4f3e963c8a4dba
+  IP: 54.169.209.134
+MASTER:
+  DNS: ec2-52-76-10-191.ap-southeast-1.compute.amazonaws.com
+  ID: i-0eb7ae0e9e510edcd
+  IP: 52.76.10.191
+MONGO:
+  ID: i-0fdc670cd56678a82
+  IP: 3.1.6.183
+MYSQL:
+  ID: i-04d8d1833f80424f6
+  IP: 18.139.114.145
+SECURITY_GROUPS:
+- sg-03206ae587d969a13
+- sg-0a59e43af68d1256d
+- sg-0ae5b80bde0d0de4f
+- sg-0ca7ebe2a69aacd52
+SLAVES:
+- DNS: ec2-13-229-229-11.ap-southeast-1.compute.amazonaws.com
+  ID: i-01b331f86bed49bfe
+  IP: 13.229.229.11
+- DNS: ec2-54-169-97-172.ap-southeast-1.compute.amazonaws.com
+  ID: i-0f695989d50bd13b9
+  IP: 54.169.97.172
+- DNS: ec2-18-140-70-107.ap-southeast-1.compute.amazonaws.com
+  ID: i-09d389212695ed948
+  IP: 18.140.70.107
+- DNS: ec2-54-169-39-128.ap-southeast-1.compute.amazonaws.com
+  ID: i-09e60bbec57e390bc
+  IP: 54.169.39.128
+- DNS: ec2-52-221-238-170.ap-southeast-1.compute.amazonaws.com
+  ID: i-0234ff14ddb3112c2
+  IP: 52.221.238.170
+- DNS: ec2-18-136-200-55.ap-southeast-1.compute.amazonaws.com
+  ID: i-00bff4a814788900e
+  IP: 18.136.200.55
+- DNS: ec2-13-250-122-117.ap-southeast-1.compute.amazonaws.com
+  ID: i-0ec11422d32711b77
+  IP: 13.250.122.117
