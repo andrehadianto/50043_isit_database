@@ -222,7 +222,7 @@ rescaledData = idfModel.transform(featurizedData)
 
 (d) **Convert word index back to word**
 
-After using `CountVectorizer`, it indexes each word and thus each word is now represented by an integer index. In order to recover the words back we created a user-defined function (`udf`) and apply it to our dataframe. 
+After using `CountVectorizer`, it indexes each word and thus each word is now represented by an integer index. In order to recover the words back we created a user-defined function (`udf`) and applied it to our dataframe. 
 
 ```
 # trying to map the index of word -> actual word cause CountVectorizer gives index
@@ -244,7 +244,7 @@ def map_to_word(vocab):
 df = rescaledData.withColumn("modified", map_to_word(vocab)(rescaledData.features))
 ```
 
-After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /corr/ directory 
+After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /tfidf/ directory 
 ```
 hadoop fs -ls /tfidf
 ```
