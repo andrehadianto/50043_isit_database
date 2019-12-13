@@ -48,7 +48,6 @@ def create_ec2_instance(count, image_id, instance_type, security_group, script_p
         print(e)
         return None
     
-    print(response_final)
     return response_final['Reservations'][0]['Instances']
 
 
@@ -229,16 +228,6 @@ def terminate_instances(ids):
 
     return response_final["Reservations"][0]["Instances"]
 
-# def run_command_bash(command):
-#     process = subprocess.Popen(command, stdout=subprocess.PIPE)
-#     while True:
-#         output = process.stdout.readline()
-#         if output == '' and process.poll() is not None:
-#             break
-#         if output:
-#             print(output.strip().decode('utf-8'))
-#     rc = process.poll()
-#     return rc
 
 def run_command_bash(command):
     with subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=1,universal_newlines=True) as p:
