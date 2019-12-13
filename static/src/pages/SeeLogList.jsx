@@ -48,13 +48,15 @@ const SeeLogList = (props) => {
     const [url, setUrl] = useState(`${process.env.API_URL}/user/logs?page=1&count=50`)
     const [activePage, setActivePage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
+    const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
         axios.get(
             url
         )
         .then(res => {
-            setLogList([...res.data]);
+            setTotalPage(parseInt(res.data.count/50) + 1);
+            setLogList([...res.data.body]);
             setIsLoading(false);
         });
     }, [url])
@@ -89,7 +91,7 @@ const SeeLogList = (props) => {
                                                 ellipsisItem={null}
                                                 activePage={activePage}
                                                 onPageChange={onPageChange}
-                                                totalPages={99}
+                                                totalPages={totalPage}
                                             />
                                         </Table.HeaderCell>
                                     </Table.Row>
@@ -142,7 +144,7 @@ const SeeLogList = (props) => {
                                             ellipsisItem={null}
                                             activePage={activePage}
                                             onPageChange={onPageChange}
-                                            totalPages={99}
+                                            totalPages={totalPage}
                                         />
                                     </Table.HeaderCell>
                                 </Table.Row>
