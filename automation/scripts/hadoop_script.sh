@@ -56,6 +56,12 @@ echo "=== Set env and PATH ==="
 echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /etc/profile
 echo "export SBT_HOME=/usr/share/sbt-launcher-packaging/bin/sbt-launch.jar" >> /etc/profile
 echo "export SPARK_HOME=/usr/lib/spark" >> /etc/profile
+echo "export HADOOP_HOME=/home/ubuntu/server/hadoop-2.8.5" >> /etc/profile
+echo "export HADOOP_CONF_DIR=$HADOOP_HOME/hadoop-2.8.5/etc/hadoop" >> /etc/profile
+echo "export HADOOP_MAPRED_HOME=$HADOOP_HOME" >> /etc/profile
+echo "export HADOOP_COMMON_HOME=$HADOOP_HOME" >> /etc/profile
+echo "export HADOOP_HDFS_HOME=$HADOOP_HOME" >> /etc/profile
+echo "export HADOOP_YARN_HOME=$HADOOP_HOME" >> /etc/profile
 
 echo "export PATH=$PATH:$JAVA_HOME/bin" >> /etc/profile
 echo "export PATH=$PATH:$SBT_HOME/bin:$SPARK_HOME/bin:$SPARK_HOME/sbin" >> /etc/profile
