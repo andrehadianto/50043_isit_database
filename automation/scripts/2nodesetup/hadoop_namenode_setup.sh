@@ -135,9 +135,10 @@ tar -zxvf sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
 sudo mv sqoop-1.4.7.bin__hadoop-2.6.0 /usr/lib
 sudo chmod -R 757 /usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0
 
-export SQOOP_HOME=/usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0
-export PATH=$PATH:$SQOOP_HOME/bin
-export SQOOP_CONF_DIR=$SQOOP_HOME/conf
+
+echo "export SQOOP_HOME=/usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0" >> /etc/profile
+echo "export SQOOP_CONF_DIR=/usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0/conf" >> /etc/profile
+echo "export PATH=$PATH:/usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0/bin" >> /etc/profile
 
 echo "Installing JDBC driver..."
 wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.38.tar.gz
@@ -146,9 +147,7 @@ sudo cp mysql-connector-java-5.1.38/mysql-connector-java-5.1.38-bin.jar $SQOOP_H
 
 sudo chmod a+rw /etc/profile
 
-echo "export SQOOP_HOME=/usr/lib/sqoop-1.4.7.bin__hadoop-2.6.0" >> /etc/profile
-echo "export PATH=$PATH:$SQOOP_HOME/bin" >> /etc/profile
-echo "export SQOOP_CONF_DIR=$SQOOP_HOME/conf" >> /etc/profile
+
 
 echo "Installing Mongo..."
 # download mongo
@@ -168,3 +167,5 @@ echo "Installing Mongo..."
     sudo systemctl enable mongod
     sudo service mongod start
 }
+
+sudo apt install -y mysql-server-5.7

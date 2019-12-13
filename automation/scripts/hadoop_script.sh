@@ -44,6 +44,7 @@ sudo chmod 777 -R ubuntu /usr/local/hadoop/
 sudo apt-get install -y python3-pip
 pip3 install pyspark --no-cache-dir
 pip3 install pymongo --no-cache-dir
+pip3 install numpy
 
 # install sbt
 echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
@@ -57,14 +58,12 @@ echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /etc/profile
 echo "export SBT_HOME=/usr/share/sbt-launcher-packaging/bin/sbt-launch.jar" >> /etc/profile
 echo "export SPARK_HOME=/usr/lib/spark" >> /etc/profile
 echo "export HADOOP_HOME=/home/ubuntu/server/hadoop-2.8.5" >> /etc/profile
-echo "export HADOOP_CONF_DIR=$HADOOP_HOME/hadoop-2.8.5/etc/hadoop" >> /etc/profile
-echo "export HADOOP_MAPRED_HOME=$HADOOP_HOME" >> /etc/profile
-echo "export HADOOP_COMMON_HOME=$HADOOP_HOME" >> /etc/profile
-echo "export HADOOP_HDFS_HOME=$HADOOP_HOME" >> /etc/profile
-echo "export HADOOP_YARN_HOME=$HADOOP_HOME" >> /etc/profile
+echo "export HADOOP_CONF_DIR=/home/ubuntu/server/hadoop-2.8.5/etc/hadoop" >> /etc/profile
+echo "export HADOOP_MAPRED_HOME=/home/ubuntu/server/hadoop-2.8.5" >> /etc/profile
+echo "export HADOOP_COMMON_HOME=/home/ubuntu/server/hadoop-2.8.5" >> /etc/profile
+echo "export HADOOP_HDFS_HOME=/home/ubuntu/server/hadoop-2.8.5" >> /etc/profile
+echo "export HADOOP_YARN_HOME=/home/ubuntu/server/hadoop-2.8.5" >> /etc/profile
 
-echo "export PATH=$PATH:$JAVA_HOME/bin" >> /etc/profile
-echo "export PATH=$PATH:$SBT_HOME/bin:$SPARK_HOME/bin:$SPARK_HOME/sbin" >> /etc/profile
-echo "export PATH=$PATH:/home/ubuntu/server/hadoop-2.8.5/bin" >> /etc/profile
+echo "export PATH=$PATH:$JAVA_HOME/bin:$SBT_HOME/bin:$SPARK_HOME/bin:$SPARK_HOME/sbin:/home/ubuntu/server/hadoop-2.8.5/bin" >> /etc/profile
 
 echo "=== Completed Spark Setup ==="
