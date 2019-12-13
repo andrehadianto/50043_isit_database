@@ -10,7 +10,7 @@ nodejs -v
 npm -v
 
 # Download code
-wget -c https://www.dropbox.com/s/9muw228zsm2z6wy/50043_isit_database-master2.zip?dl=0 -O 50043_isit_database.zip
+wget -c https://www.dropbox.com/s/e58kz6rib77u02j/50043_isit_database-master.zip?dl=0 -O 50043_isit_database.zip
 sudo apt install unzip
 unzip 50043_isit_database.zip
 
