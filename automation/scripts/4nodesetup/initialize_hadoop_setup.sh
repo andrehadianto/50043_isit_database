@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # $1 AWS key path, $2 namenode dns, $3 datanode1 dns, $4 datanode2 dns, $5 datanode3 dns
 # $6 datanode1 ip, $7 datanode2 ip, $8 datanode3 ip
+
 echo "Preparing namenode and datanode..."
 scp -o StrictHostKeyChecking=no -i $1 $1  ubuntu@$2:/home/ubuntu/aws_key.pem
 sleep 1

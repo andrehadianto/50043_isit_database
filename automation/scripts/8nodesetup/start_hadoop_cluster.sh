@@ -11,10 +11,22 @@ sleep 1
 yes | /bin/bash /home/ubuntu/server/hadoop-2.8.5/sbin/mr-jobhistory-daemon.sh start historyserver
 sleep 1 
 /usr/lib/spark/sbin/start-master.sh
-sleep 1 
+sleep 1
 LOCAL_PUBLIC_IP=$(curl ifconfig.co)
-sleep 1 
+sleep 1
 export LOCAL_PUBLIC_IP
-sleep 1 
-/usr/lib/spark/sbin/start-slaves.sh
-sleep 1 
+sleep 1
+ssh dnode1 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+sleep 1
+ssh dnode2 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+sleep 1
+ssh dnode3 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+sleep 1
+ssh dnode4 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+sleep 1
+ssh dnode5 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+sleep 1
+ssh dnode6 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+sleep 1
+ssh dnode7 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+sleep 1

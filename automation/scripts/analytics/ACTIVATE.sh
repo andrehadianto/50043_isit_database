@@ -21,6 +21,6 @@ MASTER_IP=$(curl ifconfig.co)
 export MASTER_IP
 echo $MASTER_IP
 /usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 tfidf.py $MASTER_IP
-# /usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 correlation.py $MASTER_IP
+/usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 correlation.py $MASTER_IP
 
-echo "===============================COMPLETE================================="
+echo "===================================COMPLETE========================================"

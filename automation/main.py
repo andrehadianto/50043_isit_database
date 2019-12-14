@@ -78,7 +78,7 @@ def main():
         logging.info(f'    Public IP Address: {flask_instance_info["PublicIpAddress"]}')
         logging.info(f'    Current State: {flask_instance_info["State"]["Name"]}')
 
-    CONFIG["FLASK"] = {"IP": flask_instance_info["PublicIpAddress"], "ID": flask_instance_info["InstanceId"]}
+    CONFIG["FLASK"] = {"IP": flask_instance_info["PublicIpAddress"], "ID": flask_instance_info["InstanceId"],"DNS": flask_instance_info["PublicDnsName"]}
 
 
     # *=================================================*
@@ -264,7 +264,7 @@ def main():
 
     # 2node: keypath, master dns, slave dns, slave ip
     # 4node: keypath, master dns, slave1 dns, slave2 dns, slave3 dns, slave4 dns, slave1 ip, slave2 ip, slave3 ip, slave4 ip
-    
+
     prefix = ["/bin/bash", HADOOP_CONFIG_SCRIPT, CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["DNS"]]
     slave_dns = [i["DNS"] for i in CONFIG["SLAVES"]]
     slave_ip = [i["IP"] for i in CONFIG["SLAVES"]]
@@ -279,6 +279,14 @@ def main():
     analytics = ['/bin/bash', ANALYTICS_SCRIPT, CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["IP"], CONFIG["MONGO"]["IP"], CONFIG["MYSQL"]["IP"]]
     run_command_bash(analytics)
 
+    logging.info("MongoDB can be found at %s" % (CONFIG["MONGO"]["IP"]))
+    logging.info("MySQL database can be found at %s" % (CONFIG["MYSQL"]["IP"]))
+    logging.info("Flask server: %s:5000/isit" % (CONFIG["FLASK"]["IP"]))
+    logging.info("Output files are stored in hdfs. Name node: %s" % (CONFIG["MASTER"]["DNS"]))
+    logging.info("The output of the correlation coefficient can be found in /corr/ in the last file. E.g. part-000XX")
+    logging.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#1-correlation")
+    logging.info("Output of Task 2 can be found at /tfidf directory in hdfs")
+    logging.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#2-tf-idf")
 
 if __name__ == '__main__':
 

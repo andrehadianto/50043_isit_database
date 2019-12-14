@@ -64,4 +64,8 @@ sleep 1
 sudo mkdir -p /usr/local/hadoop/hdfs/data
 sleep 1 
 sudo chown -R ubuntu:ubuntu /usr/local/hadoop/hdfs/data
-sleep 1 
+sleep 1
+sudo apt-get install -y python3-pip
+sleep 1
+pip3 install numpy
+sleep 1

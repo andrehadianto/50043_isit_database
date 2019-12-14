@@ -60,7 +60,7 @@ pip3 install pyspark --no-cache-dir
 sleep 1 
 pip3 install pymongo --no-cache-dir
 sleep 1 
-pip3 install numpy
+pip3 install numpy --no-cache-dir
 sleep 1 
 # install sbt
 echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list

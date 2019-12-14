@@ -240,4 +240,8 @@ sleep 1
 }
 
 sudo apt install -y mysql-server-5.7
-sleep 1 
+sleep 1
+sudo apt-get install -y python3-pip
+sleep 1
+pip3 install numpy
+sleep 1
