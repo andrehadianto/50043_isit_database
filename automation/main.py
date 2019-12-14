@@ -17,6 +17,7 @@ import urllib.request
 import argparse
 import yaml
 import subprocess
+import time
 
 import utils.user as user
 
@@ -263,14 +264,20 @@ def main():
 
     # 2node: keypath, master dns, slave dns, slave ip
     # 4node: keypath, master dns, slave1 dns, slave2 dns, slave3 dns, slave4 dns, slave1 ip, slave2 ip, slave3 ip, slave4 ip
-
+    
     prefix = ["/bin/bash", HADOOP_CONFIG_SCRIPT, CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["DNS"]]
     slave_dns = [i["DNS"] for i in CONFIG["SLAVES"]]
     slave_ip = [i["IP"] for i in CONFIG["SLAVES"]]
     process_cmd = prefix + slave_dns + slave_ip
 
     print(process_cmd)
+    time.sleep(60)
     run_command_bash(process_cmd)
+
+    time.sleep(5)
+    ANALYTICS_SCRIPT = "scripts/analytics/analytics.sh"
+    analytics = ['/bin/bash', ANALYTICS_SCRIPT, CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["IP"], CONFIG["MONGO"]["IP"], CONFIG["MYSQL"]["IP"]]
+    run_command_bash(analytics)
 
 
 if __name__ == '__main__':
