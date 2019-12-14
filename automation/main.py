@@ -285,7 +285,7 @@ def main():
     logging.info("Output files are stored in hdfs. Name node: %s" % (CONFIG["MASTER"]["DNS"]))
     logging.info("The output of the correlation coefficient can be found in /corr/ in the last file. E.g. part-000XX")
     logging.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#1-correlation")
-    logging.info("Output of Task 2 can be found at /tfidf directory in hdfs")
+    logging.info("The output of tfidf can be found at /tfidf directory in hdfs")
     logging.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#2-tf-idf")
 
 if __name__ == '__main__':
