@@ -144,3 +144,10 @@ yarn-error.log*
 /.changelog
 .npm/
 public/
+
+# config file
+/config.yml
+
+# pem file
+*.pem
+*.pem:*
