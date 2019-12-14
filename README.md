@@ -190,7 +190,7 @@ Now that we have <img src="https://latex.codecogs.com/svg.latex?\small&space;\su
   <img src="https://latex.codecogs.com/svg.latex?\small&space;r&space;=&space;\frac{n&space;\sum&space;xy&space;-&space;\sum&space;x&space;\sum&space;y}{\sqrt&space;{(n&space;\sum&space;x^{2}&space;-&space;(\sum&space;x)^{2})&space;(n&space;\sum&space;y^{2}&space;-&space;(\sum&space;y)^{2})}}" title="\small r = \frac{n \sum xy - \sum x \sum y}{\sqrt {(n \sum x^{2} - (\sum x)^{2}) (n \sum y^{2} - (\sum y)^{2})}}" />
 </p>
 
-After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /corr/ directory. The value of the Pearson's correlation coefficient can be found in `part-00001`. 
+After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /corr/ directory. The value of the Pearson's correlation coefficient can be found in one of the files (`part-0000X`) in that directory. 
 ```
 hadoop fs -ls /corr
 ```
