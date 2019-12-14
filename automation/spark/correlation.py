@@ -3,27 +3,30 @@ import sys
 import pyspark
 from pyspark.sql.functions import *
 from pyspark.sql.functions import length
+from pyspark.sql import SparkSession
 
-# Uncomment when Hadoop is set up
-# sc = pyspark.SparkContext("spark://{}:7077".format(sys.argv[1]), "corr")
-# spark = SparkSession(sc)
-# reviews_df = sc.textFile(sys.argv[2])			# need to change this accordingly
-# meta_df = sc.textFile(sys.argv[3])			# need to change this accordingly
+# to run
+# $SPARK_HOME/bin/spark-submit --master spark://<master-ip>:7077 correlation.py <master-ip>
+# $SPARK_HOME/bin/spark-submit --master spark://ec2-54-169-135-228.ap-southeast-1.compute.amazonaws.com:7077 correlation.py ec2-54-169-135-228.ap-southeast-1.compute.amazonaws.com
+
+
+sc = pyspark.SparkContext("spark://{}:7077".format(sys.argv[1]), "corr")
+spark = SparkSession(sc)
 
 # ================
 # Preprocessing
 # ================
 
-# Currently reading from local file
-reviews_df = spark.read.csv("C:/Users/User/Desktop/SUTD/Term 6/50.043 Database and Big Data Systems/project/kindle-reviews/kindle_short.csv", header=True, sep=",")
-# get _c0, asin and reviewText columns from reviews dataset
-reviews = reviews_df.select("_c0", "asin", "reviewText")
+reviews_df = spark.read.csv("hdfs://{}:9000/data/{}".format(sys.argv[1], "kindle.csv"), header=True, sep=",")
+# get id, asin and reviewText columns from reviews dataset
+reviews = reviews_df.select("id", "asin", "reviewText")
 # convert reviewText -> length of review
 reviews = reviews.withColumn("reviewText", length(reviews.reviewText))
 # get average review length (group by asin)
 reviews_avg = reviews.groupBy("asin").agg(mean("reviewText").alias("average_reviewLength"))
-# get price
-meta_df = spark.read.json('C:/Users/User/Desktop/SUTD/Term 6/50.043 Database and Big Data Systems/project/meta_kindle_store/meta_short.json')
+
+
+meta_df = spark.read.json("hdfs://{}:9000/data/{}".format(sys.argv[1], "meta.json"))
 prices = meta_df.select("asin", "price")
 # join by asin
 data = reviews_avg.join(prices, ["asin"])
@@ -31,8 +34,10 @@ data = reviews_avg.join(prices, ["asin"])
 
 # ==================
 
-n = data.count()
 data = data.select("price", "average_reviewLength")
+data = data.filter(col("price").isNotNull() & col("average_reviewLength").isNotNull())		# drop None values
+n = data.count()
+
 data = data.rdd.map(list)
 
 flatdata = data.flatMap(lambda row: (
@@ -60,5 +65,5 @@ print("The Pearson Correlation between average review length and price is: ")
 print(correlation)
 
 # create a rdd so that we can save
-# output = sc.parallelize(['Correlation', correlation])
-# output.saveAsTextFile("hdfs://{}:9000/corr".format(sys.argv[1]))
+output = sc.parallelize(['Correlation', correlation])
+output.saveAsTextFile("hdfs://{}:9000/corr".format(sys.argv[1]))
