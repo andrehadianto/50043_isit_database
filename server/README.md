@@ -1,6 +1,17 @@
 # Checkpoint 1
 Implementation of production backend on local machine. That is, the web server and databases run on the same machine.
 
+## Table of Contents
+* [Initialization](#initialization)
+  * [Virtual Environment](#1-python-virtual-environment)
+  * [Set up of .env](#2-use-env)
+  * [MongoDB](#3-set-up-mongo-database)
+  * [MySQL](#4-set-up-mysql-database)
+  * [Frontend](#5-set-up-front-end)
+* [Running](#running-the-server)
+
+<hr>
+
 ## Initialization
 
 ### 1. Python Virtual Environment
@@ -41,6 +52,7 @@ MONGO_HOST=localhost
 MONGO_DB=isit_database_mongo
 LOG_DB=log_mongo
 ```
+
 ### 3. Set up mongo database
 (you can refer to `../automation/scripts/mongo_script.sh` from master branch)
 - Install mongodb
@@ -58,6 +70,7 @@ LOG_DB=log_mongo
 
 ### 4. Set up MYSQL database
 - Install MYSQL version 5.7
+- Download the `kindle_reviews.csv` data
 - Run the following:
 ```
 CREATE SCHEMA isit_database;
@@ -77,7 +90,7 @@ LOAD DATA LOCAL INFILE 'kindle_reviews.csv' INTO TABLE isit_database.kindle_revi
 ```
 
 ### 5. Set up front-end
-(you can refer to `../automation/scripts/flash_script.sh` from master branch)
+(you can refer to `../automation/scripts/flask_script.sh` from master branch)
 - Install nodejs, npm
 - After installation, run:
 ```
@@ -87,9 +100,11 @@ npm install
 ```
 - run `npm run watch`
 
-### 6. Running the Server
-Running:
+<hr>
+
+## Running the Server
+To run the server, run:
 ```
 python app.py
 ```
-Go to `http://localhost:5000/isit` 
+Go to `http://localhost:5000/isit`
