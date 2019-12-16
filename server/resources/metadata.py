@@ -8,7 +8,7 @@ class GetBookTitles(Resource):
     """Returns all book titles"""
     def get(self):
         try:
-            cursor = mongo.db.kindle_metadata.find({'title': {'$exists': 1}}, {'title': 1})
+            cursor = mongo.db.kindle_metadata.find({'title': {'$exists': 1}}, {'_id': 0, 'asin': 1,'title': 1})
             json_query = json.loads(dumps(cursor, default=default))
             return {"message": "Successfully retrieve all titles", "titles": json_query}, 200
         except:
