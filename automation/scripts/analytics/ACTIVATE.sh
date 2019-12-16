@@ -23,4 +23,10 @@ echo $MASTER_IP
 /usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 tfidf.py $MASTER_IP
 /usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 correlation.py $MASTER_IP
 
-echo "===================================COMPLETE========================================"
+echo "===========================GETTING TFIDF====================================="
+/usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 tfidf.py $MASTER_IP
+
+echo "========================GETTING CORRELATION=================================="
+/usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 correlation.py $MASTER_IP
+
+echo "=============================COMPLETE========================================"

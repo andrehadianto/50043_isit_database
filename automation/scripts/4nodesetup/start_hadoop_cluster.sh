@@ -16,9 +16,9 @@ LOCAL_PUBLIC_IP=$(curl ifconfig.co)
 sleep 1
 export LOCAL_PUBLIC_IP
 sleep 1
-ssh dnode1 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+ssh dnode1 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$1:7077"
 sleep 1
-ssh dnode2 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+ssh dnode2 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$1:7077"
 sleep 1
-ssh dnode3 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$LOCAL_PUBLIC_IP:7077"
+ssh dnode3 "/bin/bash /usr/lib/spark/sbin/start-slave.sh spark://$1:7077"
 sleep 1

@@ -1,13 +1,28 @@
+import os
 import yaml
 import logging
 import utils.user as user
+import time
 from utils.utils import run_command_bash
 
 def analytics():
-    # Set up logging
-    logging.basicConfig(level=logging.INFO,
-                        format='%(levelname)s: %(asctime)s: %(message)s')
 
+    LOG_PATH = os.path.join("config", "analytics_log.log")
+
+    # Set up logging
+    logger = logging.getLogger("logger")
+    logger.setLevel(logging.INFO)
+
+    ch = logging.StreamHandler()
+    fh = logging.FileHandler(LOG_PATH, mode='w')
+
+    formatter = logging.Formatter('%(levelname)s: %(asctime)s: %(message)s')
+
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+
+    logger.addHandler(fh)
+    logger.addHandler(ch)
     with open('config/config.yml') as file:
         CONFIG = yaml.load(file, Loader=yaml.FullLoader)
         
@@ -19,15 +34,15 @@ def analytics():
 
     ANALYTICS_SCRIPT = "scripts/analytics/analytics.sh"
 
-    command = ['/bin/bash', ANALYTICS_SCRIPT, user.KEY_PATH, CONFIG["MASTER"]["IP"], CONFIG["MONGO"]["IP"], CONFIG["MYSQL"]["IP"]]
+    analytics = ['/bin/bash', ANALYTICS_SCRIPT, user.KEY_PATH, CONFIG["MASTER"]["IP"], CONFIG["MONGO"]["IP"], CONFIG["MYSQL"]["IP"]]
     
-    run_command_bash(command)
+    run_command_bash(analytics)
     
-    logging.info("Output files are stored in hdfs. Name node: %s" % (CONFIG["MASTER"]["DNS"]))
-    logging.info("The output of the correlation coefficient can be found in /corr/ in the last part file.")
-    logging.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#1-correlation")
-    logging.info("Output of Task 2 can be found at /tfidf directory in hdfs")
-    logging.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#2-tf-idf")
+    logger.info("Output files are stored in hdfs. Name node: %s" % (CONFIG["MASTER"]["DNS"]))
+    logger.info("The output of the correlation coefficient can be found in /corr/ in the last part file.")
+    logger.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#1-correlation")
+    logger.info("Output of Task 2 can be found at /tfidf directory in hdfs")
+    logger.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#2-tf-idf")
 
 
 

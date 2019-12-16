@@ -66,12 +66,12 @@ def create_security_group(name, permissions):
                                             Description="DESCRIPTION",
                                             VpcId=vpc_id)
         security_group_id = response['GroupId']
-        print('Security Group Created %s in vpc %s.' % (security_group_id, vpc_id))
+        # print('Security Group Created %s in vpc %s.' % (security_group_id, vpc_id))
 
         data = ec2_client.authorize_security_group_ingress(
             GroupId=security_group_id,
             IpPermissions=permissions)
-        print('Ingress Successfully Set %s' % data)
+        # print('Ingress Successfully Set %s' % data)
 
     except ClientError as e:
         print(e)

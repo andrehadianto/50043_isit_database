@@ -45,7 +45,7 @@ sleep 1
 
 echo "Just a little longer..."
 
-ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "/bin/bash /home/ubuntu/start_hadoop_cluster.sh"
+ssh -o StrictHostKeyChecking=no -i $1 ubuntu@$2 "/bin/bash /home/ubuntu/start_hadoop_cluster.sh $2"
 sleep 1
 
 echo "Hdfs is up! Please visit $2:50070"
