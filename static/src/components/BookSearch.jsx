@@ -1,33 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import _ from 'lodash';
 import {
     Button,
     Form,
-    Icon
+    Icon,
+    Search
 } from 'semantic-ui-react';
+import axios from 'axios';
 
-let value = '';
-
-const BookSearch = () => {
+const BookSearch = (props) => {
     const [redirect, setRedirect] = useState(false);
+    const [getTitlesAPI, setTitlesAPI] = useState(`${process.env.API_URL}/books_titles`);
+    const [results, setResults] = useState([]);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [strings, setStrings] = useState('');
+    const [source, setSource] = useState([]);
+    const [redirectASIN, setRedirectASIN] = useState('');
+    
+    useEffect(() => {
+        axios.get(
+            getTitlesAPI
+        )
+        .then(res => {
+            const modifiedSource = res.data.titles.map(book => ({title: book.title, key: book.asin}));
+            setSource(modifiedSource);
+        })
+    }, [])
 
     const searchHandler = (e) => {
         e.preventDefault();
-        value = e.target.elements.asin.value;
-        console.log(value)
-        if (!!value.length) {
-            console.log('someting here')
-            setRedirect(true);
+        if (!!strings.length) {
+            let i;
+            for (i = 0; i < source.length; i++) {
+                if (source[i].title == strings) {
+                    setRedirectASIN(source[i].key)
+                    setRedirect(true);
+                }
+            }
         }
     }
 
+    const handleSearchChange = (e, { value }) => {
+        setSearchLoading(true);
+        setStrings(value);
+    }
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (strings.length < 1) {
+                setSearchLoading(false);
+                setResults([]);
+                setStrings('');
+            };
+            const re = new RegExp(_.escapeRegExp(strings), 'i')
+            const isMatch = (result) => re.test(result.title);
+            setSearchLoading(false);
+            setResults([..._.filter(source, isMatch)])
+        }, 300)
+    }, [strings])
+
     if ( redirect ) {
-        console.log(`${value} is my value`)
-        return ( <Redirect to={{pathname: `/review/${value}`}}/> )
+        return ( <Redirect to={{pathname: `/review/${redirectASIN}`}}/> )
     } else {
         return (
-            <Form onSubmit={ searchHandler }>
+            <Form onSubmit={searchHandler}>
                 <Form.Group>
                     <Button 
                         icon
@@ -39,14 +76,17 @@ const BookSearch = () => {
                         <Icon name='search'/>
                         Search
                     </Button>
-                    <Form.Field style={{ width: '-webkit-fill-available', borderTopLeftRadius: 0, borderBottomLeftRadius: 0, paddingLeft: 0 }}>
-                        <input
-                            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-                            name='asin'
-                            placeholder='Search by book asin'
-                            required
-                        />
-                    </Form.Field>
+                    <Search
+                        style={{ width: '-webkit-fill-available', borderTopLeftRadius: 0, borderBottomLeftRadius: 0, paddingLeft: 0 }}
+                        loading={ searchLoading }
+                        onResultSelect={(e, {result}) => {setStrings(result.title)}}
+                        onSearchChange={_.debounce(handleSearchChange, 500, {leading: true})}
+                        results={results}
+                        value={strings}
+                        fluid
+                        placeholder='Search by book title'
+                        {...props}
+                    />
                 </Form.Group>
             </Form>
         )
