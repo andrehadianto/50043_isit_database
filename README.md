@@ -24,6 +24,8 @@ After cleaning the dataset, we loaded the data into the respective databases.
 * [Analytics Backend](#analytics-backend)
   + [Requirements](#requirements-2)
   + [Approach](#approach)
+    - [Correlation](#1-correlation)
+    - [TF-IDF](#2-tf-idf)
 * [Automation](#automation)
   + [Requirements](#requirements-3)
   + [Design](#design-1)
@@ -188,7 +190,7 @@ Now that we have <img src="https://latex.codecogs.com/svg.latex?\small&space;\su
   <img src="https://latex.codecogs.com/svg.latex?\small&space;r&space;=&space;\frac{n&space;\sum&space;xy&space;-&space;\sum&space;x&space;\sum&space;y}{\sqrt&space;{(n&space;\sum&space;x^{2}&space;-&space;(\sum&space;x)^{2})&space;(n&space;\sum&space;y^{2}&space;-&space;(\sum&space;y)^{2})}}" title="\small r = \frac{n \sum xy - \sum x \sum y}{\sqrt {(n \sum x^{2} - (\sum x)^{2}) (n \sum y^{2} - (\sum y)^{2})}}" />
 </p>
 
-After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /corr/ directory 
+After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /corr/ directory. The value of the Pearson's correlation coefficient can be found in one of the files (`part-0000X`) in that directory. 
 ```
 hadoop fs -ls /corr
 ```
@@ -244,7 +246,7 @@ def map_to_word(vocab):
 df = rescaledData.withColumn("modified", map_to_word(vocab)(rescaledData.features))
 ```
 
-After running the analytics scripts detailed in the next section, the output for the correlation script can be found in hdfs under the /tfidf/ directory 
+After running the analytics scripts detailed in the next section, the output for the tfidf script can be found in hdfs under the /tfidf/ directory 
 ```
 hadoop fs -ls /tfidf
 ```
@@ -274,25 +276,34 @@ The EC2 instances will be setup as in the following structure
 | 5+              | <ul><li>Datanode (HDFS)</li><li>Worker (Spark)</li></ul> | The worker performs the tasks assigned by the driver. |
 
 #### Use Flow
+##### Prerequisites
+- Use Ubuntu 18.04 LTS (due to use of bash scripts)
+- AWS EC2 key pair created in the region 'ap-southeast-1'
+
 1. Clone the project repository using the following command
     ```
     git clone https://github.com/andrehadianto/50043_isit_database.git
     ```
 2. In the automation folder, create a virtual environment and install the requirements
     ```
-    virtualenv .pyenv
-    source .pyenv\Scripts\activate
+    virtualenv env
+    source env/bin/activate
     python -m pip install -r requirements.txt
     ```
-3. Run main.py to setup and configure the EC2 instances, this will take 10-20min.
+3. Run main.py to setup and configure the EC2 instances, and run the analytics. This will take 20-30min.
     ```
     python3 main.py <access key> <secret access key> <key pair name> <**absolute** pem file directory> <cluster size>
     ```
 4. The public IP of the EC2 instance hosting the web application will be printed on the console. The website can then be viewed at `<public IP>:5000/isit`
-5. To initiate the analytics, run 
+5. To initiate the analytics again, run 
     ```
     python3 analytics.py
     ```
-6. The analytics results can be found in `file-path/filename`, the file location will be printed on the console. A sample of the file is shown below.
+6. The analytics results will be stored in HDFS. The file location will be printed on the console. To see the files, ssh into the namenode and run
+    ```
+    hadoop fs -ls /tfidf
+    hadoop fs -ls /corr
+    ```
+    A sample of the file is shown below.
     <img src="readme/analytics.jpg" width=700px/><br />
     
