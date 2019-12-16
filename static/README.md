@@ -60,16 +60,16 @@ static
 ## Features
 -----
 ![Homepage](/static/images/01.png)  
-Homepage of our webiste shows a list of all books available in our database. User may sign up and login to our website.  
+Homepage of our webiste shows a list of all books available in our database. User may sign up and login to our website to get the full feature of the website.  
 
 ![Filter](/static/images/02.png)  
-Filter the books by multiple categories. Type inside the input form for category suggestions.  
+Filter the books by multiple categories. Type inside the input form for category suggestions. User may click on multiple categories to only show books with the selected categories.  
 
 ![Filtered Book](/static/images/07.png)  
-Filtered books will show the filtered categories in the labels by upper-left corner.  
+Filtered books will show the filtered categories through labels on the upper-left corner of the page.  
 
 ![Search](/static/images/03.png)  
-Search a book by its asin code.  
+Search a book by its title. Suggestion of the titles will show as the user type in the input box.  
 
 ![Login](/static/images/04.png)  
 User may login to gain access to user-only features.  
