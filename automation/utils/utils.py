@@ -11,7 +11,7 @@ def create_ec2_instance(count, image_id, instance_type, security_group, script_p
     # Provision and launch the EC2 instance
     ec2_client = boto3.client(
         'ec2',
-        region_name="ap-southeast-1",
+        region_name=utils.user.REGION,
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 
@@ -54,7 +54,7 @@ def create_ec2_instance(count, image_id, instance_type, security_group, script_p
 def create_security_group(name, permissions):    
     ec2_client = boto3.client(
         'ec2',
-        region_name="ap-southeast-1",
+        region_name=utils.user.REGION,
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 
@@ -193,7 +193,7 @@ def exists(file_path, instance_ip, user):
 def del_security_group(id):    
     ec2_client = boto3.client(
         'ec2',
-        region_name="ap-southeast-1",
+        region_name=utils.user.REGION,
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 
@@ -208,7 +208,7 @@ def del_security_group(id):
 def terminate_instances(ids):
     ec2_client = boto3.client(
         'ec2',
-        region_name="ap-southeast-1",
+        region_name=utils.user.REGION,
         aws_access_key_id=utils.user.ACCESS_KEY,
         aws_secret_access_key=utils.user.SECRET_KEY)
 

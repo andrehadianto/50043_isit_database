@@ -27,11 +27,18 @@ def main():
     # Set up variables
     LOCAL_IP = urllib.request.urlopen('http://ident.me').read().decode('utf8')
 
-    AMAZON_LINUX_AMI = 'ami-05c859630889c79c8'
-    UBUNTU_AMI = 'ami-061eb2b23f9f8839c'
+    # @@@@@@@@@@@@@@@@@@@ Change region, and corresponding AMI image @@@@@@@@@@@@@@@@@@@
+    # The default value is set for ap-southeast-1 Singapore region. 
+    # Changing the region will require you to also change the AMI to that regions' corresponding code.
+    REGION = 'ap-southeast-1'
+    AMAZON_LINUX_AMI = 'ami-05c859630889c79c8' # Amazon Linux AMI 2018.03.0 (HVM), SSD Volume Type
+    UBUNTU_AMI = 'ami-061eb2b23f9f8839c' # Ubuntu Server 18.04 LTS (HVM), SSD Volume Type
 
+    # @@@@@@@@@@@@@@@@@@@ Set instance type @@@@@@@@@@@@@@@@@@@
+    # The default is t2.micro for flask, mysql and mongo ec2 instances and t2.medium for hadoop/spark cluster.
     INSTANCE_TYPE = 't2.micro'
     HADOOP_INSTANCE_TYPE='t2.medium'
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     HADOOP_SCRIPT = os.path.join("scripts", "hadoop_script.sh")
     FLASK_SCRIPT = os.path.join("scripts", "flask_script.sh")
@@ -42,6 +49,7 @@ def main():
 
     CONFIG = dict()
     CONFIG["AWS_CREDENTIALS"] = {"ACCESS_KEY": user.ACCESS_KEY,"SECRET_KEY": user.SECRET_KEY, "KEY_PAIR": user.KEY_PAIR, "KEY_PATH": user.KEY_PATH}
+    user.REGION = REGION
     LOG_PATH = os.path.join("config", "logs.log")
 
     # Set up logging
@@ -58,11 +66,6 @@ def main():
 
     logger.addHandler(fh)
     logger.addHandler(ch)
-    # logging.basicConfig(filename=LOG_PATH,
-    #                     filemode='w',
-    #                     level=logging.INFO,
-    #                     format='%(levelname)s: %(asctime)s: %(message)s')
-
 
     # *=================================================*
     # *                     FLASK                       *
