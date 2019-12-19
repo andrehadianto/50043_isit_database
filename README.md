@@ -1,4 +1,62 @@
 # 50.043 Project
+## Automated Use Flow
+### Prerequisites
+- Use Ubuntu 18.04 LTS (due to use of bash scripts)
+- AWS EC2 key pair created in the region 'ap-southeast-1'
+
+**Take Note**
+- Notable events will be printed on the console to show progress. All actions and events will be added to the log file, which can be found at `/automation/config/logs.log`
+- The estimated time required for setting up is 20min and the estimated time for analytics can be found in the table [below](#estimated-runtime).
+- Amazon performs status checks on the instances, which monitors the software and network configurations. These checks could fail due to various reasons, this is outside of our control and cannot be resolved using Boto3. In that case, terminate all instances and try again.
+
+### Instructions
+1. Clone the project repository using the following command
+    ```
+    git clone https://github.com/andrehadianto/50043_isit_database.git
+    ```
+2. In the automation folder, create a virtual environment and install the requirements
+    ```
+    virtualenv env
+    source env/bin/activate
+    python -m pip install -r requirements.txt
+    ```
+3. Run main.py to setup and configure the EC2 instances, and run the analytics. This will take 20-30min.
+    ```
+    python3 main.py <access key> <secret access key> <key pair name> <**absolute** pem file directory> <cluster size>
+    ```
+4. The public IP of the EC2 instance hosting the web application will be printed on the console. The website can then be viewed at `<public IP 1>:5000/isit`
+5. To initiate the analytics again, run 
+    ```
+    python clean.py
+    python analytics.py
+    ```
+    To change the cluster size, run
+    ```
+    python clean.py
+    python3 main.py <access key> <secret access key> <key pair name> <**absolute** pem file directory> <cluster size>
+    ```
+6. Upon completion of the analytics task, the time taken will be printed on the console. The results will be stored in HDFS. The file location will be printed on the console. To see the files, ssh into the namenode and run
+    ```
+    hadoop fs -ls /tfidf
+    hadoop fs -ls /corr
+    ```
+    A sample of the TF-IDF and correlation analytics output can be seen below. <br/>
+    
+    TF-IDF
+    <img src="readme/analytics_tfidf.jpg" width=1000px/><br />
+    correlation<br />
+    <img src="readme/analytics_corr.jpg" width=600px/><br />
+
+### Estimated Runtime
+The estimated runtime (in min) for performing the analytics task on various vocabulary sizes and cluster sizes are as follows,
+
+| vocabulary size | 2 nodes | 4 nodes | 8 nodes |
+|-----------------|---------|---------|---------|
+| 2000            | 10      | 4       | 2       |
+| 5000            | 20      | 7       | 3       |
+| 10000           | -       | -       | 6       |
+
+
 ## Description
 In this project, we built a web application for Kindle book reviews, similar to [Goodreads](https://goodreads.com). You will start with some public datasets from Amazon, and will design and implement your application around them. The requirements below are intended to be broad and give you freedom to explore alternative design choices. The full details of the project requirements can be found [here](https://github.com/dinhtta/istd50043_project/blob/master/README.md).
 
@@ -12,6 +70,12 @@ This dataset has 434,702 products (about 450MB)
 After cleaning the dataset, we loaded the data into the respective databases.
 
 ## Table of Contents
+* [Automated Use Flow](#automated-use-flow)
+  + [Prerequisites](#prerequisites)
+  + [Instructions](#instructions)
+  + [Estimated Runtime](#estimated-runtime)
+* [Description](#description)
+  + [Dataset](#dataset)
 * [Frontend](#frontend)
   + [Requirements](#requirements)
   + [Framework](#framework)
@@ -63,7 +127,9 @@ The features implemented on our web application is as follows:
 
 ### Preview
 This is a preview of our frontend
-<img src="static/images/01.png" width=700px/><br />
+<p align="center">
+<img src="static/images/01.png" width=700px/>
+</p><br />
 The full implementation of our frontend and the various features supported by our web application can be found [here](/static).
 
 ## Production Backend
@@ -110,6 +176,9 @@ The full documentation on the usage can be found [here](/server).
 | /user/logs/:id              | GET  | Returns a specific log in details<br/><ul><li>Parameters: ObjectId</li><li>Body: status code, time, method, path, body</li></ul> |
 | /user/login                 | POST | Log in to an account into the website |
 | /user/signup                | POST | Sign up a new account into the database |
+| /books_titles               | GET  | Returns books that have titles in the metadata -Body: titles, asin |
+| /user/login                 | POST | Returns user data for authorization -Body: name, id, token |
+| /user/signup                | POST | Returns status code of sign up result |
 
 #### 2. Kindle Reviews
 **Schema (MySQL)**
@@ -276,34 +345,4 @@ The EC2 instances will be setup as in the following structure
 | 5+              | <ul><li>Datanode (HDFS)</li><li>Worker (Spark)</li></ul> | The worker performs the tasks assigned by the driver. |
 
 #### Use Flow
-##### Prerequisites
-- Use Ubuntu 18.04 LTS (due to use of bash scripts)
-- AWS EC2 key pair created in the region 'ap-southeast-1'
-
-1. Clone the project repository using the following command
-    ```
-    git clone https://github.com/andrehadianto/50043_isit_database.git
-    ```
-2. In the automation folder, create a virtual environment and install the requirements
-    ```
-    virtualenv env
-    source env/bin/activate
-    python -m pip install -r requirements.txt
-    ```
-3. Run main.py to setup and configure the EC2 instances, and run the analytics. This will take 20-30min.
-    ```
-    python3 main.py <access key> <secret access key> <key pair name> <**absolute** pem file directory> <cluster size>
-    ```
-4. The public IP of the EC2 instance hosting the web application will be printed on the console. The website can then be viewed at `<public IP>:5000/isit`
-5. To initiate the analytics again, run 
-    ```
-    python3 analytics.py
-    ```
-6. The analytics results will be stored in HDFS. The file location will be printed on the console. To see the files, ssh into the namenode and run
-    ```
-    hadoop fs -ls /tfidf
-    hadoop fs -ls /corr
-    ```
-    A sample of the file is shown below.
-    <img src="readme/analytics.jpg" width=700px/><br />
-    
+Refer to [here](#automated-use-flow) for instructions to run automated setup.
