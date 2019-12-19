@@ -11,7 +11,7 @@ echo "Putting stuff on hdfs..."
 echo "Getting spark scripts..."
 rm correlation.py tfidf.py
 wget -c https://www.dropbox.com/s/1awdag53ph7uj8s/correlation.py?dl=0 -O correlation.py
-wget -c https://www.dropbox.com/s/q6l548dmizqwxdi/tfidf.py?dl=0 -O tfidf.py
+wget -c https://www.dropbox.com/s/ml3k2ytb5dvj44g/tfidf.py?dl=0 -O tfidf.py
 
 # run the spark scripts
 echo "Running spark scripts..."
