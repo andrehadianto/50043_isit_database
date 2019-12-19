@@ -40,12 +40,16 @@
     hadoop fs -ls /tfidf
     hadoop fs -ls /corr
     ```
-    A sample of the output is shown below.
-    <img src="readme/analytics_tfidf.jpg" width=700px/><br />
-    <img src="readme/analytics_corr.jpg" width=700px/><br />
+    A sample of the TF-IDF and correlation analytics output can be seen below. <br/>
+    
+    TF-IDF
+    <img src="readme/analytics_tfidf.jpg" width=1000px/><br />
+    correlation<br />
+    <img src="readme/analytics_corr.jpg" width=600px/><br />
 
 ### Estimated Runtime
 The estimated runtime (in min) for performing the analytics task on various vocabulary sizes and cluster sizes are as follows,
+
 | vocabulary size | 2 nodes | 4 nodes | 8 nodes |
 |-----------------|---------|---------|---------|
 | 2000            | 10      | 4       | 2       |
@@ -66,10 +70,10 @@ This dataset has 434,702 products (about 450MB)
 After cleaning the dataset, we loaded the data into the respective databases.
 
 ## Table of Contents
-* [Automated Use Flow](#uatomated-use-flow)
+* [Automated Use Flow](#automated-use-flow)
   + [Prerequisites](#prerequisites)
   + [Instructions](#instructions)
-  + [Estimated RUntime](#estimated-runtime)
+  + [Estimated Runtime](#estimated-runtime)
 * [Description](#description)
   + [Dataset](#dataset)
 * [Frontend](#frontend)
