@@ -1,15 +1,15 @@
 # 50.043 Project
 ## Automated Use Flow
-**Prerequisites**
+### Prerequisites
 - Use Ubuntu 18.04 LTS (due to use of bash scripts)
 - AWS EC2 key pair created in the region 'ap-southeast-1'
 
 **Take Note**
 - Notable events will be printed on the console to show progress. All actions and events will be added to the log file, which can be found at `/automation/config/logs.log`
-- The estimated time required for setting up is 20min and the estimated time for analytics is xx.
+- The estimated time required for setting up is 20min and the estimated time for analytics can be found in the table [below](#estimated-runtime).
 - Amazon performs status checks on the instances, which monitors the software and network configurations. These checks could fail due to various reasons, this is outside of our control and cannot be resolved using Boto3. In that case, terminate all instances and try again.
 
-**Instructions**
+### Instructions
 1. Clone the project repository using the following command
     ```
     git clone https://github.com/andrehadianto/50043_isit_database.git
@@ -40,9 +40,17 @@
     hadoop fs -ls /tfidf
     hadoop fs -ls /corr
     ```
-    A sample of the file is shown below.
-    <img src="readme/analytics.jpg" width=700px/><br />
+    A sample of the output is shown below.
+    <img src="readme/analytics_tfidf.jpg" width=700px/><br />
+    <img src="readme/analytics_corr.jpg" width=700px/><br />
 
+### Estimated Runtime
+The estimated runtime (in min) for performing the analytics task on various vocabulary sizes and cluster sizes are as follows,
+| vocabulary size | 2 nodes | 4 nodes | 8 nodes |
+|-----------------|---------|---------|---------|
+| 2000            | 10      | 4       | 2       |
+| 5000            | 20      | 7       | 3       |
+| 10000           | -       | -       | 6       |
 
 
 ## Description
@@ -58,6 +66,12 @@ This dataset has 434,702 products (about 450MB)
 After cleaning the dataset, we loaded the data into the respective databases.
 
 ## Table of Contents
+* [Automated Use Flow](#uatomated-use-flow)
+  + [Prerequisites](#prerequisites)
+  + [Instructions](#instructions)
+  + [Estimated RUntime](#estimated-runtime)
+* [Description](#description)
+  + [Dataset](#dataset)
 * [Frontend](#frontend)
   + [Requirements](#requirements)
   + [Framework](#framework)
@@ -327,42 +341,4 @@ The EC2 instances will be setup as in the following structure
 | 5+              | <ul><li>Datanode (HDFS)</li><li>Worker (Spark)</li></ul> | The worker performs the tasks assigned by the driver. |
 
 #### Use Flow
-**Prerequisites**
-- Use Ubuntu 18.04 LTS (due to use of bash scripts)
-- AWS EC2 key pair created in the region 'ap-southeast-1'
-
-**Instructions**
-1. Clone the project repository using the following command
-    ```
-    git clone https://github.com/andrehadianto/50043_isit_database.git
-    ```
-2. In the automation folder, create a virtual environment and install the requirements
-    ```
-    virtualenv env
-    source env/bin/activate
-    python -m pip install -r requirements.txt
-    ```
-3. Run main.py to setup and configure the EC2 instances, and run the analytics. This will take 20-30min.
-    ```
-    python3 main.py <access key> <secret access key> <key pair name> <**absolute** pem file directory> <cluster size>
-    ```
-4. The public IP of the EC2 instance hosting the web application will be printed on the console. The website can then be viewed at `<public IP 1>:5000/isit`
-5. To initiate the analytics again, run 
-    ```
-    python clean.py
-    python analytics.py
-    ```
-    To change the cluster size, run
-    ```
-    python clean.py
-    python3 main.py <access key> <secret access key> <key pair name> <**absolute** pem file directory> <cluster size>
-    ```
-6. Upon completion of the analytics task, the time taken will be printed on the console. The results will be stored in HDFS. The file location will be printed on the console. To see the files, ssh into the namenode and run
-    ```
-    hadoop fs -ls /tfidf
-    hadoop fs -ls /corr
-    ```
-    A sample of the file is shown below.
-    <p align="center">
-    <img src="readme/analytics.jpg" width=700px/>
-    </p><br />
+Refer to [here](#automated-use-flow) for instructions to run automated setup.
