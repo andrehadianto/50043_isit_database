@@ -23,14 +23,9 @@ export MASTER_IP
 echo $MASTER_IP
 
 echo "===========================GETTING TFIDF====================================="
-SECONDS=0
 /usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 tfidf.py $MASTER_IP
-duration=$SECONDS
 
 echo "========================GETTING CORRELATION=================================="
-SECONDS=0
 /usr/lib/spark/bin/spark-submit --master spark://$MASTER_IP:7077 correlation.py $MASTER_IP
-duration2=$SECONDS
+
 echo "=============================COMPLETE========================================"
-echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed for TFIDF"
-echo "$(($duration2 / 60)) minutes and $(($duration2 % 60)) seconds elapsed for correlation"
