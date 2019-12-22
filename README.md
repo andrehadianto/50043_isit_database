@@ -7,14 +7,16 @@
 **Take Note**
 - Notable events will be printed on the console to show progress. All actions and events will be added to the log file, which can be found at `/automation/config/logs.log`
 - The estimated time required for setting up is 20min and the estimated time for analytics can be found in the table [below](#estimated-runtime).
-- Amazon performs status checks on the instances, which monitors the software and network configurations. These checks could fail due to various reasons, this is outside of our control and cannot be resolved using Boto3. In that case, terminate all instances and try again.
+- Amazon performs status checks on the instances, which monitors the software and network configurations. These checks could fail due to various reasons, this is outside of our control and cannot be resolved using Boto3. In that case, terminate all instances and security groups manually and try again.
+- Configuration of ec2 instances can be changed in `automation/main.py`
+    <img src="readme/config.jpg" width=1000px/><br />
 
 ### Instructions
 1. Clone the project repository using the following command
     ```
     git clone https://github.com/andrehadianto/50043_isit_database.git
     ```
-2. In the automation folder, create a virtual environment and install the requirements
+2. In the automation folder, create a virtual environment (python3) and install the requirements
     ```
     virtualenv env
     source env/bin/activate
@@ -34,7 +36,7 @@
     python clean.py
     python3 main.py <access key> <secret access key> <key pair name> <**absolute** pem file directory> <cluster size>
     ```
-6. Upon completion of the analytics task, the time taken will be printed on the console. The results will be stored in HDFS. The file location will be printed on the console. To see the files, ssh into the namenode and run
+6. The results of the analytics tasks will be stored in HDFS. The file location will be printed on the console. To see the files, ssh into the namenode and run
     ```
     hadoop fs -ls /tfidf
     hadoop fs -ls /corr
