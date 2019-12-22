@@ -27,10 +27,18 @@ def main():
     # Set up variables
     LOCAL_IP = urllib.request.urlopen('http://ident.me').read().decode('utf8')
 
-    AMAZON_LINUX_AMI = 'ami-05c859630889c79c8'
-    UBUNTU_AMI = 'ami-061eb2b23f9f8839c'
+    # @@@@@@@@@@@@@@@@@@@ Change region, and corresponding AMI image @@@@@@@@@@@@@@@@@@@
+    # The default value is set for ap-southeast-1 Singapore region. 
+    # Changing the region will require you to also change the AMI to that regions' corresponding code.
+    REGION = 'ap-southeast-1'
+    AMAZON_LINUX_AMI = 'ami-05c859630889c79c8' # Amazon Linux AMI 2018.03.0 (HVM), SSD Volume Type
+    UBUNTU_AMI = 'ami-061eb2b23f9f8839c' # Ubuntu Server 18.04 LTS (HVM), SSD Volume Type
+
+    # @@@@@@@@@@@@@@@@@@@ Set instance type @@@@@@@@@@@@@@@@@@@
+    # The default is t2.micro for flask, mysql and mongo ec2 instances and t2.medium for hadoop/spark cluster.
     INSTANCE_TYPE = 't2.micro'
     HADOOP_INSTANCE_TYPE='t2.medium'
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     HADOOP_SCRIPT = os.path.join("scripts", "hadoop_script.sh")
     FLASK_SCRIPT = os.path.join("scripts", "flask_script.sh")
@@ -41,12 +49,23 @@ def main():
 
     CONFIG = dict()
     CONFIG["AWS_CREDENTIALS"] = {"ACCESS_KEY": user.ACCESS_KEY,"SECRET_KEY": user.SECRET_KEY, "KEY_PAIR": user.KEY_PAIR, "KEY_PATH": user.KEY_PATH}
-
+    user.REGION = REGION
+    LOG_PATH = os.path.join("config", "logs.log")
 
     # Set up logging
-    logging.basicConfig(level=logging.INFO,
-                        format='%(levelname)s: %(asctime)s: %(message)s')
+    logger = logging.getLogger("logger")
+    logger.setLevel(logging.INFO)
 
+    ch = logging.StreamHandler()
+    fh = logging.FileHandler(LOG_PATH, mode='w')
+
+    formatter = logging.Formatter('%(levelname)s: %(asctime)s: %(message)s')
+
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+
+    logger.addHandler(fh)
+    logger.addHandler(ch)
 
     # *=================================================*
     # *                     FLASK                       *
@@ -66,17 +85,19 @@ def main():
     CONFIG["SECURITY_GROUPS"] = [flask_security_group]
 
     # Provision and launch the EC2 instance for flask
-    logging.info('Starting flask instance...')
+    logger.info('Starting flask instance...')
 
     flask_instance_info = create_ec2_instance(1, UBUNTU_AMI, INSTANCE_TYPE, ["flask-webapp"], FLASK_SCRIPT)[0]
 
     if flask_instance_info is not None:
-        logging.info('Started ec2 instance for flask webapp')
-        logging.info(f'Launched EC2 Instance {flask_instance_info["InstanceId"]}')
-        logging.info(f'    VPC ID: {flask_instance_info["VpcId"]}')
-        logging.info(f'    Private IP Address: {flask_instance_info["PrivateIpAddress"]}')
-        logging.info(f'    Public IP Address: {flask_instance_info["PublicIpAddress"]}')
-        logging.info(f'    Current State: {flask_instance_info["State"]["Name"]}')
+        logger.info('Started ec2 instance for flask webapp')
+        logger.info(f'Launched EC2 Instance {flask_instance_info["InstanceId"]}')
+        logger.info(f'    VPC ID: {flask_instance_info["VpcId"]}')
+        logger.info(f'    Private IP Address: {flask_instance_info["PrivateIpAddress"]}')
+        logger.info(f'    Public IP Address: {flask_instance_info["PublicIpAddress"]}')
+        logger.info(f'    Current State: {flask_instance_info["State"]["Name"]}')
+    
+    print("====================================================================================")
 
     CONFIG["FLASK"] = {"IP": flask_instance_info["PublicIpAddress"], "ID": flask_instance_info["InstanceId"],"DNS": flask_instance_info["PublicDnsName"]}
 
@@ -96,17 +117,19 @@ def main():
     CONFIG["SECURITY_GROUPS"].append(hadoop_security_group)
 
     # Provision and launch the EC2 instances for hadoop/spark
-    logging.info('Starting hadoop namenodes and datanodes...')
+    logger.info('Starting hadoop namenodes and datanodes...')
 
     hadoop_instance_info = create_ec2_instance(int(user.NODES), UBUNTU_AMI, HADOOP_INSTANCE_TYPE, ["hadoop"], HADOOP_SCRIPT)
 
     if hadoop_instance_info is not None:
         for node in range(int(user.NODES)):
-            logging.info(f'Launched hadoop instance {hadoop_instance_info[node]["InstanceId"]}')
-            logging.info(f'    VPC ID: {hadoop_instance_info[node]["VpcId"]}')
-            logging.info(f'    Private IP Address: {hadoop_instance_info[node]["PrivateIpAddress"]}')
-            logging.info(f'    Public IP Address: {hadoop_instance_info[node]["PublicIpAddress"]}')
-            logging.info(f'    Current State: {hadoop_instance_info[node]["State"]["Name"]}')
+            logger.info(f'Launched hadoop instance {hadoop_instance_info[node]["InstanceId"]}')
+            logger.info(f'    VPC ID: {hadoop_instance_info[node]["VpcId"]}')
+            logger.info(f'    Private IP Address: {hadoop_instance_info[node]["PrivateIpAddress"]}')
+            logger.info(f'    Public IP Address: {hadoop_instance_info[node]["PublicIpAddress"]}')
+            logger.info(f'    Current State: {hadoop_instance_info[node]["State"]["Name"]}')
+    
+    print("====================================================================================")
 
     CONFIG["MASTER"] = {"IP": hadoop_instance_info[0]["PublicIpAddress"], 
                                 "ID": hadoop_instance_info[0]["InstanceId"],
@@ -136,17 +159,19 @@ def main():
     CONFIG["SECURITY_GROUPS"].append(sql_security_group)
 
     # Provision and launch the EC2 instance for mysql
-    logging.info('Starting MySQL...')
+    logger.info('Starting MySQL...')
 
     sql_instance_info = create_ec2_instance(1,AMAZON_LINUX_AMI, INSTANCE_TYPE, ["mysql-server"], SQL_SCRIPT)[0]
 
     if sql_instance_info is not None:
-        logging.info('Started ec2 instance for mysql server')
-        logging.info(f'Launched EC2 Instance {sql_instance_info["InstanceId"]}')
-        logging.info(f'    VPC ID: {sql_instance_info["VpcId"]}')
-        logging.info(f'    Private IP Address: {sql_instance_info["PrivateIpAddress"]}')
-        logging.info(f'    Public IP Address: {sql_instance_info["PublicIpAddress"]}')
-        logging.info(f'    Current State: {sql_instance_info["State"]["Name"]}')
+        logger.info('Started ec2 instance for mysql server')
+        logger.info(f'Launched EC2 Instance {sql_instance_info["InstanceId"]}')
+        logger.info(f'    VPC ID: {sql_instance_info["VpcId"]}')
+        logger.info(f'    Private IP Address: {sql_instance_info["PrivateIpAddress"]}')
+        logger.info(f'    Public IP Address: {sql_instance_info["PublicIpAddress"]}')
+        logger.info(f'    Current State: {sql_instance_info["State"]["Name"]}')
+
+    print("====================================================================================")
 
     CONFIG["MYSQL"] = {"IP": sql_instance_info["PublicIpAddress"], "ID": sql_instance_info["InstanceId"]}
     
@@ -172,22 +197,21 @@ def main():
     CONFIG["SECURITY_GROUPS"].append(mongo_security_group)
 
     # Provision and launch EC2 instance for mongo
-    logging.info('Starting MongoDB...')
+    logger.info('Starting MongoDB...')
 
     mongo_instance_info = create_ec2_instance(1, UBUNTU_AMI, INSTANCE_TYPE, ["mongo_db"], MONGO_SCRIPT)[0]
 
     if mongo_instance_info is not None:
-        logging.info('Started ec2 instance for mongo db')
-        logging.info(f'Launched EC2 Instance {mongo_instance_info["InstanceId"]}')
-        logging.info(f'    VPC ID: {mongo_instance_info["VpcId"]}')
-        logging.info(f'    Private IP Address: {mongo_instance_info["PrivateIpAddress"]}')
-        logging.info(f'    Public IP Address: {mongo_instance_info["PublicIpAddress"]}')
-        logging.info(f'    Current State: {mongo_instance_info["State"]["Name"]}')
+        logger.info('Started ec2 instance for mongo db')
+        logger.info(f'Launched EC2 Instance {mongo_instance_info["InstanceId"]}')
+        logger.info(f'    VPC ID: {mongo_instance_info["VpcId"]}')
+        logger.info(f'    Private IP Address: {mongo_instance_info["PrivateIpAddress"]}')
+        logger.info(f'    Public IP Address: {mongo_instance_info["PublicIpAddress"]}')
+        logger.info(f'    Current State: {mongo_instance_info["State"]["Name"]}')
+
+    print("====================================================================================")
 
     CONFIG["MONGO"] = {"IP": mongo_instance_info["PublicIpAddress"], "ID": mongo_instance_info["InstanceId"]}
-
-
-
 
     # Dump info to config.yml
     with open('config/config.yml', 'w') as file:
@@ -200,9 +224,10 @@ def main():
     # *                 FLASK CONFIG                    *
     # *=================================================*
 
-    logging.info("Setting up the flask webapp...")
+    logger.info("Setting up the flask webapp...")
 
     # Check if script is finished
+    logger.info("Checking if flask is ready...")
     indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (CONFIG["FLASK"]["ID"])
     while True:
         test = exists(indicator_file_path, CONFIG["FLASK"]["IP"], "ubuntu")
@@ -224,6 +249,7 @@ def main():
             LOG_DB=log_mongo
             MONGO_HOST=%s""" % (CONFIG["MYSQL"]["IP"], CONFIG["MONGO"]["IP"])]
     
+    logger.info("Setting .env for flask...")
     while True:
         test = execute_cmds_ssh(CONFIG["FLASK"]["IP"], "ubuntu", cmds)
         if test == "Failed":
@@ -233,24 +259,30 @@ def main():
             break
     
     # Run flask app in background (no hang up)
+    logger.info("Run flask in background...")
     while True:
         test = execute_bg(CONFIG["FLASK"]["IP"], "ubuntu", "sudo nohup python3 /50043_isit_database-master/server/app.py < /dev/null > /50043_isit_database-master/server/log.txt 2>&1 &")
         if test == "Failed":
             print("Connection failed, retrying...")
             continue
         else:
-            break   
-
-    logging.info("MongoDB can be found at %s" % (CONFIG["MONGO"]["IP"]))
-    logging.info("MySQL database can be found at %s" % (CONFIG["MYSQL"]["IP"]))
-    logging.info("Flask server has started, please visit %s:5000/isit" % (CONFIG["FLASK"]["IP"]))
+            break
     
+    print("====================================================================================")
+
+    logger.info("Web application is up!")
+    logger.info("MongoDB can be found at %s" % (CONFIG["MONGO"]["IP"]))
+    logger.info("MySQL database can be found at %s" % (CONFIG["MYSQL"]["IP"]))
+    logger.info("Flask server has started, please visit %s:5000/isit" % (CONFIG["FLASK"]["IP"]))
+    
+    print("====================================================================================")
 
     # *=================================================*
     # *                 HADOOP CONFIG                   *
     # *=================================================*
 
     # Check if hadoop/spark installed
+    logger.info("Wait for hadoop/spark to be installed...")
     indicator_file_path = "/var/lib/cloud/instances/%s/boot-finished" % (CONFIG["MASTER"]["ID"])
     while True:
         test = exists(indicator_file_path, CONFIG["MASTER"]["IP"], "ubuntu")
@@ -264,29 +296,37 @@ def main():
 
     # 2node: keypath, master dns, slave dns, slave ip
     # 4node: keypath, master dns, slave1 dns, slave2 dns, slave3 dns, slave4 dns, slave1 ip, slave2 ip, slave3 ip, slave4 ip
-
+    logger.info("Hadoop/spark installed, now configuring namenodes/datanodes...")
     prefix = ["/bin/bash", HADOOP_CONFIG_SCRIPT, CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["DNS"]]
     slave_dns = [i["DNS"] for i in CONFIG["SLAVES"]]
     slave_ip = [i["IP"] for i in CONFIG["SLAVES"]]
     process_cmd = prefix + slave_dns + slave_ip
 
     print(process_cmd)
-    time.sleep(60)
+    time.sleep(60) # buffer time
     run_command_bash(process_cmd)
 
-    time.sleep(5)
+    logger.info("Hadoop/spark has started!")
+
+    print("====================================================================================")
+
+    logger.info("Running analytics...")
+
+    time.sleep(5) # buffer times
     ANALYTICS_SCRIPT = "scripts/analytics/analytics.sh"
     analytics = ['/bin/bash', ANALYTICS_SCRIPT, CONFIG["AWS_CREDENTIALS"]["KEY_PATH"], CONFIG["MASTER"]["IP"], CONFIG["MONGO"]["IP"], CONFIG["MYSQL"]["IP"]]
+
     run_command_bash(analytics)
 
-    logging.info("MongoDB can be found at %s" % (CONFIG["MONGO"]["IP"]))
-    logging.info("MySQL database can be found at %s" % (CONFIG["MYSQL"]["IP"]))
-    logging.info("Flask server: %s:5000/isit" % (CONFIG["FLASK"]["IP"]))
-    logging.info("Output files are stored in hdfs. Name node: %s" % (CONFIG["MASTER"]["DNS"]))
-    logging.info("The output of the correlation coefficient can be found in /corr/ in the last file. E.g. part-000XX")
-    logging.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#1-correlation")
-    logging.info("The output of tfidf can be found at /tfidf directory in hdfs")
-    logging.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#2-tf-idf")
+    logger.info("MongoDB can be found at %s" % (CONFIG["MONGO"]["IP"]))
+    logger.info("MySQL database can be found at %s" % (CONFIG["MYSQL"]["IP"]))
+    logger.info("Flask server: %s:5000/isit" % (CONFIG["FLASK"]["IP"]))
+
+    logger.info("Output files are stored in hdfs. Name node: %s" % (CONFIG["MASTER"]["DNS"]))
+    logger.info("The output of the correlation coefficient can be found in /corr/ in the last file. E.g. part-000XX")
+    logger.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#1-correlation")
+    logger.info("The output of tfidf can be found at /tfidf directory in hdfs")
+    logger.info("For more information, visit https://github.com/andrehadianto/50043_isit_database/tree/develop/#2-tf-idf")
 
 if __name__ == '__main__':
 
@@ -307,6 +347,3 @@ if __name__ == '__main__':
     user.NODES = args.nodes
 
     main()
-    
-
-    
