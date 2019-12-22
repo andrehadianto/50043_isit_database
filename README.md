@@ -27,7 +27,6 @@
 4. The public IP of the EC2 instance hosting the web application will be printed on the console. The website can then be viewed at `<public IP 1>:5000/isit`
 5. To initiate the analytics again, run 
     ```
-    python clean.py
     python analytics.py
     ```
     To change the cluster size, run
