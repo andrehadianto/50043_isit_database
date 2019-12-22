@@ -48,7 +48,9 @@
     correlation<br />
     <img src="readme/analytics_corr.jpg" width=600px/><br />
 
-### Estimated Runtime
+### Estimated Runtime for the TF-IDF task
+Due to the need to recover the words from its word index in the output for the `tf-idf` task, it takes very long to perform this task on the whole vocabulary set (with the use of a `udf`). Hence, we decided to test the runtime on 3 different vocabulary sizes, namely `2000`, `5000` and `10000`. The program will consider only the top vocabSize terms ordered by term frequency across the corpus. To achieve a suitable runtime for 2 nodes, 4 nodes and 8 nodes, we decided to go with `5000` as our vocabulary size and ignore terms that appear too infrequently. 
+
 The estimated runtime (in min) for performing the analytics task on various vocabulary sizes and cluster sizes are as follows,
 
 | vocabulary size | 2 nodes | 4 nodes | 8 nodes |
