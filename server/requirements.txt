@@ -4,5 +4,5 @@ black==18.5b0
 Flask-PyMongo==2.3.0
 mysql-connector==2.2.9
 python-dotenv
-PyJWT==1.7.1
+PyJWT==2.4.0
 passlib==1.7.1
